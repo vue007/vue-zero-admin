@@ -1,0 +1,57 @@
+<template>
+  <ElConfigProvider :locale="locale" :size="baseStore.setting.size" :z-index="3000">
+    <component :is="currentLayout" />
+  </ElConfigProvider>
+</template>
+
+<script setup lang="ts">
+import { useBaseStore } from './stores/base.module'
+
+import BaseLayout from './layouts/BaseLayout.vue'
+import BlankLayout from './layouts/BlankLayout.vue'
+
+import zh_CN from 'element-plus/es/locale/lang/zh-cn'
+import zh_TW from 'element-plus/es/locale/lang/zh-tw'
+import en from 'element-plus/es/locale/lang/en'
+import { useMediaQuery, watchImmediate } from '@vueuse/core'
+
+const route = useRoute()
+const baseStore = useBaseStore()
+const i18n = useI18n()
+
+// # switch layout
+const currentLayout = shallowRef(BaseLayout)
+const layouts = { base: BaseLayout, blank: BlankLayout }
+watchEffect(() => {
+  const layoutName: string = route.meta?.layout as string
+  currentLayout.value = layouts[layoutName || 'base']
+})
+
+// # switch lang
+const langs = { zh_CN: import('element-plus/es/locale/lang/zh-cn'), zh_TW, en }
+const locale = computed(() => langs[baseStore.setting.local] || zh_CN)
+watchEffect(() => (i18n.locale.value = baseStore.setting.local))
+
+// # switch theme
+const theme = computed(() => baseStore.setting.theme)
+const systemTheme = computed(() => {
+  return useMediaQuery('(prefers-color-scheme: dark)').value ? 'dark' : 'light'
+})
+
+// - switch by user
+watchImmediate(
+  () => theme.value,
+  () => {
+    if (theme.value === 'auto')
+      document.documentElement.setAttribute('data-theme', systemTheme.value)
+    else document.documentElement.setAttribute('data-theme', theme.value)
+  },
+)
+// - auto switch by system
+watchImmediate(systemTheme, () => {
+  if (theme.value !== 'auto') return
+  document.documentElement.setAttribute('data-theme', systemTheme.value)
+})
+</script>
+
+<style lang="scss" scoped></style>

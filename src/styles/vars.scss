@@ -1,0 +1,38 @@
+$_prefix: '--el';
+$theme-light: ':root[data-theme="light"] &';
+$theme-dark: ':root[data-theme="dark"] &';
+// $theme-XXX: ':root[data-theme="XXX"] &'; //  support more theme
+
+$color-primary: var(#{$_prefix}-color-primary);
+$color-success: var(#{$_prefix}-color-success);
+$color-warning: var(#{$_prefix}-color-warning);
+$color-danger: var(#{$_prefix}-color-danger);
+$color-error: var(#{$_prefix}-color-error);
+$color-info: var(#{$_prefix}-color-info);
+
+$bg-color: var(#{$_prefix}-bg-color);
+$bg-color-page: var(#{$_prefix}-bg-color-page);
+$bg-color-overlay: var(#{$_prefix}-bg-color-overlay);
+
+$text-color-primary: var(#{$_prefix}-text-color-primary);
+$text-color-regular: var(#{$_prefix}-text-color-regular);
+$text-color-secondary: var(#{$_prefix}-text-color-secondary);
+$text-color-placeholder: var(#{$_prefix}-text-color-placeholder);
+$text-color-disabled: var(#{$_prefix}-text-color-disabled);
+
+$border-color: var(#{$_prefix}-border-color);
+$border-color-light: var(#{$_prefix}-border-color-light);
+$border-color-lighter: var(#{$_prefix}-border-color-lighter);
+$border-color-extra-light: var(#{$_prefix}-border-color-extra);
+$border-color-dark: var(#{$_prefix}-border-color-dark);
+$border-color-darker: var(#{$_prefix}-border-color-darker);
+
+$fill-color: var(#{$_prefix}-fill-color);
+$fill-color-light: var(#{$_prefix}-fill-color-light);
+$fill-color-lighter: var(#{$_prefix}-fill-color-lighter);
+$fill-color-extra-light: var(#{$_prefix}-fill-color-extra);
+$fill-color-dark: var(#{$_prefix}-fill-color-dark);
+$fill-color-darker: var(#{$_prefix}-fill-color-darker);
+$fill-color-blank: var(#{$_prefix}-fill-color-blank);
+
+$font-family: var(#{$_prefix}-font-family);

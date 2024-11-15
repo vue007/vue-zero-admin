@@ -1,0 +1,136 @@
+@use './_utils' as *;
+
+$is-dark: false;
+$mode: ':root';
+
+#{$mode} {
+  color-scheme: light;
+
+  $color-primary: #409eff;
+  $color-success: #67c23a;
+  $color-warning: #e6a23c;
+  $color-danger: #f56c6c;
+  $color-info: #909399;
+
+  @include createColors('color-primary', $color-primary, $is-dark);
+  @include createColors('color-success', $color-success, $is-dark);
+  @include createColors('color-warning', $color-warning, $is-dark);
+  @include createColors('color-danger', $color-danger, $is-dark);
+  @include createColors('color-info', $color-info, $is-dark);
+
+  #{$prefix}-bg-color: #ffffff;
+  #{$prefix}-bg-color-page: #f2f3f5;
+  #{$prefix}-bg-color-overlay: #ffffff;
+  #{$prefix}-text-color-primary: #303133;
+  #{$prefix}-text-color-regular: #606266;
+  #{$prefix}-text-color-secondary: #909399;
+  #{$prefix}-text-color-placeholder: #a8abb2;
+  #{$prefix}-text-color-disabled: #c0c4cc;
+  #{$prefix}-border-color: #dcdfe6;
+  #{$prefix}-border-color-light: #e4e7ed;
+  #{$prefix}-border-color-lighter: #ebeef5;
+  #{$prefix}-border-color-extra-light: #f2f6fc;
+  #{$prefix}-border-color-dark: #d4d7de;
+  #{$prefix}-border-color-darker: #cdd0d6;
+  #{$prefix}-fill-color: #f0f2f5;
+  #{$prefix}-fill-color-light: #f5f7fa;
+  #{$prefix}-fill-color-lighter: #fafafa;
+  #{$prefix}-fill-color-extra-light: #fafcff;
+  #{$prefix}-fill-color-dark: #ebedf0;
+  #{$prefix}-fill-color-darker: #e6e8eb;
+  #{$prefix}-fill-color-blank: #ffffff;
+  #{$prefix}-box-shadow:
+    0px 12px 32px 4px rgba(0, 0, 0, 0.04),
+    0px 8px 20px rgba(0, 0, 0, 0.08);
+  #{$prefix}-box-shadow-light: 0px 0px 12px rgba(0, 0, 0, 0.12);
+  #{$prefix}-box-shadow-lighter: 0px 0px 6px rgba(0, 0, 0, 0.12);
+  #{$prefix}-box-shadow-dark:
+    0px 16px 48px 16px rgba(0, 0, 0, 0.08),
+    0px 12px 32px rgba(0, 0, 0, 0.12),
+    0px 8px 16px -8px rgba(0, 0, 0, 0.16);
+  #{$prefix}-disabled-bg-color: var(#{$prefix}-fill-color-light);
+  #{$prefix}-disabled-text-color: var(#{$prefix}-text-color-placeholder);
+  #{$prefix}-disabled-border-color: var(#{$prefix}-border-color-light);
+  #{$prefix}-overlay-color: rgba(0, 0, 0, 0.8);
+  #{$prefix}-overlay-color-light: rgba(0, 0, 0, 0.7);
+  #{$prefix}-overlay-color-lighter: rgba(0, 0, 0, 0.5);
+  #{$prefix}-mask-color: rgba(255, 255, 255, 0.9);
+  #{$prefix}-mask-color-extra-light: rgba(255, 255, 255, 0.3);
+  #{$prefix}-border-width: 1px;
+  #{$prefix}-border-style: solid;
+  #{$prefix}-border-color-hover: var(#{$prefix}-text-color-disabled);
+  #{$prefix}-border: var(#{$prefix}-border-width) var(#{$prefix}-border-style)
+    var(#{$prefix}-border-color);
+  #{$prefix}-svg-monochrome-grey: var(#{$prefix}-border-color);
+}
+
+:root {
+  #{$prefix}-font-family: 'Helvetica Neue', Helvetica, 'PingFang SC', 'Hiragino Sans GB',
+    'Microsoft YaHei', '微软雅黑', Arial, sans-serif;
+
+  #{$prefix}-color-primary-rgb: 64, 158, 255;
+  #{$prefix}-color-success-rgb: 103, 194, 58;
+  #{$prefix}-color-warning-rgb: 230, 162, 60;
+  #{$prefix}-color-danger-rgb: 245, 108, 108;
+  #{$prefix}-color-error-rgb: 245, 108, 108;
+  #{$prefix}-color-info-rgb: 144, 147, 153;
+  #{$prefix}-font-size-extra-large: 20px;
+  #{$prefix}-font-size-large: 18px;
+  #{$prefix}-font-size-medium: 16px;
+  #{$prefix}-font-size-base: 14px;
+  #{$prefix}-font-size-small: 13px;
+  #{$prefix}-font-size-extra-small: 12px;
+  #{$prefix}-font-weight-primary: 500;
+  #{$prefix}-font-line-height-primary: 24px;
+  #{$prefix}-index-normal: 1;
+  #{$prefix}-index-top: 1000;
+  #{$prefix}-index-popper: 2000;
+  #{$prefix}-border-radius-base: 4px;
+  #{$prefix}-border-radius-small: 2px;
+  #{$prefix}-border-radius-round: 20px;
+  #{$prefix}-border-radius-circle: 100%;
+  #{$prefix}-transition-duration: 0.3s;
+  #{$prefix}-transition-duration-fast: 0.2s;
+  #{$prefix}-transition-function-ease-in-out-bezier: cubic-bezier(0.645, 0.045, 0.355, 1);
+  #{$prefix}-transition-function-fast-bezier: cubic-bezier(0.23, 1, 0.32, 1);
+  #{$prefix}-transition-all: all var(#{$prefix}-transition-duration)
+    var(#{$prefix}-transition-function-ease-in-out-bezier);
+  #{$prefix}-transition-fade: opacity var(#{$prefix}-transition-duration)
+    var(#{$prefix}-transition-function-fast-bezier);
+  #{$prefix}-transition-md-fade:
+    transform var(#{$prefix}-transition-duration) var(#{$prefix}-transition-function-fast-bezier),
+    opacity var(#{$prefix}-transition-duration) var(#{$prefix}-transition-function-fast-bezier);
+  #{$prefix}-transition-fade-linear: opacity var(#{$prefix}-transition-duration-fast) linear;
+  #{$prefix}-transition-border: border-color var(#{$prefix}-transition-duration-fast)
+    var(#{$prefix}-transition-function-ease-in-out-bezier);
+  #{$prefix}-transition-box-shadow: box-shadow var(#{$prefix}-transition-duration-fast)
+    var(#{$prefix}-transition-function-ease-in-out-bezier);
+  #{$prefix}-transition-color: color var(#{$prefix}-transition-duration-fast)
+    var(#{$prefix}-transition-function-ease-in-out-bezier);
+  #{$prefix}-component-size-large: 40px;
+  #{$prefix}-component-size: 32px;
+  #{$prefix}-component-size-small: 24px;
+  #{$prefix}-box-shadow:
+    0px 12px 32px 4px rgba(0, 0, 0, 0.04),
+    0px 8px 20px rgba(0, 0, 0, 0.08);
+  #{$prefix}-box-shadow-light: 0px 0px 12px rgba(0, 0, 0, 0.12);
+  #{$prefix}-box-shadow-lighter: 0px 0px 6px rgba(0, 0, 0, 0.12);
+  #{$prefix}-box-shadow-dark:
+    0px 16px 48px 16px rgba(0, 0, 0, 0.08),
+    0px 12px 32px rgba(0, 0, 0, 0.12),
+    0px 8px 16px -8px rgba(0, 0, 0, 0.16);
+  #{$prefix}-disabled-bg-color: var(#{$prefix}-fill-color-light);
+  #{$prefix}-disabled-text-color: var(#{$prefix}-text-color-placeholder);
+  #{$prefix}-disabled-border-color: var(#{$prefix}-border-color-light);
+  #{$prefix}-overlay-color: rgba(0, 0, 0, 0.8);
+  #{$prefix}-overlay-color-light: rgba(0, 0, 0, 0.7);
+  #{$prefix}-overlay-color-lighter: rgba(0, 0, 0, 0.5);
+  #{$prefix}-mask-color: rgba(255, 255, 255, 0.9);
+  #{$prefix}-mask-color-extra-light: rgba(255, 255, 255, 0.3);
+  #{$prefix}-border-width: 1px;
+  #{$prefix}-border-style: solid;
+  #{$prefix}-border-color-hover: var(#{$prefix}-text-color-disabled);
+  #{$prefix}-border: var(#{$prefix}-border-width) var(#{$prefix}-border-style)
+    var(#{$prefix}-border-color);
+  #{$prefix}-svg-monochrome-grey: var(#{$prefix}-border-color);
+}
