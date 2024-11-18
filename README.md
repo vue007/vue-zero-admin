@@ -219,11 +219,4 @@ const [userInfo, fetchLogin] = useApi(login, loginForm)
 }
 ```
 
-## 会议问题记录
-
-1. 南京反馈：缩进使用几个 2 or 4 缩进确认用2
-2. 南京反馈：模板生产环境默认引入 计划 10月18日 完成；已完成
-3. 深圳反馈：commit lint 待定
-4. 深圳反馈：构建优化 基础模块分包 计划 10月19日 完成；已完成
-
 ### 如有问题或建议，可在gitee中发 issues
