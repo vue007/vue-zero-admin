@@ -1,6 +1,11 @@
 <template>
   <div class="icon-list">
-    <div class="icon-item" v-for="item in iconNameList.reverse()" :key="item">
+    <div
+      class="icon-item"
+      v-for="item in iconNameList.reverse()"
+      :key="item"
+      @click="() => copyIconName(item)"
+    >
       <SvgIcon :name="item" />
       <span class="icon-name">{{ item }}</span>
     </div>
@@ -8,11 +13,18 @@
 </template>
 
 <script setup lang="ts">
+import { useClipboard } from '@vueuse/core'
+
 const iconModules = import.meta.glob('/src/icons/**/*.svg', { eager: true })
 
 const iconNameList = Object.keys(iconModules).map((key) => {
   return key.replace('/src/icons/', '').replace('.svg', '').replace('/', '-')
 })
+const { copy } = useClipboard()
+const copyIconName = (name) => {
+  ElMessage.success('icon name is copid')
+  copy(name)
+}
 
 onMounted(() => {
   console.log(iconNameList)
