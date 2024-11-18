@@ -9,7 +9,7 @@ export const useBaseStore = defineStore('base', () => {
   const setting = reactive({
     local: useLocalStorage<BaseLang>('setting.local', 'zh-CN'),
     theme: useLocalStorage<BaseTheme>('setting.theme', 'light'),
-    size: useLocalStorage<BaseSize>('setting.size', 'default')
+    size: useLocalStorage<BaseSize>('setting.size', 'default'),
   })
 
   const mutation = {
@@ -21,11 +21,8 @@ export const useBaseStore = defineStore('base', () => {
     },
     setSize(size: BaseSize) {
       setting.size = size
-    }
+    },
   }
-
-  const action = {}
-  const getter = {}
 
   return { setting, ...mutation }
 })

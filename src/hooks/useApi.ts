@@ -75,6 +75,8 @@ export function useApi<P, D>(
         if (isObject(result)) merge(requestData, result)
         return _api(requestData)
       } catch (e) {
+        console.log(e)
+
         ElMessage.error('表单校验未通过') // TODO 国际化
         loading.value = false
         return

@@ -2,13 +2,14 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import js from '@eslint/js'
 import { FlatCompat } from '@eslint/eslintrc'
+import oxlint from 'eslint-plugin-oxlint'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 const compat = new FlatCompat({
   baseDirectory: __dirname,
   recommendedConfig: js.configs.recommended,
-  allConfig: js.configs.all
+  allConfig: js.configs.all,
 })
 
 export default [
@@ -19,17 +20,19 @@ export default [
     '@vue/eslint-config-prettier/skip-formatting',
     'prettier',
     '@unocss/eslint-config/flat',
-    './eslintrc-auto-import.json'
+    './eslintrc-auto-import.json',
   ),
+  oxlint.configs['flat/recommended'],
 
   {
     languageOptions: {
       ecmaVersion: 'latest',
-      sourceType: 'script'
+      sourceType: 'script',
     },
     rules: {
-      'vue/multi-word-component-names': ['off']
-    }
+      'vue/multi-word-component-names': ['off'],
+      'no-unused-vars': 'off',
+    },
   },
 
   {
@@ -43,7 +46,7 @@ export default [
       '*.md',
       '*.woff',
       '*.ttf',
-      'README.md'
-    ]
-  }
+      'README.md',
+    ],
+  },
 ]

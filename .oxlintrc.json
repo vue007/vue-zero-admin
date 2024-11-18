@@ -10,6 +10,7 @@
   "settings": {},
   "rules": {
     "eqeqeq": "warn",
-    "import/no-cycle": "error"
+    "import/no-cycle": "error",
+    "no-unsafe-declaration-merging": "off"
   }
 }

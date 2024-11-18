@@ -6,6 +6,8 @@ import vueJsx from '@vitejs/plugin-vue-jsx'
 import vueI18n from '@intlify/unplugin-vue-i18n/vite'
 import vueDevTools from 'vite-plugin-vue-devtools'
 import oxlintPlugin from 'vite-plugin-oxlint'
+//@ts-ignore
+import eslintPlugin from 'vite-plugin-eslint'
 
 import mkcert from 'vite-plugin-mkcert'
 
@@ -26,7 +28,8 @@ export default defineConfig(({ command, mode }) => {
       vue(),
       vueJsx(),
       vueI18n(),
-      oxlintPlugin({}),
+      // oxlintPlugin({}),
+      // eslintPlugin({}),
 
       // just remove special plugin when unneed
       vitePluginUnocss(),
