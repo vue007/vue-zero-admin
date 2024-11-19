@@ -14,6 +14,7 @@
 
 <script setup lang="tsx">
 import { login } from '@/api/base.api'
+import type { LoginForm } from '@/api/base.type'
 import { useThrottleFn } from '@vueuse/core'
 import { cloneDeep } from 'es-toolkit'
 import { RouterLink } from 'vue-router'

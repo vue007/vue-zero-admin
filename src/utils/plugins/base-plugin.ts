@@ -5,7 +5,10 @@ import { isString, merge } from 'es-toolkit'
 const tooltip = (el: HTMLElement, value: string | any) => {
   const attrs = { content: '' }
   merge(attrs, {
-    ...{ placement: 'top', trigger: 'hover', effect: 'dark', virtualRef: el },
+    placement: 'top',
+    trigger: 'hover',
+    effect: 'dark',
+    virtualRef: el,
     ...(isString(value) ? { content: value } : value),
   })
 

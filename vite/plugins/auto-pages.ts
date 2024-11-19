@@ -5,7 +5,7 @@ export const vitePluginAutoPages = () =>
     dirs: [{ dir: 'src/pages', baseRoute: '/' }],
     exclude: ['**/_views/**', '**/components/**'],
     importMode: 'async',
-    extendRoute(route, parent) {
+    extendRoute(route, _parent) {
       return { ...route, meta: { auth: true, layout: 'base' } }
-    }
+    },
   })

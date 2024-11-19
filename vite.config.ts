@@ -28,8 +28,8 @@ export default defineConfig(({ command, mode }) => {
       vue(),
       vueJsx(),
       vueI18n(),
-      // oxlintPlugin({}),
-      // eslintPlugin({}),
+      oxlintPlugin({ allow: ['no-unsafe-declaration-merging', 'no-unused-vars'] }),
+      eslintPlugin({}),
 
       // just remove special plugin when unneed
       vitePluginUnocss(),
