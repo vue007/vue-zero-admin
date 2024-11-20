@@ -1,7 +1,16 @@
-$_prefix: '--el';
 $theme-light: ':root[data-theme="light"] &';
 $theme-dark: ':root[data-theme="dark"] &';
 // $theme-XXX: ':root[data-theme="XXX"] &'; //  support more theme
+
+$size-small: ':root[data-size="small"] &';
+$size-default: ':root[data-size="default"] &';
+$size-large: ':root[data-size="large"] &';
+// demo: #{$size-small} { font-size: 12px; }
+// demo: #{$size-default} { font-size: 24px; }
+// demo: #{$size-large} { font-size: 36px; }
+
+// css agent vars bellow
+$_prefix: '--el';
 
 $color-primary: var(#{$_prefix}-color-primary);
 $color-success: var(#{$_prefix}-color-success);

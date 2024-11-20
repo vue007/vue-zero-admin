@@ -4,15 +4,15 @@ import { useLocalStorage } from '@vueuse/core'
 type BaseSize = 'large' | 'default' | 'small'
 type BaseTheme = 'dark' | 'light' | 'auto'
 type BaseLang = 'en' | 'zh-CN' | 'zh-TW'
+type BaseArrangement = 'default' | ''
 
 export const useBaseStore = defineStore('base', () => {
   const setting = reactive({
     local: useLocalStorage<BaseLang>('setting.local', 'zh-CN'),
     theme: useLocalStorage<BaseTheme>('setting.theme', 'light'),
     size: useLocalStorage<BaseSize>('setting.size', 'default'),
-  })
+    arrangement: useLocalStorage<BaseArrangement>('setting.size', 'default'),
 
-  const mutation = {
     setLocale(locale: BaseLang) {
       setting.local = locale
     },
@@ -22,7 +22,10 @@ export const useBaseStore = defineStore('base', () => {
     setSize(size: BaseSize) {
       setting.size = size
     },
-  }
+    setArrangement(arrangement) {
+      setting.arrangement = arrangement
+    },
+  })
 
-  return { setting, ...mutation }
+  return { setting }
 })
