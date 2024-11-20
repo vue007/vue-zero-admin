@@ -23,4 +23,7 @@ export const vitePluginUnocss = () =>
     transformers: [
       transformerDirectives(), // support @apply、@screen and theme()
     ],
+    shortcuts: {
+      'flex-center': 'flex items-center justify-center',
+    },
   })
