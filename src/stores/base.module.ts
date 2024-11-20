@@ -27,5 +27,14 @@ export const useBaseStore = defineStore('base', () => {
     },
   })
 
-  return { setting }
+  const menu = reactive({
+    collapse: false,
+    active: '/',
+
+    toggleCollapse() {
+      menu.collapse = !menu.collapse
+    },
+  })
+
+  return { setting, menu }
 })

@@ -1,7 +1,9 @@
 <template>
   <div>
     <header class="layout-header">
-      <div class="header-left mr-auto" id="header-left">{{ t('header') }}</div>
+      <div class="header-left mr-auto" id="header-left">
+        <div class="app-title">{{ t('header') }}</div>
+      </div>
 
       <div class="header-right" id="header-right" />
     </header>
@@ -20,6 +22,7 @@
   </div>
 
   <LayoutActions :to="actionsPosition" />
+  <LayoutMenu :to="menuPosition" />
 </template>
 
 <script setup lang="ts">
@@ -31,6 +34,7 @@ const needKeep = computed(() => false) // add keep-alive toggle logic
 const pageRef = ref(null)
 
 const actionsPosition = '#header-right'
+const menuPosition = '#layout-aside'
 
 onMounted(() => {
   console.log(t('header'))
@@ -38,8 +42,7 @@ onMounted(() => {
 </script>
 
 <style lang="scss" scoped>
-$header-height: 60px;
-
+$header-height: 64px;
 .layout-header {
   @apply: fixed top-0 left-0 w-100vw z-10;
   @apply: flex justify-between items-center;
@@ -51,19 +54,42 @@ $header-height: 60px;
   background-color: var(--el-color-primary-light-9);
   box-shadow: var(--el-box-shadow);
 
+  #{$size-large} {
+    height: $header-height * 1.2;
+  }
+  #{$size-small} {
+    height: $header-height * 0.8;
+  }
+
+  .app-title {
+    #{$size-large} {
+      font-size: 1.2em;
+    }
+    #{$size-small} {
+      font-size: 0.8em;
+    }
+  }
+
   .header-right {
-    @apply: flex items-center justify-center;
+    @apply: flex-center;
   }
 }
 
 .layout-body {
   padding-top: $header-height;
+  #{$size-large} {
+    padding-top: $header-height * 1.2;
+  }
+  #{$size-small} {
+    padding-top: $header-height * 0.8;
+  }
+
   @apply: flex;
   height: 100vh;
   overflow: hidden;
 }
 .layout-aside {
-  width: 200px;
+  width: 216px;
   height: 100vh;
   background-color: var(--el-color-primary-light-8);
 }

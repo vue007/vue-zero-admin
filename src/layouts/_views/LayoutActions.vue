@@ -17,7 +17,7 @@
     <LocaleCheckTag value="en" text="English" />
   </el-popover>
 
-  <el-popover ref="themePopRef" :virtual-ref="themeBtnRef" virtual-triggering trigger="hover" width="100">
+  <el-popover ref="themePopRef" :virtual-ref="themeBtnRef" virtual-triggering trigger="hover">
     <ThemeCheckTag value="light" icon="ze-sunny" text="base.theme.light" />
     <ThemeCheckTag value="dark" icon="ze-moon" text="base.theme.dark" />
     <ThemeCheckTag value="auto" icon="ze-laptop" text="base.theme.auto" />
@@ -40,20 +40,24 @@ const [themePopRef, themeBtnRef] = [ref(), ref()]
 const [sizePopRef, sizeBtnRef] = [ref(), ref()]
 
 const ThemeCheckTag = ({ text, value, icon }) => (
-  <el-check-tag class={`check-item size-${setting.size}`} checked={setting.theme == value} onChange={() => setting.setTheme(value)}>
-    <svg-icon v-show={icon} class='mr-8' name={icon} />
+  <el-check-tag class='check-item' checked={setting.theme == value} onChange={() => setting.setTheme(value)}>
+    <svg-icon v-show={icon} class='mr-12' name={icon} />
     {t(text)}
   </el-check-tag>
 )
 const LocaleCheckTag = ({ text, value }) => (
-  <el-check-tag class={`check-item size-${setting.size}`} checked={setting.local == value} onChange={() => setting.setLocale(value)}>
+  <el-check-tag class={`check-item`} checked={setting.local == value} onChange={() => setting.setLocale(value)}>
     {text}
   </el-check-tag>
 )
 const SizeCheckTag = ({ text, value }) => (
-  <el-check-tag class={`check-item size-${value}`} checked={setting.size == value} onChange={() => setting.setSize(value)}>
-    {t(text)}
-  </el-check-tag>
+  <el-check-tag
+    class='check-item items-start'
+    style={{ fontSize: `var(--el-font-size-${value})` }}
+    checked={setting.size == value}
+    onChange={() => setting.setSize(value)}
+    v-html={t(text)}
+  />
 )
 </script>
 
@@ -65,5 +69,14 @@ const SizeCheckTag = ({ text, value }) => (
 .check-item {
   width: 100%;
   margin-bottom: 5px;
+  padding: 0.4em 0.8em;
+  @apply: flex-center;
+
+  #{$size-large} {
+    font-size: var(--el-font-size-large);
+  }
+  #{$size-small} {
+    font-size: var(--el-font-size-extra-small);
+  }
 }
 </style>
