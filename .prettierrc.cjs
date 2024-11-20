@@ -1,6 +1,6 @@
 module.exports = {
   $schema: 'https://json.schemastore.org/prettierrc',
-  printWidth: 140,
+  printWidth: 120,
   tabWidth: 2,
   tabs: false,
   semi: false,
