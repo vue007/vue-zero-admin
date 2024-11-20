@@ -1,51 +1,36 @@
 <template>
-  <el-container>
-    <el-header class="layout-header">
-      <div class="mr-auto">{{ t('header') }}</div>
+  <div>
+    <header class="layout-header">
+      <div class="header-left mr-auto" id="header-left">{{ t('header') }}</div>
 
-      <el-radio-group v-model="baseStore.setting.size" @change="setSize" class="mr-10">
-        <el-radio-button :label="$t('base.size.large')" value="large" size="large" />
-        <el-radio-button :label="$t('base.size.normal')" value="default" size="default" />
-        <el-radio-button :label="$t('base.size.small')" value="small" size="small" />
-      </el-radio-group>
+      <div class="header-right" id="header-right" />
+    </header>
 
-      <el-radio-group v-model="baseStore.setting.local" @change="setLocale" class="mr-10">
-        <el-radio-button label="简中" value="zh-CN" />
-        <el-radio-button label="繁中" value="zh-TW" />
-        <el-radio-button label="English" value="en" />
-      </el-radio-group>
+    <section class="layout-body">
+      <aside class="layout-aside" id="layout-aside"></aside>
+      <div class="layout-page">
+        <router-view v-slot="{ route, Component: Comp }">
+          <keep-alive :max="10">
+            <component v-if="needKeep" :is="Comp" ref="pageRef" :key="route.path" />
+          </keep-alive>
+          <component v-if="!needKeep" :is="Comp" ref="pageRef" :key="route.path" />
+        </router-view>
+      </div>
+    </section>
+  </div>
 
-      <el-radio-group v-model="baseStore.setting.theme" @change="setTheme">
-        <el-radio-button :label="$t('base.theme.light')" value="light" />
-        <el-radio-button :label="$t('base.theme.dark')" value="dark" />
-        <el-radio-button :label="$t('base.theme.auto')" value="auto" />
-      </el-radio-group>
-    </el-header>
-
-    <el-main class="layout-body">
-      <router-view v-slot="{ route, Component: Page }">
-        <keep-alive :max="10">
-          <component v-if="needKeep" :is="Page" ref="pageRef" :key="route.path" />
-        </keep-alive>
-        <component v-if="!needKeep" :is="Page" ref="pageRef" :key="route.path" />
-      </router-view>
-    </el-main>
-  </el-container>
+  <LayoutActions :to="actionsPosition" />
 </template>
 
 <script setup lang="ts">
 import { useBaseStore } from '@/stores/base.module'
 
-// const { t } = useI18n({ useScope: 'local' })
 const { t } = useI18nLocal()
-const baseStore = useBaseStore()
-
-const setLocale = (locale) => baseStore.setLocale(locale)
-const setTheme = (theme) => baseStore.setTheme(theme)
-const setSize = (size) => baseStore.setSize(size)
 
 const needKeep = computed(() => false) // add keep-alive toggle logic
 const pageRef = ref(null)
+
+const actionsPosition = '#header-right'
 
 onMounted(() => {
   console.log(t('header'))
@@ -56,15 +41,38 @@ onMounted(() => {
 $header-height: 60px;
 
 .layout-header {
+  @apply: fixed top-0 left-0 w-100vw z-10;
   @apply: flex justify-between items-center;
-  @apply: fixed top-0 left-0 w-full z-10;
+
+  padding: 0 30px;
+
   font-size: 32px;
   height: $header-height;
   background-color: var(--el-color-primary-light-9);
+  box-shadow: var(--el-box-shadow);
+
+  .header-right {
+    @apply: flex items-center justify-center;
+  }
 }
 
 .layout-body {
   padding-top: $header-height;
+  @apply: flex;
+  height: 100vh;
+  overflow: hidden;
+}
+.layout-aside {
+  width: 200px;
+  height: 100vh;
+  background-color: var(--el-color-primary-light-8);
+}
+.layout-page {
+  flex: 1;
+  height: 100vh;
+  overflow-y: auto;
+
+  padding: 10px;
 }
 </style>
 

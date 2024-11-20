@@ -1,5 +1,5 @@
 <template>
-  <ElConfigProvider :locale="locale" :size="baseStore.setting.size" :z-index="3000">
+  <ElConfigProvider :locale="locale" :size="setting.size" :z-index="3000">
     <component :is="currentLayout" />
   </ElConfigProvider>
 </template>
@@ -17,6 +17,7 @@ import { useMediaQuery, watchImmediate } from '@vueuse/core'
 
 const route = useRoute()
 const baseStore = useBaseStore()
+const { setting } = baseStore
 const i18n = useI18n()
 
 // # switch layout
@@ -29,11 +30,11 @@ watchEffect(() => {
 
 // # switch lang
 const langs = { zh_CN: import('element-plus/es/locale/lang/zh-cn'), zh_TW, en }
-const locale = computed(() => langs[baseStore.setting.local] || zh_CN)
-watchEffect(() => (i18n.locale.value = baseStore.setting.local))
+const locale = computed(() => langs[setting.local] || zh_CN)
+watchEffect(() => (i18n.locale.value = setting.local))
 
 // # switch theme
-const theme = computed(() => baseStore.setting.theme)
+const theme = computed(() => setting.theme)
 const systemTheme = computed(() => {
   return useMediaQuery('(prefers-color-scheme: dark)').value ? 'dark' : 'light'
 })
@@ -42,8 +43,7 @@ const systemTheme = computed(() => {
 watchImmediate(
   () => theme.value,
   () => {
-    if (theme.value === 'auto')
-      document.documentElement.setAttribute('data-theme', systemTheme.value)
+    if (theme.value === 'auto') document.documentElement.setAttribute('data-theme', systemTheme.value)
     else document.documentElement.setAttribute('data-theme', theme.value)
   },
 )
@@ -52,6 +52,11 @@ watchImmediate(systemTheme, () => {
   if (theme.value !== 'auto') return
   document.documentElement.setAttribute('data-theme', systemTheme.value)
 })
+
+watchImmediate(
+  () => setting.size,
+  (val) => document.documentElement.setAttribute('data-size', val),
+)
 </script>
 
 <style lang="scss" scoped></style>

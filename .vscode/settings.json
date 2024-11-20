@@ -29,5 +29,5 @@
 
   "unocss.remToPxRatio": 4,
   "css.customData": [".vscode/unocss.json"],
-  "oxc.enable": false
+  "oxc.enable": true
 }

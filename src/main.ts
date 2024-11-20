@@ -1,8 +1,8 @@
 import 'virtual:uno.css'
 import 'virtual:svg-icons-register'
-import './styles/theme/index.scss'
 
-// import.meta.glob('../node_modules/element-plus/es/components/{message,dialog,message-box,dropdown,loading}/style/css',{ eager: true })
+import './styles/sanitize.css'
+import './styles/theme/index.scss'
 
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
