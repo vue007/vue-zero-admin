@@ -3,6 +3,7 @@
 </template>
 <script setup lang="ts">
 import { login } from '@/api/base.api'
+import type { LoginForm } from '@/api/base.type'
 import { useDemoStore } from '@/stores/demo.module'
 
 const demoStore = useDemoStore()
