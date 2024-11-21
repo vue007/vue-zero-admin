@@ -55,10 +55,10 @@ $header-height: 64px;
   box-shadow: var(--el-box-shadow);
 
   #{$size-large} {
-    height: $header-height * 1.2;
+    height: $header-height + 10px;
   }
   #{$size-small} {
-    height: $header-height * 0.8;
+    height: $header-height - 10px;
   }
 
   .app-title {
@@ -78,10 +78,10 @@ $header-height: 64px;
 .layout-body {
   padding-top: $header-height;
   #{$size-large} {
-    padding-top: $header-height * 1.2;
+    padding-top: $header-height + 10px;
   }
   #{$size-small} {
-    padding-top: $header-height * 0.8;
+    padding-top: $header-height - 10px;
   }
 
   @apply: flex;

@@ -24,7 +24,7 @@ import { useBaseStore } from '@/stores/base.module'
 
 const { t } = useI18nLocal()
 const baseStore = useBaseStore()
-const { setting, menu } = baseStore
+const { menu } = baseStore
 const route = useRoute()
 const router = useRouter()
 
@@ -33,15 +33,26 @@ const props = defineProps({
 })
 
 const handleMenuSelect = () => {}
-onMounted(() => {})
 router.afterEach(() => {
   menu.active = route.path
 })
+
+onMounted(() => {})
 </script>
 
 <style lang="scss" scoped>
 .layout-menu {
   border-right: unset;
   background-color: unset;
+
+  #{$size-large} {
+    font-size: var(--el-font-size-large);
+  }
+  #{$size-small} {
+    font-size: var(--el-font-size-extra-small);
+  }
+  :deep(.el-menu) {
+    background-color: unset;
+  }
 }
 </style>

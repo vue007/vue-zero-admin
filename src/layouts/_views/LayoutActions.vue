@@ -3,6 +3,7 @@
     <div class="action" ref="sizeBtnRef"><SvgIcon name="ze-font-size" /></div>
     <div class="action" ref="localeBtnRef"><SvgIcon name="ze-language" /></div>
     <div class="action" ref="themeBtnRef"><SvgIcon name="ze-theme" /></div>
+    <
   </Teleport>
 
   <el-popover ref="sizePopRef" :virtual-ref="sizeBtnRef" virtual-triggering trigger="hover">
@@ -63,8 +64,15 @@ const SizeCheckTag = ({ text, value }) => (
 
 <style lang="scss" scoped>
 .action {
-  font-size: 28px;
+  font-size: 24px;
   margin-right: 10px;
+
+  #{$size-large} {
+    font-size: 28px;
+  }
+  #{$size-small} {
+    font-size: 20px;
+  }
 }
 .check-item {
   width: 100%;
