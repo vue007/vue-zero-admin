@@ -3,7 +3,6 @@
     <div class="action" ref="sizeBtnRef"><SvgIcon name="ze-font-size" /></div>
     <div class="action" ref="localeBtnRef"><SvgIcon name="ze-language" /></div>
     <div class="action" ref="themeBtnRef"><SvgIcon name="ze-theme" /></div>
-    <
   </Teleport>
 
   <el-popover ref="sizePopRef" :virtual-ref="sizeBtnRef" virtual-triggering trigger="hover">
