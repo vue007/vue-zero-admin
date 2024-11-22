@@ -1,14 +1,21 @@
 <template>
   <VPage>
     <template #header>弹窗</template>
-    <el-button @click="() => testModalRef.open()">TestModal.open</el-button>
+
+    <el-button @click="openBaseModal">open base modal</el-button>
+    <!-- <el-button @click="() => testModalRef.open()">TestModal.open</el-button>
     <el-button @click="() => channelModalRef.open()">打开渠道管理</el-button>
-    <el-button @click="() => DialogContentRef.open()">打开自定义Dialog</el-button>
+    <el-button @click="() => DialogContentRef.open()">打开自定义Dialog</el-button> -->
     <template #footer></template>
   </VPage>
+
+  <ZeModal v-model="modalFlag" type="dialog" width="400px" title="BaseModal">base modal</ZeModal>
 </template>
 
 <script setup lang="ts">
+const modalFlag = ref(false)
+const openBaseModal = () => (modalFlag.value = true)
+
 // const [TestModal, testModalRef] = useModal({
 //   title: '关闭前Title JS', // tip: 属性在js中优先级更高
 //   type: 'dialog',

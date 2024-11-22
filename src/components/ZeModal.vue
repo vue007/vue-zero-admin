@@ -1,52 +1,28 @@
 <template>
-  <template v-if="_type === 'dialog'">
-    <el-dialog
-      class="modal-dialog"
-      v-bind="$attrs"
-      v-model="_visible"
-      :fullscreen="isFull"
-      @close="close"
-      @submit.prevent
-    >
-      <template #title>
-        <slot name="title">
-          <span class="modal-title">{{ _title }}</span>
-        </slot>
-      </template>
+  <Component :is="WarpComp" class="modal-dialog" v-bind="$attrs" v-model="model" @close="close" @submit.prevent>
+    <template #header>
+      <slot name="title">
+        <span class="modal-title">{{ options.title }}</span>
+      </slot>
+    </template>
 
-      <template #default>
-        <slot></slot>
-      </template>
+    <template #default>
+      <slot></slot>
+    </template>
 
-      <template #footer>
-        <slot name="footer">
-          <FormAction v-if="_showAction" />
-        </slot>
-      </template>
-    </el-dialog>
-  </template>
-
-  <template v-else-if="_type === 'drawer'">
-    <el-drawer class="modal-dialog is-drawer" v-model="_visible" v-bind="$attrs" @close="close">
-      <template #title>
-        <slot name="title">
-          <span class="modal-title">{{ _title }}</span>
-        </slot>
-      </template>
-      <template #default>
-        <slot></slot>
-      </template>
-      <template #footer>
-        <slot name="footer">
-          <FormAction v-if="showAction" />
-        </slot>
-      </template>
-    </el-drawer>
-  </template>
+    <template #footer>
+      <slot name="footer">
+        <FormAction v-if="options.showAction" />
+      </slot>
+    </template>
+  </Component>
 </template>
 
 <script lang="tsx" setup>
-import { ElButton } from 'element-plus'
+import 'element-plus/es/components/dialog/style/css'
+import 'element-plus/es/components/drawer/style/css'
+
+import { ElButton, ElDialog, ElDrawer } from 'element-plus'
 import { isUndefined } from 'es-toolkit'
 const { t } = useI18n()
 
@@ -54,6 +30,9 @@ const vFormRef = ref()
 provide('VModal_VForm', reactive({ setVFormRef: (r: Ref<any>) => (vFormRef.value = r) }))
 const emit = defineEmits(['open', 'close', 'confirm', 'cancel'])
 
+const WarpComp = computed(() => (options.type == 'drawer' ? ElDrawer : ElDialog))
+
+const model = defineModel()
 const props = defineProps({
   type: { type: String as PropType<'dialog' | 'drawer'>, default: 'dialog', require: true },
   visible: { type: Boolean },
@@ -65,52 +44,51 @@ const props = defineProps({
 })
 
 const attrs = useAttrs()
-const [_type, _visible, _isFull, _title, _showAction, _submitting] = [
-  ref(props.type),
-  ref(props.visible),
-  ref(props.isFull),
-  ref(attrs.title),
-  ref(props.showAction),
-  ref(props.submitting),
-]
+const options = reactive({
+  type: props.type,
+  title: attrs.title,
+  showAction: props.showAction,
+  submitting: props.submitting,
+})
+watch(
+  () => props,
+  (val: any) => setData(val),
+  { deep: true },
+)
 
 const FormAction = defineComponent({
   name: 'VFormAction',
   render: () => (
     <div class='modal-footer'>
       {!props.footerConfirmTxt && <ElButton onClick={close}>{t('common.cancel')}</ElButton>}
-      <ElButton type={'primary'} onClick={handleConfirm} loading={_submitting.value}>
+      <ElButton type={'primary'} onClick={handleConfirm} loading={options.submitting}>
         {props.footerConfirmTxt || t('common.confirm')}
       </ElButton>
     </div>
   ),
 })
 
-const setData = ({ type, visible, isFull, showAction, title, submitting }) => {
-  if (!isUndefined(type)) _type.value = type
-  if (!isUndefined(visible)) _visible.value = visible
-  if (!isUndefined(isFull)) _isFull.value = isFull
-  if (!isUndefined(showAction)) _showAction.value = showAction
-  if (!isUndefined(title)) _title.value = title
-  if (!isUndefined(submitting)) _submitting.value = submitting
+const setData = ({ type, showAction, title, submitting }) => {
+  if (!isUndefined(type)) options.type = type
+  if (!isUndefined(showAction)) options.showAction = showAction
+  if (!isUndefined(title)) options.title = title
+  if (!isUndefined(submitting)) options.submitting = submitting
 }
 const getData = () => {
   return {
-    type: _type.value,
-    visible: _visible.value,
-    isFull: _isFull.value,
-    title: _title.value,
-    showAction: _showAction.value,
+    type: options.type,
+    title: options.title,
+    showAction: options.showAction,
   }
 }
 
 const setTitle = (title: string) => {
-  if (!isUndefined(title)) _title.value = title
+  if (!isUndefined(title)) options.title = title
 }
 
 const open = (data = undefined) => {
   emit('open', data)
-  _visible.value = true
+  model.value = true
 
   nextTick(() => {
     if (vFormRef.value) {
@@ -121,9 +99,9 @@ const open = (data = undefined) => {
 
 const close = (e?: Event) => {
   if (vFormRef.value) vFormRef.value.clearValidate()
-  if (_visible.value) emit('close', e)
+  if (model.value) emit('close', e)
   e?.stopPropagation()
-  _visible.value = false
+  model.value = false
 }
 
 const handleConfirm = async (e: Event) => {
@@ -140,7 +118,7 @@ const handleConfirm = async (e: Event) => {
   }
 }
 
-const toggle = (isShow: boolean) => (_visible.value = isShow)
+const toggle = (isShow: boolean) => (model.value = isShow)
 
 defineExpose({ toggle, open, close, setData, setTitle, getData, confirm: handleConfirm, form: vFormRef })
 </script>
