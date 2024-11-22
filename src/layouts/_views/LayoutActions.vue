@@ -1,6 +1,6 @@
 <template>
   <Teleport :to="props.to" defer>
-    <div class="action cursor-pointer" ref="sizeBtnRef" v-tooltip="'full screen'">
+    <div class="action cursor-pointer" v-tooltip="'full screen'">
       <SvgIcon name="ze-full-screen" />
     </div>
     <div class="action" ref="sizeBtnRef"><SvgIcon name="ze-font-size" /></div>
