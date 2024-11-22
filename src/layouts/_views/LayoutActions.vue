@@ -1,8 +1,13 @@
 <template>
   <Teleport :to="props.to" defer>
+    <div class="action cursor-pointer" ref="sizeBtnRef" v-tooltip="'full screen'">
+      <SvgIcon name="ze-full-screen" />
+    </div>
     <div class="action" ref="sizeBtnRef"><SvgIcon name="ze-font-size" /></div>
     <div class="action" ref="localeBtnRef"><SvgIcon name="ze-language" /></div>
     <div class="action" ref="themeBtnRef"><SvgIcon name="ze-theme" /></div>
+    <div class="action cursor-pointer" ref="settingBtnRef" v-tooltip="'setting'"><SvgIcon name="ze-setting" /></div>
+    <el-avatar class="action cursor-pointer" :size="setting.size" shape="circle" src=""></el-avatar>
   </Teleport>
 
   <el-popover ref="sizePopRef" :virtual-ref="sizeBtnRef" virtual-triggering trigger="hover">
@@ -64,7 +69,7 @@ const SizeCheckTag = ({ text, value }) => (
 <style lang="scss" scoped>
 .action {
   font-size: 24px;
-  margin-right: 10px;
+  margin-right: 12px;
 
   #{$size-large} {
     font-size: 28px;

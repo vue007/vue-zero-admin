@@ -1,6 +1,6 @@
 <template>
   <svg aria-hidden="true" class="svg-icon" v-bind="$attrs">
-    <use :href="symbolId" :fill="color" />
+    <use :href="symbolId" :fill="color" :stroke="color" />
   </svg>
 </template>
 
@@ -46,6 +46,7 @@ const fontSize = computed(() => {
   position: relative;
   fill: currentColor;
   color: var(--color);
+  stroke: var(--color);
   font-size: v-bind(fontSize);
   width: 1em;
   height: 1em;
