@@ -22,6 +22,8 @@ declare module 'vue' {
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     SvgIcon: typeof import('./components/SvgIcon.vue')['default']
-    ViPage: typeof import('./pages/_views/ViPage.vue')['default']
+    ViPage: typeof import('./pages/_views/VPage.vue')['default']
+    VPage: typeof import('./pages/_views/VPage.vue')['default']
+    ZeModal: typeof import('./components/ZeModal.vue')['default']
   }
 }

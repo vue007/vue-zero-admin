@@ -14,6 +14,7 @@
       <el-sub-menu index="/doc">
         <template #title>Demo</template>
         <el-menu-item index="/doc/icon">SvgIcon</el-menu-item>
+        <el-menu-item index="/doc/modal">Modal</el-menu-item>
       </el-sub-menu>
     </el-menu>
   </Teleport>
