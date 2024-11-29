@@ -46,5 +46,6 @@ declare module 'vue' {
     ZeModalFormAction: typeof import('./components/ZeTable.vue')['default']
     ZePagination: typeof import('./components/ZePagination.vue')['default']
     ZeTable: typeof import('./components/ZeTable.vue')['default']
+    ZeTableColumn: typeof import('./components/ZeTableColumn.vue')['default']
   }
 }

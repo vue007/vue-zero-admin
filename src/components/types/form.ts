@@ -37,7 +37,7 @@ export type ZeFormItem = FormItemInstance & {}
 type ElFormItemProps = Omit<FormItemProps, 'type'>
 type _formItemProps = ZeFormItem['$props']
 export type ZeFormItemProp = Partial<Omit<_formItemProps, 'type'>> &
-  Partial<ElFormItemProps> & { type?: FormItemType; hidden?: boolean; prop?: string; [k: string]: any }
+  Partial<ElFormItemProps> & { type?: FormItemType; hidden?: boolean; prop: string; [k: string]: any }
 
 export type ZeFormInstance = FormInstance & { setFields: any }
 

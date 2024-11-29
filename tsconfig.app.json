@@ -1,13 +1,6 @@
 {
   "extends": "@vue/tsconfig/tsconfig.dom.json",
-  "include": [
-    "env.d.ts",
-    "src/**/*.ts",
-    "src/**/*.tsx",
-    "src/**/*.d.ts",
-    "src/**/*.json",
-    "src/**/*.vue"
-  ],
+  "include": ["env.d.ts", "src/**/*.ts", "src/**/*.tsx", "src/**/*.d.ts", "src/**/*.json", "src/**/*.vue"],
   "exclude": ["src/**/__tests__/*", "dist", "node_modules"],
   "compilerOptions": {
     "composite": true,
@@ -18,7 +11,7 @@
     "outDir": "./",
     "noImplicitAny": false,
 
-    "types": ["@intlify/unplugin-vue-i18n/messages"],
+    "types": ["element-plus/global", "@intlify/unplugin-vue-i18n/messages"],
     "paths": {
       "@/*": ["./src/*"]
     }
