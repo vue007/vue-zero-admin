@@ -20,7 +20,7 @@
         <div class="mb-16">表单校验</div>
         <ze-form v-model="form" ref="validationFormRef" :rules="formRules">
           <ze-form-item type="text" v-model="form.usename" label="名字" class="mt-10" ref="gtInputItemRef" />
-          <ze-form-item type="number" v-model="form.age" label="年龄" min="0" />
+          <ze-form-item type="number" v-model="form.age" label="年龄" :min="0" />
           <ze-form-item type="radio" v-model="form.sex" label="性别" :enum-list="SEX_ENUM_LIST" />
           <ze-form-item type="switch" v-model="form.hasLoan" label="有无房贷" />
           <ze-form-item type="select" v-model="form.region" label="区域" :enum-list="REGION_ENUM_LIST" />

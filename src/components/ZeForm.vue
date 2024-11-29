@@ -73,7 +73,7 @@ const expose = new Proxy(
   },
 )
 
-const vFormRef = inject<any>('ZeModal->ZeForm')
+const vFormRef = inject<any>('ZeModal->ZeForm', undefined)
 
 const initInject = () => {
   if (vFormRef) vFormRef.value = { ...formRef.value, setFields }
