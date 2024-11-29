@@ -13,7 +13,7 @@ const tooltip = (el: HTMLElement, value: string | any) => {
   })
 
   if (attrs.content) {
-    const nVNode = h(ElTooltip, attrs)
+    const nVNode = h(ElTooltip, { ...attrs, key: attrs.content })
     const dom = document.createElement('span')
     render(nVNode, dom)
   }
