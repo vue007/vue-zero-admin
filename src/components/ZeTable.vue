@@ -12,7 +12,7 @@
 
     <slot name="before-columns"></slot>
 
-    <el-table-column v-for="item in _columns" :key="item.prop" v-bind="item">
+    <el-table-column v-for="item in showedColumns" :key="getColKey(item)" v-bind="item">
       <template v-if="$slots[`col-${item.prop}`]" #default="scope">
         <slot :name="`col-${item.prop}`" :row="scope.row" :index="scope.$index"></slot>
       </template>
@@ -20,6 +20,25 @@
 
     <slot name="after-columns"></slot>
   </el-table>
+
+  <el-popover
+    v-if="props.filterColVR"
+    ref="popoverRef"
+    :virtual-ref="props.filterColVR"
+    trigger="click"
+    virtual-triggering
+  >
+    <span>表格列显示与隐藏</span>
+    <el-checkbox-group v-model="filterColumns">
+      <el-checkbox
+        v-for="item in _columns"
+        :key="getColKey(item)"
+        :label="item.label"
+        :value="item.prop"
+        :disabled="item.fixed !== undefined"
+      />
+    </el-checkbox-group>
+  </el-popover>
 </template>
 
 <script setup lang="ts">
@@ -27,8 +46,6 @@ import type { ElTable, ElTableColumn, TableColumnCtx, TableInstance } from 'elem
 import { omit } from 'es-toolkit'
 
 export type ZeTableColumns = { hidden?: boolean } & TableColumnCtx<any>
-
-const exportColumns = inject<any>('VPage_exportColumns', null)
 
 const props = defineProps({
   data: {
@@ -39,21 +56,26 @@ const props = defineProps({
     type: Array<Partial<ZeTableColumns>>,
     require: true,
   },
+  filterColVR: {
+    type: Object as PropType<Ref>,
+    default: () => ref(undefined),
+  },
 })
+const tableRef = ref<TableInstance>()
 
 const emits = defineEmits(['sort-change', 'row-sort', 'selection-change'])
 
-const tableRef = ref<TableInstance>()
-
+const getColKey = (item) => item.prop || item.type
 const _columns = computed(() => {
   return props.columns?.filter((item) => !item.hidden) || []
 })
+const showedColumns = computed(() => {
+  return _columns.value?.filter((item) => filterColumns.value?.includes(getColKey(item)))
+})
 
+const filterColumns = ref<Array<string>>()
 watchEffect(() => {
-  if (!props || !props.columns) return
-  if (exportColumns) {
-    exportColumns.value = props.columns.map((item) => ({ prop: item.prop, label: item.label }))
-  }
+  filterColumns.value = _columns.value.map((item) => getColKey(item)) || []
 })
 </script>
 

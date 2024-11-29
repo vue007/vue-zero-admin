@@ -1,5 +1,7 @@
 <template>
   <VPage>
+    <el-button ref="filterColRef">filter columns</el-button>
+
     <ze-table
       :data="tableData"
       :columns="[
@@ -20,6 +22,7 @@
         { prop: 'createTime', label: $t('doc.col.createTime'), minWidth: 160 },
       ]"
       :border="false"
+      :filterColVR="filterColRef"
     >
       <!-- <template #header-actions>
         <el-button type="primary" @click="() => editModalRef.open()">{{ $t('common.add') }}</el-button>
@@ -45,6 +48,8 @@ import { userList } from '@/api/user.api'
 const [pageData, request, loading] = useApi(userList, { pageNo: 1, pageSize: 10 }, { immediate: true })
 
 const tableData = computed(() => pageData?.value?.list)
+
+const filterColRef = ref()
 
 onMounted(() => {
   console.log(pageData)
