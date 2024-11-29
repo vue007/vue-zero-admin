@@ -4,19 +4,19 @@
     :border="true"
     style="width: 100%"
     maxheight="62vh"
-    ref="tableRef"
-    v-bind="omit($attrs, 'data')"
+    ref="rawRef"
+    v-bind="omit($attrs, ['data'])"
   >
     <slot name="header"></slot>
     <slot name="filter-icon"></slot>
 
     <slot name="before-columns"></slot>
 
-    <el-table-column v-for="item in showedColumns" :key="getColKey(item)" v-bind="item">
+    <ze-table-column v-for="item in showedColumns" :key="getColKey(item)" v-bind="item">
       <template v-if="$slots[`col-${item.prop}`]" #default="scope">
         <slot :name="`col-${item.prop}`" :row="scope.row" :index="scope.$index"></slot>
       </template>
-    </el-table-column>
+    </ze-table-column>
 
     <slot name="after-columns"></slot>
   </el-table>
@@ -42,7 +42,7 @@
 </template>
 
 <script setup lang="ts">
-import type { ElTable, ElTableColumn, TableColumnCtx, TableInstance } from 'element-plus'
+import type { ElTable, TableColumnCtx, TableInstance } from 'element-plus'
 import { omit } from 'es-toolkit'
 
 export type ZeTableColumns = { hidden?: boolean } & TableColumnCtx<any>
@@ -61,7 +61,7 @@ const props = defineProps({
     default: () => ref(undefined),
   },
 })
-const tableRef = ref<TableInstance>()
+const rawRef = ref<TableInstance>()
 
 const emits = defineEmits(['sort-change', 'row-sort', 'selection-change'])
 
@@ -77,6 +77,17 @@ const filterColumns = ref<Array<string>>()
 watchEffect(() => {
   filterColumns.value = _columns.value.map((item) => getColKey(item)) || []
 })
+
+type ZeTableExpose = TableInstance & {}
+defineExpose<ZeTableExpose>(
+  new Proxy(
+    {},
+    {
+      get: (_target, prop) => rawRef.value?.[prop],
+      has: (_target, prop) => prop in (rawRef.value || {}),
+    },
+  ) as ZeTableExpose,
+)
 </script>
 
 <style lang="scss" scoped>

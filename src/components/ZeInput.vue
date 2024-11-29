@@ -1,5 +1,5 @@
 <template>
-  <el-input v-bind="toMerged($attrs, props)" class="ze-input" ref="inputR">
+  <el-input v-bind="toMerged($attrs, props)" class="ze-input" ref="rawRef">
     <template v-for="(_, name) in $slots" #[name]="scope">
       <slot :name="name" v-bind="scope"></slot>
     </template>
@@ -15,14 +15,14 @@ type ZeInputProps = Partial<InputProps> & {}
 const props = withDefaults(defineProps<ZeInputProps>(), {
   clearable: true,
 })
-const inputR = ref<ElInputType>()
+const rawRef = ref<ElInputType>()
 
 defineExpose<ElInputType>(
   new Proxy(
     {},
     {
-      get: (_target, prop) => inputR.value?.[prop],
-      has: (_target, prop) => prop in (inputR.value || {}),
+      get: (_target, prop) => rawRef.value?.[prop],
+      has: (_target, prop) => prop in (rawRef.value || {}),
     },
   ) as ElInputType,
 )
