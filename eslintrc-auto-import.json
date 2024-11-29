@@ -90,6 +90,8 @@
     "watchEffect": true,
     "watchPostEffect": true,
     "watchSyncEffect": true,
-    "ElMessage": true
+    "ElMessage": true,
+    "useModal": true,
+    "useFormItems": true
   }
 }
