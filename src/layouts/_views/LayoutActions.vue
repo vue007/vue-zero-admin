@@ -1,12 +1,14 @@
 <template>
   <Teleport :to="props.to" defer>
     <div class="action cursor-pointer" v-tooltip="'full screen'">
-      <SvgIcon name="ze-full-screen" />
+      <svg-icon name="ze-full-screen" />
     </div>
-    <div class="action" ref="sizeBtnRef"><SvgIcon name="ze-font-size" /></div>
-    <div class="action" ref="localeBtnRef"><SvgIcon name="ze-language" /></div>
-    <div class="action" ref="themeBtnRef"><SvgIcon name="ze-theme" /></div>
-    <div class="action cursor-pointer" ref="settingBtnRef" v-tooltip="'setting'"><SvgIcon name="ze-setting" /></div>
+    <div class="action" ref="sizeBtnRef"><svg-icon name="ze-font-size" /></div>
+    <div class="action" ref="localeBtnRef"><svg-icon name="ze-language" /></div>
+    <div class="action cursor-pointer" ref="themeBtnRef" @click="toggleTheme">
+      <svg-icon :name="themeIcon" />
+    </div>
+    <div class="action cursor-pointer" ref="settingBtnRef" v-tooltip="'setting'"><svg-icon name="ze-setting" /></div>
     <el-avatar class="action cursor-pointer" :size="setting.size" shape="circle" src=""></el-avatar>
   </Teleport>
 
@@ -45,13 +47,13 @@ const [themePopRef, themeBtnRef] = [ref(), ref()]
 const [sizePopRef, sizeBtnRef] = [ref(), ref()]
 
 const ThemeCheckTag = ({ text, value, icon }) => (
-  <el-check-tag class='check-item' checked={setting.theme == value} onChange={() => setting.setTheme(value)}>
+  <el-check-tag class='check-item' checked={setting.theme === value} onChange={() => setting.setTheme(value)}>
     <svg-icon v-show={icon} class='mr-12' name={icon} />
     {t(text)}
   </el-check-tag>
 )
 const LocaleCheckTag = ({ text, value }) => (
-  <el-check-tag class={`check-item`} checked={setting.local == value} onChange={() => setting.setLocale(value)}>
+  <el-check-tag class={`check-item`} checked={setting.local === value} onChange={() => setting.setLocale(value)}>
     {text}
   </el-check-tag>
 )
@@ -59,11 +61,23 @@ const SizeCheckTag = ({ text, value }) => (
   <el-check-tag
     class='check-item items-start'
     style={{ fontSize: `var(--el-font-size-${value})` }}
-    checked={setting.size == value}
+    checked={setting.size === value}
     onChange={() => setting.setSize(value)}
     v-html={t(text)}
   />
 )
+
+const themeIcon = computed(() => {
+  if ('light' === setting.theme) return 'el-sunny'
+  if ('dark' === setting.theme) return 'el-moon'
+  if ('auto' === setting.theme) return 'el-platform'
+  return 'el-sunny'
+})
+const toggleTheme = () => {
+  if ('auto' === setting.theme) return
+  if ('light' === setting.theme) return setting.setTheme('dark')
+  if ('dark' === setting.theme) return setting.setTheme('light')
+}
 </script>
 
 <style lang="scss" scoped>

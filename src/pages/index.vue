@@ -4,7 +4,7 @@
   <br />
 
   <div class="flex items-center mt-20">
-    <SvgIcon name="WMV" :size="32" />
+    <svg-icon name="WMV" :size="32" />
     <RouterLink to="/doc/icon" class="ml-5">
       {{ t('check all icons') }}
     </RouterLink>
@@ -32,7 +32,7 @@ const info = ref({})
 onMounted(() => {
   login(loginForm)
     .then((res) => {
-      res.data.data == res.apiData
+      res.data.data === res.apiData
     })
     .catch((err) => {})
 })

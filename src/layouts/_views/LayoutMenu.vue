@@ -12,9 +12,11 @@
       </el-menu-item>
 
       <el-sub-menu index="/doc">
-        <template #title>Demo</template>
+        <template #title>Component doc</template>
         <el-menu-item index="/doc/icon">SvgIcon</el-menu-item>
         <el-menu-item index="/doc/modal">Modal</el-menu-item>
+        <el-menu-item index="/doc/form">Form</el-menu-item>
+        <el-menu-item index="/doc/table">Table</el-menu-item>
       </el-sub-menu>
     </el-menu>
   </Teleport>
