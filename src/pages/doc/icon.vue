@@ -1,12 +1,7 @@
 <template>
   <div class="icon-list">
-    <div
-      class="icon-item"
-      v-for="item in iconNameList.reverse()"
-      :key="item"
-      @click="() => copyIconName(item)"
-    >
-      <SvgIcon :name="item" />
+    <div class="icon-item" v-for="item in iconNameList.reverse()" :key="item" @click="() => copyIconName(item)">
+      <svg-icon :name="item" />
       <span class="icon-name">{{ item }}</span>
     </div>
   </div>
