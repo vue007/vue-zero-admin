@@ -61,7 +61,7 @@ export function useApi<P, D>(
                 ? options.tipError.value
                 : err.msg
             // : $t(`error.${err.code}`)
-            ElMessage.error(message == `error.${err.code}` ? err.message : message)
+            ElMessage.error(message === `error.${err.code}` ? err.message : message)
           }
         })
         .finally(() => {
