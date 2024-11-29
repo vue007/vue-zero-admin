@@ -1,21 +1,20 @@
 import { useThrottleFn } from '@vueuse/core'
 import type { AxiosError, InternalAxiosRequestConfig } from 'axios'
-import axios from 'axios'
-
-// TODO: 同步生成后端接口 interface
+import axios, { HttpStatusCode } from 'axios'
 
 import type { AxiosPromiseE } from 'env'
 import { PromiseErr } from '@/utils/primise-error'
+import { getToken } from '@/utils/auth'
 // ------------------------------- Begin 类型定义 -------------------------------
 
 /** 分页查询表单 */
 export interface ApiPageForm {
-  pageNum: number
+  pageNo: number
   pageSize: number
 }
 
 export class ApiPagination implements ApiPageForm {
-  pageNum!: 1
+  pageNo!: 1
   pageSize!: 10
   total!: 0 | number
   totalPage?: 0 | number
@@ -33,10 +32,10 @@ export class ApiPage<T> extends ApiPagination {
   list!: Array<T>
 
   public static isFinished(page: ApiPage<any>): boolean {
-    return page.pageNum * page.pageSize >= page.total
+    return page.pageNo * page.pageSize >= page.total
   }
   public static mergeNextPage(page: ApiPage<any>, data: ApiPage<any>): ApiPage<any> {
-    page.pageNum = data.pageNum
+    page.pageNo = data.pageNo
     page.pageSize = data.pageSize
     page.total = data.total
     page.totalPage = data.totalPage
@@ -53,14 +52,19 @@ export type ApiPromise<T> = AxiosPromiseE<ApiResponse<T>, ApiError>
 export type ApiPromisePage<T> = AxiosPromiseE<ApiResponse<ApiPage<T>>, ApiError>
 // ------------------------------- End 类型定义 -------------------------------
 
-export const TOKEN_KEY = 'ADMIN_TOKEN_KEY'
-const SKIP401 = 'skip401'
-
 const baseURL: string = import.meta.env.VITE_APP_BASE_API
 
 axios.defaults.headers['Content-Type'] = 'application/json;charset=utf-8'
-axios.defaults.headers['lang'] = 'zh-CN'
 // axios.defaults.headers['clientid'] = import.meta.env.VITE_APP_CLIENT_ID
+
+export const ENCRYPT_HEADER = 'encrypt-key'
+export const TOKEN_KEY = 'ADMIN_TOKEN_KEY'
+export const globalApiHeaders = () => {
+  return {
+    Authorization: 'Bearer ' + getToken(),
+    // clientid: import.meta.env.VITE_APP_CLIENT_ID,
+  }
+}
 
 const fetch = axios.create({
   withCredentials: true,
@@ -71,8 +75,14 @@ const fetch = axios.create({
 // request拦截器,在请求之前做一些处理
 fetch.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
-    // openLoading()
-    // config.headers['Authorization'] = useSystemStore().user.info.token // TODO 用户token
+    // lang
+    config.headers['Content-Language'] = localStorage.getItem('setting.local') || 'zh-CN'
+    const isToken = config.headers?.isToken === false
+
+    if (getToken() && !isToken) {
+      config.headers['Authorization'] = globalApiHeaders().Authorization
+    }
+
     return config
   },
   (error) => {
@@ -80,15 +90,32 @@ fetch.interceptors.request.use(
   },
 )
 
+// TODO i18n
+export const errorCode: any = {
+  '401': '认证失败，无法访问系统资源',
+  '403': '当前操作没有权限',
+  '404': '访问资源不存在',
+  default: '系统未知错误，请反馈给管理员',
+}
+
 // 配置成功后的拦截器
 fetch.interceptors.response.use(
   (res) => {
     try {
-      // closeLaoding()
+      // 未设置状态码则默认成功状态
+      const code = Number(res.data.code || HttpStatusCode.Ok)
+      // 获取错误信息
+      const msg = errorCode[code] || res.data.msg || errorCode['default']
+
+      if (res.request.responseType === 'blob' || res.request.responseType === 'arraybuffer') {
+        return res.data
+      }
+
       // 成功
-      if ([200].includes(res.data.code)) {
-        const { pageNum, pageSize } = res.request.data
-        if (pageNum) res.data.data['pageNum'] = pageNum
+      if ([HttpStatusCode.Ok].includes(res.data.code)) {
+        console.log(res, res.request, res.config, 'asdfasdf')
+        const { pageNo, pageSize } = res.config.params
+        if (pageNo) res.data.data['pageNo'] = pageNo
         if (pageSize) res.data.data['pageSize'] = pageSize
         return PromiseErr.resolve({
           ...res,
@@ -96,14 +123,18 @@ fetch.interceptors.response.use(
           isSuccess: true,
         })
       } else {
-        if (Number(res.data.code) === 401) {
+        if (HttpStatusCode.Unauthorized === code) {
           redirectToLogin()
           throw new Error('need-login')
         }
-        ElMessage.error(res.data.msg)
+        if (601 === code) {
+          ElMessage.warning(msg)
+          throw new Error('warning')
+        }
+        ElMessage.error(msg)
         return PromiseErr.reject({
           data: res.data,
-          message: res.data.msg,
+          message: msg,
           code: res.data.code + '',
           response: res,
         })
@@ -135,4 +166,4 @@ const redirectToLogin = useThrottleFn(() => {
   }, 3000)
 }, 5000)
 
-export { fetch, SKIP401 }
+export { fetch }
