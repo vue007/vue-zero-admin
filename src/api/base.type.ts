@@ -3,7 +3,7 @@ export type LoginForm = {
   password: string
 }
 
-export type UserInfo = {
+export type LoginInfo = {
   username: string
   roles: string[]
   token: string
