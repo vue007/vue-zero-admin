@@ -92,6 +92,8 @@
     "watchSyncEffect": true,
     "ElMessage": true,
     "useModal": true,
-    "useFormItems": true
+    "useFormItems": true,
+    "useTable": true,
+    "usePagination": true
   }
 }

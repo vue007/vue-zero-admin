@@ -26,6 +26,7 @@ declare module 'vue' {
     ElInputNumber: typeof import('element-plus/es')['ElInputNumber']
     ElMenu: typeof import('element-plus/es')['ElMenu']
     ElMenuItem: typeof import('element-plus/es')['ElMenuItem']
+    ElPagination: typeof import('element-plus/es')['ElPagination']
     ElPopover: typeof import('element-plus/es')['ElPopover']
     ElSubMenu: typeof import('element-plus/es')['ElSubMenu']
     ElSwitch: typeof import('element-plus/es')['ElSwitch']
@@ -43,6 +44,7 @@ declare module 'vue' {
     ZeInput: typeof import('./components/ZeInput.vue')['default']
     ZeModal: typeof import('./components/ZeModal.vue')['default']
     ZeModalFormAction: typeof import('./components/ZeTable.vue')['default']
+    ZePagination: typeof import('./components/ZePagination.vue')['default']
     ZeTable: typeof import('./components/ZeTable.vue')['default']
   }
 }
