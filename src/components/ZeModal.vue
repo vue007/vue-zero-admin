@@ -24,18 +24,17 @@ import 'element-plus/es/components/drawer/style/css'
 
 import { ElButton, ElDialog, ElDrawer } from 'element-plus'
 import { isUndefined } from 'es-toolkit'
-const { t } = useI18n()
+let { t } = useI18nLocal()
 
-const vFormRef = ref()
-provide('VModal_VForm', reactive({ setVFormRef: (r: Ref<any>) => (vFormRef.value = r) }))
+const modalForm = ref()
+provide('ZeModal->ZeForm', modalForm)
 const emit = defineEmits(['open', 'close', 'confirm', 'cancel'])
 
-const WarpComp = computed(() => (options.type == 'drawer' ? ElDrawer : ElDialog))
+const WarpComp = computed(() => (options.type === 'drawer' ? ElDrawer : ElDialog))
 
-const model = defineModel()
+const model = defineModel<any>()
 const props = defineProps({
   type: { type: String as PropType<'dialog' | 'drawer'>, default: 'dialog', require: true },
-  visible: { type: Boolean },
   showAction: { type: Boolean, default: true },
   isFull: { type: Boolean, default: () => false },
   readonly: { type: Boolean, default: () => false },
@@ -60,9 +59,9 @@ const FormAction = defineComponent({
   name: 'VFormAction',
   render: () => (
     <div class='modal-footer'>
-      {!props.footerConfirmTxt && <ElButton onClick={close}>{t('common.cancel')}</ElButton>}
+      {!props.footerConfirmTxt && <ElButton onClick={close}>{t ? t('base.cancel') : 'cancel'}</ElButton>}
       <ElButton type={'primary'} onClick={handleConfirm} loading={options.submitting}>
-        {props.footerConfirmTxt || t('common.confirm')}
+        {props.footerConfirmTxt || t ? t?.('base.confirm') : 'confirm'}
       </ElButton>
     </div>
   ),
@@ -91,23 +90,24 @@ const open = (data = undefined) => {
   model.value = true
 
   nextTick(() => {
-    if (vFormRef.value) {
-      vFormRef.value.setFields(data)
+    if (modalForm.value) {
+      modalForm.value.setFields(data)
     }
   })
 }
 
 const close = (e?: Event) => {
-  if (vFormRef.value) vFormRef.value.clearValidate()
+  console.log(modalForm.value, modalForm.value, 'vFormRef.value.clearValidate')
+  if (modalForm.value) modalForm.value.clearValidate()
   if (model.value) emit('close', e)
   e?.stopPropagation()
   model.value = false
 }
 
 const handleConfirm = async (e: Event) => {
-  if (vFormRef.value) {
+  if (modalForm.value) {
     try {
-      if (vFormRef.value) await vFormRef.value.validate()
+      if (modalForm.value) await modalForm.value.validate()
       emit('confirm', e)
     } catch (error) {
       ElMessage.error('请检查表单内容')
@@ -120,7 +120,7 @@ const handleConfirm = async (e: Event) => {
 
 const toggle = (isShow: boolean) => (model.value = isShow)
 
-defineExpose({ toggle, open, close, setData, setTitle, getData, confirm: handleConfirm, form: vFormRef })
+defineExpose({ toggle, open, close, setData, setTitle, getData, confirm: handleConfirm, form: modalForm })
 </script>
 
 <!-- global style -->
