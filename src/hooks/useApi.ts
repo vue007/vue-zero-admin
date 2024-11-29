@@ -4,9 +4,9 @@ import { isFunction, isString, merge } from 'es-toolkit'
 import { isObject } from 'es-toolkit/compat'
 import type { ApiError, ApiPromise, ApiResponse } from '@/api/_fetch'
 
-type OnSuccessFn<T> = (res?: _AxiosResponse<ApiResponse<T>>) => void
-type OnSubmitFn<T> = (data?: T & { [prop: string]: any }) => Promise<boolean | T>
-type OnErrorFn = (err: ApiError) => void
+export type UseApiOnSuccessFn<T> = (res?: _AxiosResponse<ApiResponse<T>>) => void
+export type UseApiOnSubmitFn<T> = (data?: T & { [prop: string]: any }) => Promise<boolean | T>
+export type UseApiOnErrorFn = (err: ApiError) => void
 
 /**
  * useApi
@@ -22,10 +22,10 @@ export function useApi<P, D>(
     immediate?: boolean
     tipError?: boolean | string | Ref
     tipSuccess?: boolean | string | Ref
-    onSuccess?: OnSuccessFn<D>
-    onError?: OnErrorFn
+    onSuccess?: UseApiOnSuccessFn<D>
+    onError?: UseApiOnErrorFn
     onFinally?: () => void
-    onSubmit?: OnSubmitFn<P>
+    onSubmit?: UseApiOnSubmitFn<P>
   },
 ): [Ref<D | undefined>, Function, Ref<boolean>] {
   const loading = ref(false)
