@@ -81,7 +81,7 @@ export default defineConfig(({ command, mode }) => {
       }
     }
 
-    createProxy('https://localhost:8081/', '/api', /^\/api/)
+    createProxy('http://127.0.0.1:4523/m1/5534148-5210746-default', '/api', /^\/api/)
     config.server = server
 
     // https support
