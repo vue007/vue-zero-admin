@@ -1,7 +1,7 @@
 <template>
   <el-form-item
     class="ze-form-item"
-    v-bind="reactiveOmit($attrs, ['class', 'style'])"
+    v-bind="omit($attrs, ['class', 'style'])"
     :class="itemClass"
     :style="itemStyle"
     :label="props.labelT ? $t(props.labelT as string) : isUndefined($attrs.label) ? undefined : $attrs.label + ''"
@@ -33,7 +33,7 @@
       <template v-else>
         <component
           v-if="(props.enumList && !!props.enumList.length) || $slots.default"
-          v-bind="reactiveOmit($attrs, OMIT_KEYS)"
+          v-bind="omit($attrs, OMIT_KEYS)"
           :is="enumComponent"
         >
           <component
@@ -48,7 +48,7 @@
             <slot :name="n" v-bind="scope" />
           </template>
         </component>
-        <component v-else v-bind="reactiveOmit($attrs, OMIT_KEYS)" :is="enumItemComponent">
+        <component v-else v-bind="omit($attrs, OMIT_KEYS)" :is="enumItemComponent">
           <template v-for="(_, n) in $slots" #[n]="scope">
             <slot :name="n" v-bind="scope" />
           </template>
@@ -72,7 +72,7 @@
       ></el-cascader>
     </template>
     <template v-else-if="isNumberType">
-      <el-input-number v-bind="getBindValues" :placeholder="_PLH" ref="inputEl">
+      <el-input-number v-bind="omit($attrs, OMIT_KEYS)" :placeholder="_PLH" ref="inputEl">
         <template v-for="(_, n) in $slots" #[n]="scope">
           <slot :name="n" v-bind="scope" />
         </template>
@@ -126,7 +126,7 @@ import type {
   RadioGroupContext,
   SelectContext,
 } from 'element-plus'
-import { reactiveOmit } from '@vueuse/core'
+
 import { isUndefined, omit, toMerged } from 'es-toolkit'
 import { includes } from 'es-toolkit/compat'
 import {
