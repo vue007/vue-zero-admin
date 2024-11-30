@@ -4,7 +4,7 @@ import { isFunction, merge } from 'es-toolkit'
 import { isObject } from '@vueuse/core'
 
 type KeyPath = Array<string> | string
-type Return = [Ref<any[] | undefined>, Function, any, Ref<boolean>]
+// type Return = [Ref<any[] | undefined>, Function, any, Ref<boolean>]
 
 /**
  * useTable

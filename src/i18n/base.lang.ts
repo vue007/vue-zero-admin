@@ -11,6 +11,8 @@ export const baseLang = {
     light: i('浅色', '浅色', 'Light'),
     dark: i('深色', '深色', 'Dark'),
   },
+  index: i('序号', '序號', 'Index'),
+
   button: i('按钮', '按钮', 'Button'),
   confirm: i('确定', '確定', 'Confirm'),
   cancel: i('取消', '取消', 'Cancel'),

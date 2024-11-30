@@ -22,7 +22,7 @@
           <ze-form-item type="text" v-model="form.usename" label="名字" class="mt-10" ref="gtInputItemRef" />
           <ze-form-item type="number" v-model="form.age" label="年龄" :min="0" />
           <ze-form-item type="radio" v-model="form.sex" label="性别" :enum-list="SEX_ENUM_LIST" />
-          <ze-form-item type="switch" v-model="form.hasLoan" label="有无房贷" />
+          <ze-form-item type="switch" v-model="form.hasPassion" label="有无房贷" />
           <ze-form-item type="select" v-model="form.region" label="区域" :enum-list="REGION_ENUM_LIST" />
           <ze-form-item type="date" v-model="form.date" label="开始日期" />
           <ze-form-item type="datetime" v-model="form.date" label="开始时间" />
@@ -39,7 +39,7 @@
 </template>
 
 <script setup lang="ts">
-import type { ZeInputInstance } from '@/components/types'
+import type { ZeFormItemInstance, ZeInputInstance } from '@/components/types'
 import type { ZeFormInstance } from '@/components/types/form'
 import type { FormRules } from 'element-plus'
 
@@ -57,7 +57,7 @@ const form = reactive({
   usename: '',
   age: 0,
   sex: 1,
-  hasLoan: true,
+  hasPassion: true,
   region: '',
   date: '',
   datetime: '',
@@ -81,7 +81,7 @@ const formRules: FormRules<typeof form> = {
 const [gtInput, gtInputRef] = [ref(), ref<ZeInputInstance>()]
 const [gtInputItem, gtInputItemRef] = [ref(), ref<ZeInputInstance>()]
 
-const validationFormRef = ref<ZeInputInstance>()
+const validationFormRef = ref<ZeFormInstance>()
 
 onMounted(() => {
   nextTick(() => {

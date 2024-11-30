@@ -24,7 +24,6 @@
 </template>
 
 <script setup lang="tsx">
-import type { Arrayable } from 'element-plus/es/utils/typescript.mjs'
 import type { FormValidateCallback } from 'element-plus/lib/components/index.js'
 import ZeFormItem from './ZeFormItem.vue'
 import { watchOnce } from '@vueuse/core'
@@ -34,7 +33,7 @@ import { isEmpty, startsWith } from 'es-toolkit/compat'
 import type { FormInstance } from 'element-plus'
 
 const emit = defineEmits(['update:modelValue', 'submit'])
-const model = defineModel<ZeFormItemProp>()
+const model = defineModel<ZeFormItemProp & { prop?: string }>()
 const defaultModelVal = ref<any>(null)
 
 watchOnce(
@@ -46,7 +45,7 @@ watchOnce(
 const props = defineProps({
   labelWidth: { type: String, default: '120' },
   inline: { type: Boolean, default: () => false },
-  items: { type: Array as PropType<(ZeFormItemProp & { prop: any })[]>, default: () => [] },
+  items: { type: Array as PropType<(ZeFormItemProp & { prop?: any })[]>, default: () => [] },
   hidden: { type: Boolean, default: () => false },
   changeEvent: { type: Function },
 })
@@ -78,7 +77,6 @@ const vFormRef = inject<any>('ZeModal->ZeForm', undefined)
 const initInject = () => {
   if (vFormRef) vFormRef.value = { ...formRef.value, setFields }
 }
-initInject()
 onMounted(() => {
   initInject()
 })

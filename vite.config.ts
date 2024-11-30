@@ -81,7 +81,8 @@ export default defineConfig(({ command, mode }) => {
       }
     }
 
-    createProxy('http://127.0.0.1:4523/m1/5534148-5210746-default', '/api', /^\/api/)
+    // createProxy('http://127.0.0.1:4523/m1/5534148-5210746-default', '/api', /^\/api/)
+    createProxy('https://apifoxmock.com/m1/5534148-5210746-default', '/api', /^\/api/)
     config.server = server
 
     // https support

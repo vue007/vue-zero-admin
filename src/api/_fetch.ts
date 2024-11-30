@@ -53,6 +53,7 @@ export type ApiPromisePage<T> = AxiosPromiseE<ApiResponse<ApiPage<T>>, ApiError>
 // ------------------------------- End 类型定义 -------------------------------
 
 const baseURL: string = import.meta.env.VITE_APP_BASE_API
+const apifoxToken: string = import.meta.env.VITE_APP_APIFOX_TOKEN
 
 axios.defaults.headers['Content-Type'] = 'application/json;charset=utf-8'
 // axios.defaults.headers['clientid'] = import.meta.env.VITE_APP_CLIENT_ID
@@ -81,6 +82,9 @@ fetch.interceptors.request.use(
 
     if (getToken() && !isToken) {
       config.headers['Authorization'] = globalApiHeaders().Authorization
+    }
+    if (import.meta.env.DEV) {
+      config.headers['apifoxToken'] = apifoxToken
     }
 
     return config

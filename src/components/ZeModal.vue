@@ -97,7 +97,6 @@ const open = (data = undefined) => {
 }
 
 const close = (e?: Event) => {
-  console.log(modalForm.value, modalForm.value, 'vFormRef.value.clearValidate')
   if (modalForm.value) modalForm.value.clearValidate()
   if (model.value) emit('close', e)
   e?.stopPropagation()
@@ -105,14 +104,19 @@ const close = (e?: Event) => {
 }
 
 const handleConfirm = async (e: Event) => {
+  console.log('onConfirm')
+
   if (modalForm.value) {
     try {
-      if (modalForm.value) await modalForm.value.validate()
-      emit('confirm', e)
+      const valid = await modalForm.value?.validate()
+      console.log(valid, 'valid')
     } catch (error) {
       ElMessage.error('请检查表单内容')
       console.log(error)
+    } finally {
+      console.log('onConfirm finallhy')
     }
+    emit('confirm', e)
   } else {
     emit('confirm', e)
   }

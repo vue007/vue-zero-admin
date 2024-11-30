@@ -6,19 +6,20 @@
     <ze-table
       :data="tableData"
       :columns="[
-        { type: 'index', label: $t('doc.col.index'), align: 'center', width: '60px', fixed: 'left' },
+        { type: 'index', label: $t('base.index'), align: 'center', width: '60px', fixed: 'left' },
         { prop: 'id', hidden: true },
         { prop: 'name', label: $t('doc.col.name'), minWidth: 150, fixed: true },
         { prop: 'age', label: $t('doc.col.age'), minWidth: 120, headerAlign: 'center', align: 'center' },
         { prop: 'sex', label: $t('doc.col.sex'), minWidth: 120 },
-        { prop: 'hasLoan', label: $t('doc.col.hasLoan'), minWidth: 120 },
-        { prop: 'zip', label: $t('doc.col.zip'), minWidth: 120, headerAlign: 'center', align: 'center' },
-        { prop: 'createTime', label: $t('doc.col.createTime'), minWidth: 160 },
+        { prop: 'hasPassion', label: $t('doc.col.hasPassion'), minWidth: 120 },
+        { prop: 'city', label: $t('doc.col.city'), minWidth: 120, headerAlign: 'center', align: 'center' },
+        { prop: 'startDate', label: $t('doc.col.startDate'), minWidth: 160 },
+        { prop: 'createdTime', label: $t('doc.col.createdTime'), minWidth: 160 },
       ]"
       :filterColVR="filterColRef"
     >
-      <template #col-hasLoan="scope">
-        <el-switch :modelValue="scope.row.hasLoan" @update:modelValue="scope.row.hasLoan = $event" />
+      <template #col-hasPassion="scope">
+        <el-switch :modelValue="scope.row.hasPassion" @update:modelValue="scope.row.hasPassion = $event" />
       </template>
 
       <template #after-columns="scope">
@@ -33,11 +34,11 @@
 </template>
 
 <script setup lang="ts">
-import { userList } from '@/api/user.api'
+import { userApi } from '@/api/_index'
 
 const searchForm = reactive({ pageNo: 1, pageSize: 10 })
 
-const [tableData, refresh, pagination] = useTable(userList, searchForm, { immediate: true })
+const [tableData, refresh, pagination] = useTable(userApi.list, searchForm, { immediate: true })
 
 const filterColRef = ref()
 

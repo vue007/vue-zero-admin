@@ -6,12 +6,13 @@ import type { Ref, ComputedRef } from 'vue'
 export type FormItemsDatas = {
   [key: string]: {
     value: any
-    item?: ZeFormItemProp
+    item?: Omit<ZeFormItemProp, 'prop'>
     rule?: FormItemRule[]
   }
 }
 
 type UseFormItemsReturn<T> = [Ref<T>, ZeFormItemProp[], ComputedRef<Record<string, FormItemRule>>]
+
 export function useFormItems(formItemDatas: FormItemsDatas): UseFormItemsReturn<any> {
   const form = ref<any>({})
   // 设置为响应式数据，用来控制组件渲染

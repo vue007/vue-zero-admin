@@ -17,6 +17,7 @@
         <el-menu-item index="/doc/modal">Modal</el-menu-item>
         <el-menu-item index="/doc/form">Form</el-menu-item>
         <el-menu-item index="/doc/table">Table</el-menu-item>
+        <el-menu-item index="/doc/crud">CRUD</el-menu-item>
       </el-sub-menu>
     </el-menu>
   </Teleport>
