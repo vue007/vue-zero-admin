@@ -69,6 +69,7 @@ const checkAge = (rule, value, cb) => {
   if (!value) cb(new Error('谁还不是个宝宝呢'))
   if (value < 18) cb(new Error('你还未满十八岁?'))
   if (value > 120) cb(new Error('现在知道为什么急救电话是120了吧'))
+  cb()
 }
 
 const formRules: FormRules<typeof form> = {
