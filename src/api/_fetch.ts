@@ -116,11 +116,15 @@ fetch.interceptors.response.use(
       }
 
       // 成功
-      if ([HttpStatusCode.Ok].includes(res.data.code)) {
+      console.log(HttpStatusCode.Ok, res.data.code, 'HttpStatusCode.Ok === res.data.code')
+
+      if (HttpStatusCode.Ok === res.data.code) {
         console.log(res, res.request, res.config, 'asdfasdf')
-        const { pageNo, pageSize } = res.config.params
-        if (pageNo) res.data.data['pageNo'] = pageNo
-        if (pageSize) res.data.data['pageSize'] = pageSize
+        if (res.config && res.config.params) {
+          const { pageNo, pageSize } = res.config?.params
+          if (pageNo) res.data.data['pageNo'] = pageNo
+          if (pageSize) res.data.data['pageSize'] = pageSize
+        }
         return PromiseErr.resolve({
           ...res,
           apiData: res.data.data,

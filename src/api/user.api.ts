@@ -5,10 +5,10 @@ export function list(params: UserSearchForm): ApiPromisePage<UserRow> {
   return fetch.get('/user/list', { params })
 }
 
-export function add(params: UserForm): ApiPromisePage<UserRow> {
-  return fetch.get('/user/add', { params })
+export function create(data: UserForm): ApiPromisePage<UserRow> {
+  return fetch.post('/user/create', { data })
 }
 
-export function update(params: UserForm): ApiPromisePage<UserRow> {
-  return fetch.get('/user/update', { params })
+export function update(data: UserForm): ApiPromisePage<UserRow> {
+  return fetch.post('/user/update', { ...data })
 }

@@ -1,8 +1,13 @@
 <template>
   <VPage>
     <template #header>
-      <el-button @click="refresh">search</el-button>
-      <el-button ref="filterColRef">filter columns</el-button>
+      <ze-form>
+        <ze-form-item></ze-form-item>
+        <ze-form-item>
+          <el-button @click="refresh">search</el-button>
+          <el-button ref="filterColRef">filter columns</el-button>
+        </ze-form-item>
+      </ze-form>
     </template>
 
     <ze-table
@@ -49,6 +54,7 @@
 <script setup lang="ts">
 import { userApi } from '@/api/_index'
 import type { UserForm } from '@/api/user.type'
+import { toReactive } from '@vueuse/core'
 
 const searchForm = reactive({ pageNo: 1, pageSize: 10 })
 
@@ -71,7 +77,7 @@ const checkAge = (rule, value, cb) => {
   if (!value) cb(new Error('谁还不是个宝宝呢'))
   if (value < 18) cb(new Error('你还未满十八岁?'))
   if (value > 120) cb(new Error('现在知道为什么急救电话是120了吧'))
-  cb()
+  cb() // DO NOT MISSING AT THE END
 }
 
 const [userForm, userFormItems, userFormRules] = useFormItems({
@@ -108,11 +114,12 @@ const [userForm, userFormItems, userFormRules] = useFormItems({
 })
 
 const [, fetchEdit, submitting] = useApi(
-  (data: UserForm) => (isEdit.value ? userApi.update(data) : userApi.add(data)),
-  userForm,
+  (data: UserForm) => (isEdit.value ? userApi.update(data) : userApi.create(data)),
+  toReactive(userForm),
   {
-    onFinally: () => editDlgRef.value.close(),
+    onSuccess: () => editDlgRef.value.close(),
     tipSuccess: computed(() => (isEdit.value ? '保存成功' : '新增成功')),
+    tipError: computed(() => (isEdit.value ? '保存失败' : '新增失败')),
   },
 )
 
