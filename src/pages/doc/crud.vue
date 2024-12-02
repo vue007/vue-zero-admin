@@ -58,7 +58,13 @@ import { toReactive } from '@vueuse/core'
 
 const searchForm = reactive({ pageNo: 1, pageSize: 10 })
 
-const [tableData, refresh, pagination] = useTable(userApi.list, searchForm, { immediate: true })
+const {
+  rows: tableData,
+  request: refresh,
+  pagination,
+  loading,
+} = useTable(userApi.list, searchForm, { immediate: true })
+// const [tableData, refresh, pagination, loading] = useTable(userApi.list, searchForm, { immediate: true })
 
 const filterColRef = ref()
 const isEdit = computed(() => userForm?.value?.id)
@@ -113,7 +119,9 @@ const [userForm, userFormItems, userFormRules] = useFormItems({
   },
 })
 
-const [, fetchEdit, submitting] = useApi(
+// 同时支持 对象 和 数组 析构
+// const [,fetchEdit] = useApi(
+const { request: fetchEdit } = useApi(
   (data: UserForm) => (isEdit.value ? userApi.update(data) : userApi.create(data)),
   toReactive(userForm),
   {
@@ -123,6 +131,8 @@ const [, fetchEdit, submitting] = useApi(
   },
 )
 
+// 同时支持 对象 和 数组 析构
+// const { reference: editDlgRef, component: EditDialog } = useModal()
 const [editDlgRef, EditDialog] = useModal({ title: formTitle.value, onConfirm: () => fetchEdit() })
 </script>
 
