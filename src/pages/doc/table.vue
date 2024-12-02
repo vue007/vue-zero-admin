@@ -1,6 +1,6 @@
 <template>
   <VPage>
-    <el-button @click="refresh">search</el-button>
+    <el-button @click="refresh" :loading="loading">search</el-button>
     <el-button ref="filterColRef">filter columns</el-button>
 
     <ze-table
@@ -38,7 +38,7 @@ import { userApi } from '@/api/_index'
 
 const searchForm = reactive({ pageNo: 1, pageSize: 10 })
 
-const [tableData, refresh, pagination] = useTable(userApi.list, searchForm, { immediate: true })
+const [tableData, refresh, pagination, loading] = useTable(userApi.list, searchForm, { immediate: true })
 
 const filterColRef = ref()
 
