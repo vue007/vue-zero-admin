@@ -48,4 +48,7 @@ declare module 'vue' {
     ZeTable: typeof import('./components/ZeTable.vue')['default']
     ZeTableColumn: typeof import('./components/ZeTableColumn.vue')['default']
   }
+  export interface ComponentCustomProperties {
+    vLoading: typeof import('element-plus/es')['ElLoadingDirective']
+  }
 }
