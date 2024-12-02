@@ -3,10 +3,17 @@ import type { _AxiosResponse } from 'env'
 import { isFunction, isString, merge } from 'es-toolkit'
 import { isObject } from 'es-toolkit/compat'
 import type { ApiError, ApiPromise, ApiResponse } from '@/api/_fetch'
+import { iteratorObject } from '@/utils/iteratorObject'
 
 export type UseApiOnSuccessFn<T> = (res?: _AxiosResponse<ApiResponse<T>>) => void
 export type UseApiOnSubmitFn<T> = (data?: T & { [prop: string]: any }) => Promise<boolean | T>
 export type UseApiOnErrorFn = (err: ApiError) => void
+
+export type UseApiReturn<D> = {
+  data: Ref<D | undefined>
+  request: Function
+  loading: Ref<boolean>
+} & [Ref<D | undefined>, Function, Ref<boolean>]
 
 /**
  * useApi
@@ -27,7 +34,7 @@ export function useApi<P, D>(
     onFinally?: () => void
     onSubmit?: UseApiOnSubmitFn<P>
   },
-): [Ref<D | undefined>, Function, Ref<boolean>] {
+): UseApiReturn<D> {
   const loading = ref(false)
   const apiData = ref<D>()
 
@@ -88,5 +95,5 @@ export function useApi<P, D>(
 
   if (options?.immediate) nextTick(() => request())
 
-  return [apiData, request, loading]
+  return iteratorObject({ data: apiData, request, loading })
 }

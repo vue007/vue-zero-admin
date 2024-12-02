@@ -2,10 +2,19 @@ import type { ApiPromisePage } from '@/api/_fetch'
 import type { UseApiOnSubmitFn } from './useApi'
 import { isFunction, merge } from 'es-toolkit'
 import { isObject } from '@vueuse/core'
+import { iteratorObject } from '@/utils/iteratorObject'
+import type { UnwrapRef } from 'vue'
 
 type KeyPath = Array<string> | string
-// type Return = [Ref<any[] | undefined>, Function, any, Ref<boolean>]
 
+type _Ref<T> = { value: T } & UnwrapRef<T>
+type ReturnObj<T> = {
+  rows: _Ref<T[]>
+  request: (evt: any) => {}
+  pagination: any
+  loading: _Ref<boolean>
+}
+type UseTableReturn<T> = ReturnObj<T> & [_Ref<T[]>, (evt: any) => {}, any, _Ref<boolean>]
 /**
  * useTable
  */
@@ -17,7 +26,7 @@ export function useTable<P, D>(
     immediate?: boolean
     onSubmit?: UseApiOnSubmitFn<P>
   },
-) {
+): UseTableReturn<D> {
   const dt = {
     path: {
       data: 'list',
@@ -36,8 +45,8 @@ export function useTable<P, D>(
   if (!options.path.pageSize) options.path.pageSize = dt.path.pageSize
   // console.log(options, 'options')
 
-  const [pagination, , , setTotal] = usePagination((extraData?: object) => (extraData ? refresh(extraData) : refresh()))
-  const listData = ref<D[]>()
+  const pagination = usePagination((extraData?: object) => (extraData ? refresh(extraData) : refresh()))
+  const listData = ref()
 
   const pageKey = options?.path?.page?.split('.')[options?.path?.page?.split('.').length - 1]
   const pageSizeKey = options?.path?.pageSize?.split('.')[options?.path?.pageSize?.split('.').length - 1]
@@ -60,11 +69,11 @@ export function useTable<P, D>(
 
   watchEffect(() => {
     listData.value = pageData.value?.list || []
-    setTotal(pageData.value?.total)
+    pagination.setTotal(pageData.value?.total || 0)
   })
 
   const refresh = (extraData?: object) => request(extraData)
 
   if (options.immediate) refresh()
-  return [listData, refresh, pagination, loading]
+  return iteratorObject({ rows: listData, request: refresh, pagination, loading })
 }

@@ -1,4 +1,6 @@
 import type { ZeFormItemProp } from '@/components/types/form'
+import { iteratorObject } from '@/utils/iteratorObject'
+import { toReactive } from '@vueuse/core'
 import type { FormItemRule } from 'element-plus'
 import { forEach, set } from 'es-toolkit/compat'
 import type { Ref, ComputedRef } from 'vue'
@@ -11,7 +13,11 @@ export type FormItemsDatas = {
   }
 }
 
-type UseFormItemsReturn<T> = [Ref<T>, ZeFormItemProp[], ComputedRef<Record<string, FormItemRule>>]
+type UseFormItemsReturn<T> = {
+  form: Ref<T>
+  formItems: ZeFormItemProp[]
+  rules: ComputedRef<Record<string, FormItemRule>>
+} & [Ref<T>, ZeFormItemProp[], ComputedRef<Record<string, FormItemRule>>]
 
 export function useFormItems(formItemDatas: FormItemsDatas): UseFormItemsReturn<any> {
   const form = ref<any>({})
@@ -25,5 +31,5 @@ export function useFormItems(formItemDatas: FormItemsDatas): UseFormItemsReturn<
     set(formRules.value, key, item.rule || [])
     set(form.value, key, formItemDatas[key].value)
   })
-  return [form, formItems.value, computed(() => formRules.value)]
+  return iteratorObject({ form, formItems: computed(() => formItems.value), rules: computed(() => formRules.value) })
 }

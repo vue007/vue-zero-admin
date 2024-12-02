@@ -1,3 +1,5 @@
+import type { ZeModalInstance } from '@/components/types'
+import { iteratorObject } from '@/utils/iteratorObject'
 import { isString } from 'es-toolkit'
 import { render } from 'vue'
 
@@ -11,11 +13,16 @@ type ModalArgs = {
   [key: string]: any
 }
 
+type UseModalReturn<R, C> = { reference: R; component: C } & [R, C]
+
 const _ZeModal = defineAsyncComponent(() => import('@/components/ZeModal.vue'))
 
 const defModalArgs: ModalArgs = { type: 'dialog', content: undefined, onConfirm: () => {}, immediate: false }
 
-export const useModal = ({ content, immediate, ...props }: ModalArgs = defModalArgs): [Ref, Component] => {
+export const useModal = ({ content, immediate, ...props }: ModalArgs = defModalArgs): UseModalReturn<
+  Ref<ZeModalInstance>,
+  Component
+> => {
   const modalRef = ref()
 
   const __Use_Modal = (_props, { slots: _slots, attrs: _attrs }) => (
@@ -33,5 +40,8 @@ export const useModal = ({ content, immediate, ...props }: ModalArgs = defModalA
     modalRef.value.open()
   }
 
-  return [modalRef, __Use_Modal]
+  return iteratorObject({
+    reference: modalRef,
+    component: __Use_Modal,
+  })
 }
