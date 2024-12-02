@@ -74,6 +74,5 @@ export function useTable<P, D>(
 
   const refresh = (extraData?: object) => request(extraData)
 
-  if (options.immediate) refresh()
   return iteratorObject({ rows: listData, request: refresh, pagination, loading })
 }
