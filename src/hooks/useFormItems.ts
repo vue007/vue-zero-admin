@@ -13,11 +13,13 @@ export type FormItemsDatas = {
   }
 }
 
-type UseFormItemsReturn<T> = {
-  form: Ref<T>
-  formItems: ZeFormItemProp[]
+type R<D> = {
+  form: Ref<D>
+  items: ZeFormItemProp[]
   rules: ComputedRef<Record<string, FormItemRule>>
-} & [Ref<T>, ZeFormItemProp[], ComputedRef<Record<string, FormItemRule>>]
+}
+
+type UseFormItemsReturn<D> = R<D> & [R<D>['form'], R<D>['items'], R<D>['rules']]
 
 export function useFormItems(formItemDatas: FormItemsDatas): UseFormItemsReturn<any> {
   const form = ref<any>({})
@@ -31,5 +33,5 @@ export function useFormItems(formItemDatas: FormItemsDatas): UseFormItemsReturn<
     set(formRules.value, key, item.rule || [])
     set(form.value, key, formItemDatas[key].value)
   })
-  return iteratorObject({ form, formItems: computed(() => formItems.value), rules: computed(() => formRules.value) })
+  return iteratorObject({ form, items: computed(() => formItems.value), rules: computed(() => formRules.value) })
 }

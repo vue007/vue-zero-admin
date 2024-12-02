@@ -8,13 +8,13 @@ import type { UnwrapRef } from 'vue'
 type KeyPath = Array<string> | string
 
 type _Ref<T> = { value: T } & UnwrapRef<T>
-type ReturnObj<T> = {
+type R<T> = {
   rows: _Ref<T[]>
   request: (evt: any) => {}
   pagination: any
   loading: _Ref<boolean>
 }
-type UseTableReturn<T> = ReturnObj<T> & [_Ref<T[]>, (evt: any) => {}, any, _Ref<boolean>]
+type UseTableReturn<D> = R<D> & [R<D>['rows'], R<D>['request'], R<D>['pagination'], R<D>['loading']]
 /**
  * useTable
  */
