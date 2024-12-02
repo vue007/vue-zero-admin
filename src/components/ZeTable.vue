@@ -42,15 +42,18 @@
 </template>
 
 <script setup lang="ts">
-import type { ElTable, TableColumnCtx, TableInstance } from 'element-plus'
-import { omit } from 'es-toolkit'
+import { watchOnce } from '@vueuse/core'
+import type { TableColumnCtx, TableInstance } from 'element-plus'
+import { isEqual, omit } from 'es-toolkit'
+import type { PropType } from 'vue'
 
 export type ZeTableColumns = { hidden?: boolean } & TableColumnCtx<any>
 
 const props = defineProps({
   data: {
-    type: Array<any>,
+    type: Array as PropType<any[] | never[]>,
     require: true,
+    default: () => [],
   },
   columns: {
     type: Array<Partial<ZeTableColumns>>,
@@ -74,9 +77,14 @@ const showedColumns = computed(() => {
 })
 
 const filterColumns = ref<Array<string>>()
-watchEffect(() => {
+const initFilterColumns = () => {
   filterColumns.value = _columns.value.map((item) => getColKey(item)) || []
-})
+}
+
+watchOnce(
+  () => props.columns,
+  () => initFilterColumns(),
+)
 
 type ZeTableExpose = TableInstance & {}
 defineExpose<ZeTableExpose>(
