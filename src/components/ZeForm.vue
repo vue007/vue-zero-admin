@@ -7,7 +7,7 @@
           <ze-formItem v-if="!isEmpty(model)" v-model="model[item.prop]" v-bind="item">
             <template
               v-for="(_, n) in pickBy($slots, (v, k) => startsWith(k + '', `item-${item.prop}`))"
-              #[n.toString().split(`-`)[1]]="scope"
+              #[n.toString().split(`#`)[1]]="scope"
             >
               <slot :name="n" v-bind="scope" />
             </template>
