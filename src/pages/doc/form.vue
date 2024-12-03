@@ -39,7 +39,7 @@
 </template>
 
 <script setup lang="ts">
-import type { ZeFormItemInstance, ZeInputInstance } from '@/components/types'
+import type { ZeInputInstance } from '@/components/types'
 import type { ZeFormInstance } from '@/components/types/form'
 import type { FormRules } from 'element-plus'
 

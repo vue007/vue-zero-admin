@@ -39,6 +39,8 @@ declare module 'vue' {
     SvgIcon: typeof import('./components/SvgIcon.vue')['default']
     ViPage: typeof import('./pages/_views/VPage.vue')['default']
     VPage: typeof import('./pages/_views/VPage.vue')['default']
+    ZeAction: typeof import('./components/ZeActions.vue')['default']
+    ZeActions: typeof import('./components/ZeActions.vue')['default']
     ZeForm: typeof import('./components/ZeForm.vue')['default']
     ZeFormItem: typeof import('./components/ZeFormItem.vue')['default']
     ZeInput: typeof import('./components/ZeInput.vue')['default']
