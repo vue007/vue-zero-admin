@@ -1,3 +1,3 @@
-import type { TableColumnCtx, TableColumnInstance } from 'element-plus'
+import type { TableColumnCtx } from 'element-plus'
 
 export type TableColumnProps = Partial<TableColumnCtx<any>>
