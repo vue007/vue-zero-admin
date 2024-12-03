@@ -1,10 +1,11 @@
 <template>
   <VPage>
     <template #header>
-      <ze-form>
-        <ze-form-item></ze-form-item>
+      <ze-form :model="searchForm" inline>
+        <ze-form-item type="text" v-model="searchForm.name" />
         <ze-form-item>
           <el-button @click="refresh">search</el-button>
+          <el-button @click="() => editDlgRef.open()">add user</el-button>
           <el-button ref="filterColRef">filter columns</el-button>
         </ze-form-item>
       </ze-form>
@@ -56,19 +57,21 @@
 import { userApi } from '@/api/_index'
 import type { UserForm } from '@/api/user.type'
 import { toReactive } from '@vueuse/core'
+import { isEmpty } from 'es-toolkit/compat'
 
-const searchForm = reactive({ pageNo: 1, pageSize: 10 })
+const searchForm = reactive({ name: '', pageNo: 1, pageSize: 10 })
 
-const {
-  rows: tableData,
-  request: refresh,
-  pagination,
-  loading,
-} = useTable(userApi.list, searchForm, { immediate: true })
-// const [tableData, refresh, pagination, loading] = useTable(userApi.list, searchForm, { immediate: true })
+// 同时支持 对象 和 数组 析构
+// const {
+//   rows: tableData,
+//   request: refresh,
+//   pagination,
+//   loading,
+// } = useTable(userApi.list, searchForm, { immediate: true })
+const [tableData, refresh, pagination, loading] = useTable(userApi.list, searchForm, { immediate: true })
 
 const filterColRef = ref()
-const isEdit = computed(() => userForm?.value?.id)
+const isEdit = computed(() => !isEmpty(userForm?.value?.id))
 const formTitle = computed(() => (isEdit?.value ? '编辑' : '新增'))
 
 const SEX_ENUM_LIST = [
@@ -126,7 +129,10 @@ const { request: fetchEdit, loading: submitting } = useApi(
   (data: UserForm) => (isEdit.value ? userApi.update(data) : userApi.create(data)),
   toReactive(userForm),
   {
-    onSuccess: () => editDlgRef.value.close(),
+    onSuccess: () => {
+      editDlgRef.value.close()
+      refresh()
+    },
     tipSuccess: computed(() => (isEdit.value ? '保存成功' : '新增成功')),
     tipError: computed(() => (isEdit.value ? '保存失败' : '新增失败')),
   },
@@ -135,9 +141,9 @@ const { request: fetchEdit, loading: submitting } = useApi(
 // 同时支持 对象 和 数组 析构
 // const { reference: editDlgRef, component: EditDialog } = useModal()
 const [editDlgRef, EditDialog] = useModal({
-  title: formTitle.value,
+  title: formTitle,
   onConfirm: () => fetchEdit(),
-  submitting: submitting,
+  submitting,
 })
 </script>
 
