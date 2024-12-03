@@ -1,10 +1,11 @@
 <template>
   <VPage>
     <template #header>
-      <ze-form :model="searchForm" inline>
+      <ze-form :model="searchForm" ref="searchFormRef" inline>
         <ze-form-item type="text" v-model="searchForm.name" />
         <ze-form-item>
           <el-button @click="refresh">search</el-button>
+          <el-button @click="reset">reset</el-button>
           <el-button @click="() => editDlgRef.open()">add user</el-button>
           <el-button ref="filterColRef">filter columns</el-button>
         </ze-form-item>
@@ -56,9 +57,11 @@
 <script setup lang="ts">
 import { userApi } from '@/api/_index'
 import type { UserForm } from '@/api/user.type'
+import type { ZeFormInstance } from '@/components/types/form'
 import { toReactive } from '@vueuse/core'
 import { isEmpty } from 'es-toolkit/compat'
 
+const searchFormRef = ref<ZeFormInstance>()
 const searchForm = reactive({ name: '', pageNo: 1, pageSize: 10 })
 
 // 同时支持 对象 和 数组 析构
@@ -145,6 +148,10 @@ const [editDlgRef, EditDialog] = useModal({
   onConfirm: () => fetchEdit(),
   submitting,
 })
+
+const reset = () => {
+  searchFormRef.value?.resetFields()
+}
 </script>
 
 <style lang="scss" scoped></style>
