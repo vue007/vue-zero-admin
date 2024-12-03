@@ -12,6 +12,7 @@
 
     <ze-table
       :data="tableData"
+      :loading="loading"
       :columns="[
         { type: 'index', label: $t('base.index'), align: 'center', width: '60px', fixed: 'left' },
         { prop: 'id', hidden: true },
@@ -121,7 +122,7 @@ const [userForm, userFormItems, userFormRules] = useFormItems({
 
 // 同时支持 对象 和 数组 析构
 // const [,fetchEdit] = useApi(
-const { request: fetchEdit } = useApi(
+const { request: fetchEdit, loading: submitting } = useApi(
   (data: UserForm) => (isEdit.value ? userApi.update(data) : userApi.create(data)),
   toReactive(userForm),
   {
@@ -133,7 +134,11 @@ const { request: fetchEdit } = useApi(
 
 // 同时支持 对象 和 数组 析构
 // const { reference: editDlgRef, component: EditDialog } = useModal()
-const [editDlgRef, EditDialog] = useModal({ title: formTitle.value, onConfirm: () => fetchEdit() })
+const [editDlgRef, EditDialog] = useModal({
+  title: formTitle.value,
+  onConfirm: () => fetchEdit(),
+  submitting: submitting,
+})
 </script>
 
 <style lang="scss" scoped></style>
