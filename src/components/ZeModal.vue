@@ -12,7 +12,9 @@
 
     <template #footer>
       <slot name="footer">
-        <FormAction v-if="options.showAction" />
+        <div v-if="options.showAction" class="modal-footer">
+          <ze-actions :loading="submitting" @cancel="close" @confirm="handleConfirm" />
+        </div>
       </slot>
     </template>
   </Component>
@@ -47,7 +49,6 @@ const options = reactive({
   type: props.type,
   title: attrs.title,
   showAction: props.showAction,
-  submitting: props.submitting,
 })
 watch(
   () => props,
@@ -55,23 +56,10 @@ watch(
   { deep: true },
 )
 
-const FormAction = defineComponent({
-  name: 'VFormAction',
-  render: () => (
-    <div class='modal-footer'>
-      {!props.footerConfirmTxt && <ElButton onClick={close}>{t ? t('base.cancel') : 'cancel'}</ElButton>}
-      <ElButton type={'primary'} onClick={handleConfirm} loading={options.submitting}>
-        {props.footerConfirmTxt || t ? t?.('base.confirm') : 'confirm'}
-      </ElButton>
-    </div>
-  ),
-})
-
-const setData = ({ type, showAction, title, submitting }) => {
+const setData = ({ type, showAction, title, submitting }: any) => {
   if (!isUndefined(type)) options.type = type
   if (!isUndefined(showAction)) options.showAction = showAction
   if (!isUndefined(title)) options.title = title
-  if (!isUndefined(submitting)) options.submitting = submitting
 }
 const getData = () => {
   return {
@@ -108,15 +96,12 @@ const handleConfirm = async (e: Event) => {
 
   if (modalForm.value) {
     try {
-      const valid = await modalForm.value?.validate()
-      console.log(valid, 'valid')
+      await modalForm.value?.validate()
+      emit('confirm', e)
     } catch (error) {
       ElMessage.error('请检查表单内容')
-      console.log(error)
-    } finally {
-      console.log('onConfirm finallhy')
+      console.warn(error)
     }
-    emit('confirm', e)
   } else {
     emit('confirm', e)
   }
