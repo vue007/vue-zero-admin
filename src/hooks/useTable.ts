@@ -10,7 +10,7 @@ type KeyPath = Array<string> | string
 type _Ref<T> = { value: T } & UnwrapRef<T>
 type R<T> = {
   rows: _Ref<T[]>
-  request: (evt: any) => {}
+  request: (evt?: any) => {}
   pagination: any
   loading: _Ref<boolean>
 }
