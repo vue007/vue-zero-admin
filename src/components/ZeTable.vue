@@ -5,7 +5,8 @@
     style="width: 100%"
     maxheight="62vh"
     ref="rawRef"
-    v-bind="omit($attrs, ['data'])"
+    v-bind="omit(attrs, ['data'])"
+    v-loading="props.loading"
   >
     <slot name="header"></slot>
     <slot name="filter-icon"></slot>
@@ -44,10 +45,12 @@
 <script setup lang="ts">
 import { watchOnce } from '@vueuse/core'
 import type { TableColumnCtx, TableInstance } from 'element-plus'
-import { isEqual, omit } from 'es-toolkit'
-import type { PropType } from 'vue'
+import { omit } from 'es-toolkit'
+import { type PropType } from 'vue'
 
 export type ZeTableColumns = { hidden?: boolean } & TableColumnCtx<any>
+
+const attrs = useAttrs()
 
 const props = defineProps({
   data: {
@@ -59,6 +62,7 @@ const props = defineProps({
     type: Array<Partial<ZeTableColumns>>,
     require: true,
   },
+  loading: { type: Boolean, default: false },
   filterColVR: {
     type: Object as PropType<Ref>,
     default: () => ref(undefined),
