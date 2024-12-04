@@ -1,10 +1,11 @@
-@use './_utils' as *;
+@use './_mixin' as *;
 
 $is-dark: true;
 $mode: ':root[data-theme="dark"]';
 
 #{$mode} {
   color-scheme: dark;
+  @include defaultThemeVars();
 
   $color-primary: #409eff;
   $color-success: #67c23a;
