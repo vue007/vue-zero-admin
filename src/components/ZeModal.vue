@@ -15,8 +15,8 @@
         <div v-if="options.showAction" class="modal-footer">
           <ze-actions
             :actions="[
-              { action: 'cancel', text: $t('base.cancel') },
-              { action: 'confirm', text: $t('base.confirm'), loading: submitting },
+              { action: 'cancel', text: t('base.cancel') },
+              { action: 'confirm', text: t('base.confirm'), loading: submitting },
             ]"
             @cancel="close"
             @confirm="handleConfirm"
