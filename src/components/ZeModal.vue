@@ -13,7 +13,14 @@
     <template #footer>
       <slot name="footer">
         <div v-if="options.showAction" class="modal-footer">
-          <ze-actions :loading="submitting" @cancel="close" @confirm="handleConfirm" />
+          <ze-actions
+            :actions="[
+              { action: 'cancel', text: $t('base.cancel') },
+              { action: 'confirm', text: $t('base.confirm'), loading: submitting },
+            ]"
+            @cancel="close"
+            @confirm="handleConfirm"
+          />
         </div>
       </slot>
     </template>
