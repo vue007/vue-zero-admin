@@ -247,7 +247,7 @@ defineExpose<ZeFormExposeType>(
   min-width: 160px;
   width: auto;
 
-  & + & {
+  :deep(:not(.el-form--inline) & + &) {
     margin-top: 10px;
   }
 
