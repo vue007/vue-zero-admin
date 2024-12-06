@@ -13,13 +13,13 @@ export type FormItemsDatas = {
   }
 }
 
-type R<D> = {
+type Return<D> = {
   form: Ref<D>
   items: ZeFormItemProp[]
   rules: ComputedRef<Record<string, FormItemRule>>
 }
 
-type UseFormItemsReturn<D> = R<D> & [R<D>['form'], R<D>['items'], R<D>['rules']]
+type UseFormItemsReturn<D, R extends Return<D> = Return<D>> = R & [R['form'], R['items'], R['rules']]
 
 export function useFormItems(formItemDatas: FormItemsDatas): UseFormItemsReturn<any> {
   const form = ref<any>({})

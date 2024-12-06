@@ -9,13 +9,13 @@ export type UseApiOnSuccessFn<T> = (res?: _AxiosResponse<ApiResponse<T>>) => voi
 export type UseApiOnSubmitFn<T> = (data?: T & { [prop: string]: any }) => Promise<boolean | T>
 export type UseApiOnErrorFn = (err: ApiError) => void
 
-type R<D> = {
+type Return<D> = {
   data: Ref<D | undefined>
   request: Function
   loading: Ref<boolean>
 }
 
-export type UseApiReturn<D> = R<D> & [R<D>['data'], R<D>['request'], R<D>['loading']]
+export type UseApiReturn<D, R extends Return<D> = Return<D>> = R & [R['data'], R['request'], R['loading']]
 
 /**
  * useApi
