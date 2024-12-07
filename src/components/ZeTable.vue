@@ -43,7 +43,6 @@
 </template>
 
 <script setup lang="ts">
-import { watchDebounced, watchOnce } from '@vueuse/core'
 import type { TableColumnCtx, TableInstance } from 'element-plus'
 import { omit } from 'es-toolkit'
 import { type PropType } from 'vue'
@@ -85,10 +84,10 @@ const initFilterColumns = () => {
   filterColumns.value = _columns.value.map((item) => getColKey(item)) || []
 }
 
-watchDebounced(
+watch(
   () => props.columns,
   () => initFilterColumns(),
-  { immediate: true, debounce: 520, maxWait: 1314 },
+  { immediate: true },
 )
 
 type ZeTableExpose = TableInstance & {}
