@@ -19,7 +19,7 @@
       </template>
     </ze-table-column>
 
-    <slot name="append"></slot>
+    <slot></slot>
   </el-table>
 
   <el-popover

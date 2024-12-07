@@ -19,11 +19,9 @@
         <el-switch :modelValue="scope.row.hasPassion" @update:modelValue="scope.row.hasPassion = $event" />
       </template>
 
-      <template #append="scope">
-        <el-table-column min-width="160">
-          <el-button link type="primary" size="small">{{ $t('base.delete') }}</el-button>
-        </el-table-column>
-      </template>
+      <el-table-column min-width="160">
+        <el-button link type="primary" size="small">{{ $t('base.delete') }}</el-button>
+      </el-table-column>
     </ze-table>
 
     <ze-pagination v-model="pagination" />

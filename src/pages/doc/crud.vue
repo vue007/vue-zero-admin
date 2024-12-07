@@ -32,16 +32,14 @@
         <el-switch :modelValue="scope.row.hasPassion" @update:modelValue="scope.row.hasPassion = $event" />
       </template>
 
-      <template #append>
-        <el-table-column min-width="160">
-          <template #default="scope">
-            <el-button link type="primary" size="small" @click="() => editDlgRef.open(scope.row)">
-              {{ $t('base.edit') }}
-            </el-button>
-            <el-button link type="primary" size="small">{{ $t('base.delete') }}</el-button>
-          </template>
-        </el-table-column>
-      </template>
+      <el-table-column min-width="160">
+        <template #default="scope">
+          <el-button link type="primary" size="small" @click="() => editDlgRef.open(scope.row)">
+            {{ $t('base.edit') }}
+          </el-button>
+          <el-button link type="primary" size="small">{{ $t('base.delete') }}</el-button>
+        </template>
+      </el-table-column>
     </ze-table>
 
     <template #content-footer>
