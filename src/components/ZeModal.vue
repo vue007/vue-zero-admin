@@ -15,8 +15,8 @@
         <div v-if="options.showAction" class="modal-footer">
           <ze-actions
             :actions="[
-              { action: 'cancel', text: t('base.cancel') },
-              { action: 'confirm', text: t('base.confirm'), loading: submitting },
+              { content: t('base.cancel'), onClick: () => close() },
+              { content: t('base.confirm'), type: 'primary', onClick: (e?: Event) => handleConfirm(e), loading: submitting },
             ]"
             @cancel="close"
             @confirm="handleConfirm"
@@ -98,7 +98,7 @@ const close = (e?: Event) => {
   model.value = false
 }
 
-const handleConfirm = async (e: Event) => {
+const handleConfirm = async (e?: Event) => {
   console.log('onConfirm')
 
   if (modalForm.value) {
