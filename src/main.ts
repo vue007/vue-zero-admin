@@ -1,9 +1,6 @@
 import 'virtual:uno.css'
 import 'virtual:svg-icons-register'
 
-import './styles/sanitize.css'
-import './styles/theme/index.scss'
-
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 

@@ -5,6 +5,9 @@
 </template>
 
 <script setup lang="ts">
+import './styles/sanitize.css'
+import './styles/theme/index.scss'
+
 import { useBaseStore } from './stores/base.module'
 
 import BaseLayout from './layouts/BaseLayout.vue'
