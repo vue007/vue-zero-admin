@@ -30,6 +30,6 @@ defineExpose<ElInputType>(
 
 <style lang="scss" scoped>
 .ze-input {
-  min-width: 160px;
+  min-width: 190px;
 }
 </style>

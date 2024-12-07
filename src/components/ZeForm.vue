@@ -85,8 +85,15 @@ defineExpose<ZeFormInstance>(expose as any)
 </script>
 
 <style lang="scss" scoped>
-.form-buttom {
-  width: 100%;
+.ze-form {
+  &.el-form--inline {
+    display: flex;
+    width: 100%;
+  }
+
+  :last-child {
+    margin-right: 0;
+  }
 }
 
 :deep(form-buttom > .el-form-item__content) {
