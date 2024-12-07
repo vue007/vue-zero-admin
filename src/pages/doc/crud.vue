@@ -3,7 +3,7 @@
     <template #header>
       <ze-form :model="searchForm" ref="searchFormRef" inline>
         <ze-form-item type="text" v-model="searchForm.name" />
-        <ze-form-item>
+        <ze-form-item class="ml-auto">
           <el-button @click="refresh">search</el-button>
           <el-button @click="reset">reset</el-button>
           <el-button @click="() => editDlgRef.open()">add user</el-button>
