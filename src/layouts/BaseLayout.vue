@@ -48,6 +48,8 @@ $header-height: 64px;
   @apply: flex justify-between items-center;
 
   padding: 0 30px;
+  padding-right: 30px;
+  padding-left: 40px;
 
   font-size: 32px;
   height: $header-height;

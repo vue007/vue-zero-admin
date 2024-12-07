@@ -11,7 +11,7 @@
     <slot name="header"></slot>
     <slot name="filter-icon"></slot>
 
-    <slot name="before-columns"></slot>
+    <slot name="prepend"></slot>
 
     <ze-table-column v-for="item in showedColumns" :key="getColKey(item)" v-bind="item">
       <template v-if="$slots[`col-${item.prop}`]" #default="scope">
@@ -19,7 +19,7 @@
       </template>
     </ze-table-column>
 
-    <slot name="after-columns"></slot>
+    <slot name="append"></slot>
   </el-table>
 
   <el-popover
@@ -43,7 +43,7 @@
 </template>
 
 <script setup lang="ts">
-import { watchOnce } from '@vueuse/core'
+import { watchDebounced, watchOnce } from '@vueuse/core'
 import type { TableColumnCtx, TableInstance } from 'element-plus'
 import { omit } from 'es-toolkit'
 import { type PropType } from 'vue'
@@ -85,9 +85,10 @@ const initFilterColumns = () => {
   filterColumns.value = _columns.value.map((item) => getColKey(item)) || []
 }
 
-watchOnce(
+watchDebounced(
   () => props.columns,
   () => initFilterColumns(),
+  { immediate: true, debounce: 520, maxWait: 1314 },
 )
 
 type ZeTableExpose = TableInstance & {}

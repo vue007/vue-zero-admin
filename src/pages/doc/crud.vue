@@ -32,7 +32,7 @@
         <el-switch :modelValue="scope.row.hasPassion" @update:modelValue="scope.row.hasPassion = $event" />
       </template>
 
-      <template #after-columns>
+      <template #append>
         <el-table-column min-width="160">
           <template #default="scope">
             <el-button link type="primary" size="small" @click="() => editDlgRef.open(scope.row)">

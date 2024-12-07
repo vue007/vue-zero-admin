@@ -6,9 +6,6 @@
     <ze-table
       :data="tableData"
       :columns="[
-        { type: 'index', label: $t('base.index'), align: 'center', width: '60px', fixed: 'left' },
-        { prop: 'id', hidden: true },
-        { prop: 'name', label: $t('doc.col.name'), minWidth: 150, fixed: true },
         { prop: 'age', label: $t('doc.col.age'), minWidth: 120, headerAlign: 'center', align: 'center' },
         { prop: 'sex', label: $t('doc.col.sex'), minWidth: 120 },
         { prop: 'hasPassion', label: $t('doc.col.hasPassion'), minWidth: 120 },
@@ -22,7 +19,7 @@
         <el-switch :modelValue="scope.row.hasPassion" @update:modelValue="scope.row.hasPassion = $event" />
       </template>
 
-      <template #after-columns="scope">
+      <template #append="scope">
         <el-table-column min-width="160">
           <el-button link type="primary" size="small">{{ $t('base.delete') }}</el-button>
         </el-table-column>
