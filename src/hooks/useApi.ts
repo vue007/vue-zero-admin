@@ -4,18 +4,21 @@ import { isFunction, isString, merge } from 'es-toolkit'
 import { isObject } from 'es-toolkit/compat'
 import type { ApiError, ApiPromise, ApiResponse } from '@/api/_fetch'
 import { iteratorObject } from '@/utils/iteratorObject'
+import type { IteratorObjctType } from './_type'
 
 export type UseApiOnSuccessFn<T> = (res?: _AxiosResponse<ApiResponse<T>>) => void
 export type UseApiOnSubmitFn<T> = (data?: T & { [prop: string]: any }) => Promise<boolean | T>
 export type UseApiOnErrorFn = (err: ApiError) => void
 
-type Return<D> = {
-  data: Ref<D | undefined>
-  request: Function
-  loading: Ref<boolean>
-}
+type ReturnFields<D> = [
+  {
+    data: Ref<D | undefined>
+  },
+  { request: Function },
+  { loading: Ref<boolean> },
+]
 
-export type UseApiReturn<D, R extends Return<D> = Return<D>> = R & [R['data'], R['request'], R['loading']]
+export type UseApiReturn<D> = IteratorObjctType<ReturnFields<D>>
 
 /**
  * useApi

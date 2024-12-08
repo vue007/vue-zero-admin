@@ -4,17 +4,23 @@ import { isFunction, merge } from 'es-toolkit'
 import { isObject } from '@vueuse/core'
 import { iteratorObject } from '@/utils/iteratorObject'
 import type { UnwrapRef } from 'vue'
+import type { IteratorObjctType } from './_type'
 
 type KeyPath = Array<string> | string
 
-type _Ref<T> = { value: T } & UnwrapRef<T>
-type Return<T> = {
-  rows: _Ref<T[]>
-  request: (evt?: any) => {}
-  pagination: any
-  loading: _Ref<boolean>
-}
-type UseTableReturn<D, R extends Return<D> = Return<D>> = R & [R['rows'], R['request'], R['pagination'], R['loading']]
+export type _Ref<T> = { value: T } & UnwrapRef<T>
+
+type ReturnFields<D> = [
+  { rows: _Ref<D[]> },
+  {
+    request: (evt?: object) => {}
+  },
+  { pagination: ReturnType<typeof usePagination> },
+  { loading: _Ref<boolean> },
+]
+
+type UseTableReturn<D> = IteratorObjctType<ReturnFields<D>>
+
 /**
  * useTable
  */
