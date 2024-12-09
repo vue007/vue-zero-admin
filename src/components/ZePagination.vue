@@ -1,13 +1,13 @@
 <template>
   <el-pagination
-    v-model:current-page="pagination?.pageNo"
+    v-model:current-page="pagination!.pageNo"
     :page-size="pagination?.pageSize"
     layout="total, sizes, prev, pager, next,jumper"
     :page-sizes="pagination?.pageSizes"
     :total="pagination?.total"
+    :small="size !== 'large'"
     @size-change="(size) => pagination?.sizeChange(size)"
     @current-change="(page) => pagination?.currentChange(page)"
-    :small="size !== 'large'"
   />
 </template>
 
