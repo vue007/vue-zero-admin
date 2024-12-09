@@ -89,6 +89,7 @@ defineExpose<ZeFormInstance>(expose as any)
   &.el-form--inline {
     display: flex;
     width: 100%;
+    flex-flow: wrap;
   }
 
   :last-child {
