@@ -1,5 +1,5 @@
 <template>
-  <el-input v-bind="toMerged($attrs, props)" class="ze-input" ref="rawRef">
+  <el-input v-bind="mergeProps($attrs, props)" class="ze-input" ref="rawRef">
     <template v-for="(_, name) in $slots" #[name]="scope">
       <slot :name="name" v-bind="scope"></slot>
     </template>
@@ -9,8 +9,8 @@
 <script setup lang="ts">
 import type { InputProps } from 'element-plus'
 import type { InputInstance } from 'element-plus/lib/components/index.js'
-import { toMerged } from 'es-toolkit'
-type ElInputType = InputInstance
+import { mergeProps } from 'vue'
+type ElInputType = InputInstance & {}
 type ZeInputProps = Partial<InputProps> & {}
 const props = withDefaults(defineProps<ZeInputProps>(), {
   clearable: true,

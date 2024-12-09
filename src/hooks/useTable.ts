@@ -8,7 +8,7 @@ import type { IteratorObjctType } from './_type'
 
 type KeyPath = Array<string> | string
 
-export type _Ref<T> = { value: T } & UnwrapRef<T>
+type _Ref<T> = { value: T } & UnwrapRef<T>
 
 type ReturnFields<D> = [
   { rows: _Ref<D[]> },

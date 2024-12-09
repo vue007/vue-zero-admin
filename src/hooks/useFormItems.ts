@@ -2,7 +2,7 @@ import type { ZeFormItemProp } from '@/components/types/form'
 import { iteratorObject } from '@/utils/iteratorObject'
 import type { FormItemRule } from 'element-plus'
 import { forEach, set } from 'es-toolkit/compat'
-import type { Ref, ComputedRef } from 'vue'
+import type { Ref, ComputedRef, UnwrapRef } from 'vue'
 import type { IteratorObjctType } from './_type'
 
 export type FormItemsDatas = {
@@ -11,6 +11,10 @@ export type FormItemsDatas = {
     item?: Omit<ZeFormItemProp, 'prop'>
     rule?: FormItemRule[]
   }
+}
+
+type GenerateFormDataType<T extends FormItemsDatas> = {
+  [K in keyof T]: T[K]['value']
 }
 
 type Return<D> = [
@@ -23,8 +27,10 @@ type Return<D> = [
 
 type UseFormItemsReturn<D> = IteratorObjctType<Return<D>>
 
-export function useFormItems(formItemDatas: FormItemsDatas): UseFormItemsReturn<any> {
-  const form = ref<any>({})
+export function useFormItems<T extends FormItemsDatas>(
+  formItemDatas: T,
+): UseFormItemsReturn<UnwrapRef<GenerateFormDataType<T>>> {
+  const form = ref<GenerateFormDataType<T>>({} as any)
   // 设置为响应式数据，用来控制组件渲染
   const formItems = ref<ZeFormItemProp[]>([])
   const formRules = ref({})
