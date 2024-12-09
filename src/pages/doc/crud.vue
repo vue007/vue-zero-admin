@@ -92,6 +92,7 @@ const checkAge = (rule, value, cb) => {
 }
 
 const [userForm, userFormItems, userFormRules] = useFormItems({
+  id: { value: '', item: { type: 'hidden' } },
   name: {
     value: '',
     item: { type: 'text', label: '名字' },
