@@ -8,11 +8,17 @@
       router
     >
       <el-menu-item index="/">
-        <template #title>Dashboard</template>
+        <el-icon><svg-icon name="el-odometer" /></el-icon>
+        <template #title>
+          <span class="w-160">Dashboard</span>
+        </template>
       </el-menu-item>
 
       <el-sub-menu index="/doc">
-        <template #title>Component doc</template>
+        <template #title>
+          <el-icon><svg-icon name="el-cpu" /></el-icon>
+          <span>Demo</span>
+        </template>
         <el-menu-item index="/doc/icon">SvgIcon</el-menu-item>
         <el-menu-item index="/doc/modal">Modal</el-menu-item>
         <el-menu-item index="/doc/form">Form</el-menu-item>
@@ -30,16 +36,21 @@ const { t } = useI18nLocal()
 const baseStore = useBaseStore()
 const { menu } = baseStore
 const route = useRoute()
-const router = useRouter()
 
 const props = defineProps({
   to: { type: String, default: '#layout-aside' },
 })
 
 const handleMenuSelect = () => {}
-router.afterEach(() => {
-  menu.active = route.path
-})
+
+watch(
+  () => route.path,
+  () => {
+    let path = route.meta?.isTab ? route.matched[0].path : route.path
+    menu.setActive(path)
+  },
+  { immediate: true },
+)
 
 onMounted(() => {})
 </script>
@@ -48,6 +59,7 @@ onMounted(() => {})
 .layout-menu {
   border-right: unset;
   background-color: unset;
+  margin-top: 12px;
 
   #{$size-large} {
     font-size: var(--el-font-size-large);
