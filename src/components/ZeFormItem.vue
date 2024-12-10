@@ -1,92 +1,48 @@
 <template>
   <el-form-item
     class="ze-form-item"
-    v-bind="omit($attrs, ['class', 'style'])"
+    v-bind="omit($attrs, ['class', 'style', 'width'])"
     :class="itemClass"
     :style="itemStyle"
     :label="props.labelT ? $t(props.labelT as string) : isUndefined($attrs.label) ? undefined : $attrs.label + ''"
     :prop="_prop"
     ref="formItemEl"
   >
-    <template v-if="isInputType">
-      <ze-input v-bind="getBindValues" :placeholder="_PLH" ref="inputEl">
+    <template v-if="isInputComp">
+      <component v-bind="getBindValues" :is="InputComp" :placeholder="_PLH" ref="inputEl">
         <template v-for="(_, n) in $slots" #[n]="scope">
           <slot :name="n" v-bind="scope" />
         </template>
-      </ze-input>
+      </component>
     </template>
     <template v-else-if="isEnumType">
-      <template v-if="props.type === 'select'">
-        <el-select v-bind="getBindValues" :placeholder="_PLH" ref="inputEl">
-          <el-option
-            v-for="item in props.enumList"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
-            :disabled="item.disabled"
-          ></el-option>
-          <template v-for="(_, n) in $slots" #[n]="scope">
-            <slot :name="n" v-bind="scope" />
-          </template>
-        </el-select>
-      </template>
-      <template v-else>
-        <component
-          v-if="(props.enumList && !!props.enumList.length) || $slots.default"
-          v-bind="omit($attrs, OMIT_KEYS)"
-          :is="enumComponent"
-        >
-          <component
-            :is="enumItemComponent"
-            v-for="item in props.enumList"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
-            :disabled="item.disabled"
-          ></component>
-        </component>
-        <component v-else v-bind="omit($attrs, OMIT_KEYS)" :is="enumItemComponent">
-          <template v-for="(_, n) in $slots" #[n]="scope">
-            <slot :name="n" v-bind="scope" />
-          </template>
-        </component>
-      </template>
-    </template>
-    <template v-else-if="isPickerType">
-      <el-date-picker v-bind="getBindValues" :type="(props.type as any) || 'date'" :placeholder="_PLH" ref="inputEl">
-        <template v-for="(_, n) in $slots" #[n]="scope">
-          <slot :name="n" v-bind="scope" />
-        </template>
-      </el-date-picker>
-    </template>
-    <template v-else-if="isTreeType">
-      <el-cascader
-        v-if="props.type === 'cascader'"
-        :options="props.enumList"
-        v-bind="getBindValues"
+      <component
+        v-if="'select' === props.type || (props.enumList && !!props.enumList.length) || $slots.default"
+        v-bind="omit($attrs, OMIT_KEYS)"
+        :is="enumComponent"
         :placeholder="_PLH"
-        ref="inputEl"
-      ></el-cascader>
-    </template>
-    <template v-else-if="isNumberType">
-      <el-input-number v-bind="omit($attrs, OMIT_KEYS)" :placeholder="_PLH" ref="inputEl">
+      >
+        <component
+          :is="enumItemComponent"
+          v-for="item in props.enumList"
+          :key="item.value"
+          :label="item.label"
+          :value="item.value"
+          :disabled="item.disabled"
+        ></component>
+      </component>
+      <component v-else v-bind="omit($attrs, OMIT_KEYS)" :is="enumItemComponent">
         <template v-for="(_, n) in $slots" #[n]="scope">
           <slot :name="n" v-bind="scope" />
         </template>
-      </el-input-number>
+      </component>
     </template>
-    <template v-else-if="isSwitchType">
-      <el-switch v-bind="getBindValues" :placeholder="_PLH" ref="inputEl">
-        <template v-for="(_, n) in $slots" #[n]="scope">
-          <slot :name="n" v-bind="scope" />
-        </template>
-      </el-switch>
-    </template>
+
     <!-- <template v-else-if="isUploadType">
-      <ze-upload v-bind="getBindValues" ref="inputEl"></ZeUpload>
+      <ze-upload v-bind="getBindValues" ref="inputEl"><ze-upload>
     </template> -->
     <template v-else>
-      <slot v-bind="getBindValues"></slot>
+      <slot v-bind="getBindValues" :placeholder="_PLH"></slot>
     </template>
 
     <template v-if="$slots.label" #label="scope">
@@ -99,22 +55,19 @@
 </template>
 
 <script setup lang="tsx">
-import 'element-plus/es/components/checkbox/style/css'
-import 'element-plus/es/components/checkbox-button/style/css'
-import 'element-plus/es/components/checkbox-group/style/css'
-import 'element-plus/es/components/radio/style/css'
-import 'element-plus/es/components/radio-button/style/css'
-import 'element-plus/es/components/radio-group/style/css'
-import 'element-plus/es/components/select/style/css'
 import {
+  ElCascader,
   ElCheckbox,
   ElCheckboxButton,
   ElCheckboxGroup,
+  ElDatePicker,
+  ElInputNumber,
   ElOption,
   ElRadio,
   ElRadioButton,
   ElRadioGroup,
   ElSelect,
+  ElSwitch,
 } from 'element-plus'
 import type {
   CheckboxGroupInstance,
@@ -124,7 +77,7 @@ import type {
   SelectContext,
 } from 'element-plus'
 
-import { isUndefined, omit, toMerged } from 'es-toolkit'
+import { isUndefined, omit } from 'es-toolkit'
 import { includes } from 'es-toolkit/compat'
 import {
   INPUT_TYPES,
@@ -136,6 +89,8 @@ import {
   type FormItemType,
 } from './types/form'
 import type { ZeInputInstance } from './types'
+import ZeInput from './ZeInput.vue'
+import { mergeProps } from 'vue'
 
 const attrs = useAttrs()
 
@@ -158,18 +113,35 @@ const props = defineProps({
 
 const { t } = useI18n()
 const _PLH = computed(() =>
-  props.plh ? props.plh : props.plhT ? t(props.plhT as unknown as string) : t('placeholder') + '',
+  props.plh
+    ? props.plh
+    : props.plhT
+      ? t(props.plhT as unknown as string)
+      : isInputComp.value
+        ? t('placeholder')
+        : t('placeholderSelect') + '',
 )
 
-const isInputType = computed(() => includes([...INPUT_TYPES], props.type))
-const isEnumType = computed(() => includes([...ENUM_TYPES], props.type))
+const getBindValues = computed(() => mergeProps(attrs, omit(props, OMIT_KEYS)))
+
 const isNumberType = computed(() => includes([...NUMBER_TYPES], props.type))
 const isPickerType = computed(() => includes([...PICKER_TYPES], props.type))
 const isTreeType = computed(() => includes([...TREE_TYPES], props.type))
 const isSwitchType = computed(() => includes([...SWITCH_TYPES], props.type))
+const isInputType = computed(() => includes([...INPUT_TYPES], props.type))
+const isEnumType = computed(() => includes([...ENUM_TYPES], props.type))
 // const isUploadType = computed(() => includes([...UPLOAD_TYPES], props.type))
-
-const getBindValues = computed(() => toMerged(attrs, omit(props, OMIT_KEYS)))
+const isInputComp = computed(
+  () => isInputType.value || isPickerType.value || isTreeType.value || isNumberType.value || isSwitchType.value,
+)
+const InputComp = computed<any>(() => {
+  if (isInputType.value) return ZeInput
+  else if (isPickerType.value) return ElDatePicker
+  else if (isTreeType.value) return ElCascader
+  else if (isNumberType.value) return ElInputNumber
+  else if (isSwitchType.value) return ElSwitch
+  else return undefined
+})
 
 // beta
 const _prop = computed(() => {
@@ -183,12 +155,14 @@ const _prop = computed(() => {
 })
 
 const enumComponent = computed(() => {
+  if (props.type === 'select') return ElSelect
   if (props.type === 'radio') return ElRadioGroup
   if (props.type === 'checkbox') return ElCheckboxGroup
   return props.type
 })
 
 const enumItemComponent = computed(() => {
+  if (props.type === 'select') return ElOption
   if (props.type === 'radio') return props.isButton ? ElRadioButton : ElRadio
   if (props.type === 'checkbox') return props.isButton ? ElCheckboxButton : ElCheckbox
   return props.type
@@ -239,30 +213,41 @@ defineExpose<ZeFormExposeType>(
 )
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .ze-form-item {
-  min-width: 160px;
   width: auto;
+  margin-bottom: 24px;
+
+  .el-select {
+    min-width: 200px;
+  }
 
   :deep(:not(.el-form--inline) & + &) {
     margin-top: 10px;
   }
 
-  .el-select {
-    min-width: 160px;
+  :deep(.el-input__prefix) {
+    padding-right: 9px;
+  }
+
+  :deep(.el-input__suffix) {
+    padding-left: 9px;
   }
 }
 
 :deep(.el-select) {
-  min-width: 160px;
+  min-width: 200px;
 }
 </style>
 
 <i18n lang="yaml">
 en:
-  placeholder: Enter
+  placeholder: Please Enter
+  placeholderSelect: Please Select
 zh-CN:
   placeholder: 请输入
+  placeholderSelect: 请选择
 zh-TW:
   placeholder: 請輸入
+  placeholderSelect: 請選擇
 </i18n>
