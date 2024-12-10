@@ -27,8 +27,11 @@ export const useBaseStore = defineStore('base', () => {
     collapse: false,
     active: '/',
 
+    setCollapse(flag) {
+      menu.collapse = flag
+    },
     toggleCollapse() {
-      menu.collapse = !menu.collapse
+      menu.setCollapse(!menu.collapse)
     },
     setActive(path: string) {
       menu.active = path
