@@ -14,9 +14,6 @@ importers:
       axios:
         specifier: ^1.7.9
         version: 1.7.9(debug@4.4.0)
-      disable-devtool:
-        specifier: ^0.3.8
-        version: 0.3.8
       element-plus:
         specifier: ^2.9.0
         version: 2.9.0(vue@3.5.13(typescript@5.7.2))
@@ -1788,9 +1785,6 @@ packages:
     resolution: {integrity: sha512-pGjwhsmsp4kL2RTz08wcOlGN83otlqHeD/Z5T8GXZB+/YcpQ/dgo+lbU8ZsGxV0HIvqqxo9l7mqYwyYMD9bKDg==}
     engines: {node: '>=0.10'}
     hasBin: true
-
-  disable-devtool@0.3.8:
-    resolution: {integrity: sha512-spwifiBbcgDTVEdzoWyH3NjZ1he/OgJmUNXvMgEffJ8Fh2B6mEJjCCEV25wlJSyNXEdGyzKFFRXh4kVDRK/wCg==}
 
   dom-serializer@0.2.2:
     resolution: {integrity: sha512-2/xPb3ORsQ42nHYiSunXkDjPLBaEj/xTwUO4B7XCZQTRk7EBtTOPaygh10YAAh2OI1Qrp6NWfpAhzswj0ydt9g==}
@@ -5497,8 +5491,6 @@ snapshots:
 
   detect-libc@1.0.3:
     optional: true
-
-  disable-devtool@0.3.8: {}
 
   dom-serializer@0.2.2:
     dependencies:

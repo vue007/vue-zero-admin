@@ -18,7 +18,6 @@
   "dependencies": {
     "@vueuse/core": "^12.0.0",
     "axios": "^1.7.9",
-    "disable-devtool": "^0.3.8",
     "element-plus": "^2.9.0",
     "es-toolkit": "^1.29.0",
     "pinia": "^2.3.0",
@@ -65,5 +64,6 @@
   },
   "lint-staged": {
     "**/*.{js,mjs,cjs,jsx,ts,mts,cts,tsx,vue,astro,svelte}": "oxlint"
-  }
+  },
+  "types": "./types/index.d.ts"
 }
