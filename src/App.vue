@@ -62,4 +62,10 @@ watchImmediate(
 )
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+:global(html) {
+  font-family: var(--el-font-family);
+  width: 100vw;
+  height: 100vh;
+}
+</style>
