@@ -18,9 +18,3 @@ app.use(router)
 app.use(basePlugin)
 
 app.mount('#app')
-
-if (import.meta.env.PROD) {
-  import('disable-devtool').then(({ default: disableDevtool }) => {
-    disableDevtool()
-  })
-}
