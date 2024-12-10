@@ -10,6 +10,7 @@ import oxlintPlugin from 'vite-plugin-oxlint'
 import eslintPlugin from 'vite-plugin-eslint'
 
 import mkcert from 'vite-plugin-mkcert'
+import ElementPlus from 'unplugin-element-plus/vite'
 
 import { vitePluginAutoPages } from './vite/plugins/auto-pages'
 import { vitePluginAutoImport } from './vite/plugins/auto-import'
@@ -28,6 +29,7 @@ export default defineConfig(({ command, mode }) => {
       vue(),
       vueJsx(),
       vueI18n(),
+      ElementPlus({}),
       oxlintPlugin({ allow: ['no-unsafe-declaration-merging', 'no-unused-vars'] }),
       eslintPlugin({}),
 
