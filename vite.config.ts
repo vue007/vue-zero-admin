@@ -6,8 +6,8 @@ import vueJsx from '@vitejs/plugin-vue-jsx'
 import vueI18n from '@intlify/unplugin-vue-i18n/vite'
 import vueDevTools from 'vite-plugin-vue-devtools'
 import oxlintPlugin from 'vite-plugin-oxlint'
-//@ts-ignore
-import eslintPlugin from 'vite-plugin-eslint'
+// @ts-ignore
+// import eslintPlugin from 'vite-plugin-eslint'
 
 import mkcert from 'vite-plugin-mkcert'
 import ElementPlus from 'unplugin-element-plus/vite'
@@ -31,7 +31,7 @@ export default defineConfig(({ command, mode }) => {
       vueI18n(),
       ElementPlus({}),
       oxlintPlugin({ allow: ['no-unsafe-declaration-merging', 'no-unused-vars'] }),
-      eslintPlugin({}),
+      // eslintPlugin(),
 
       // just remove special plugin when unneed
       vitePluginUnocss(),
