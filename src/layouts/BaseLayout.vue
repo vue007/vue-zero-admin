@@ -2,18 +2,33 @@
   <div>
     <header class="layout-header">
       <div class="header-left mr-auto" id="header-left">
-        <div class="app-title">{{ t('header') }}</div>
+        <div class="app-logo flex">
+          <img class="w-36 h-36 lt-sm:w-50 lt-sm:h-24" src="@/assets/images/logo.png" alt="logo" />
+        </div>
+        <div class="app-title ml-16 flex lt-sm:ml-8"></div>
       </div>
 
       <div class="header-right" id="header-right" />
     </header>
 
     <section class="layout-body">
-      <aside class="layout-aside" id="layout-aside"></aside>
+      <aside class="layout-aside">
+        <div id="layout-aside-menu"></div>
+        <div class="collapse-action" @click="baseStore.menu.toggleCollapse">
+          <svg-icon name="el-fold" />
+        </div>
+      </aside>
       <div class="layout-page">
+        <el-breadcrumb class="page-breadcrumb" separator="/">
+          <el-breadcrumb-item :to="{ path: '/' }">homepage</el-breadcrumb-item>
+          <el-breadcrumb-item>
+            <a href="/">promotion management</a>
+          </el-breadcrumb-item>
+        </el-breadcrumb>
+
         <router-view v-slot="{ route, Component: Comp }">
           <keep-alive :max="10">
-            <component v-if="needKeep" :is="Comp" ref="pageRef" :key="route.path" />
+            <component v-if="needKeep" :is="Comp" ref="pageRef" :key="isTab ? route.matched[0].path : route.path" />
           </keep-alive>
           <component v-if="!needKeep" :is="Comp" ref="pageRef" :key="route.path" />
         </router-view>
@@ -27,15 +42,27 @@
 
 <script setup lang="ts">
 import { useBaseStore } from '@/stores/base.module'
+import { useMediaQuery, watchDebounced } from '@vueuse/core'
 
 const { t } = useI18nLocal()
+const baseStore = useBaseStore()
+const route = useRoute()
 
-const needKeep = computed(() => false) // add keep-alive toggle logic
+const isTab = computed(() => route.meta.isTab)
+const needKeep = computed(() => isTab.value)
 const pageRef = ref(null)
 
 const actionsPosition = '#header-right'
-const menuPosition = '#layout-aside'
+const menuPosition = '#layout-aside-menu'
 
+const isLargeScreen = useMediaQuery('(min-width: 1024px)')
+watchDebounced(
+  () => isLargeScreen.value,
+  (val) => {
+    baseStore.menu.setCollapse(!val)
+  },
+  { debounce: 200, maxWait: 500, immediate: true },
+)
 onMounted(() => {
   console.log(t('header'))
 })
@@ -46,15 +73,21 @@ $header-height: 64px;
 .layout-header {
   @apply: fixed top-0 left-0 w-100vw z-10;
   @apply: flex justify-between items-center;
-
-  padding: 0 30px;
-  padding-right: 30px;
-  padding-left: 40px;
+  background-color: #fff;
 
   font-size: 32px;
   height: $header-height;
-  background-color: var(--el-color-primary-light-9);
   box-shadow: var(--el-box-shadow);
+
+  padding: 0 24px 0 30px;
+
+  @screen lt-sm {
+    padding: 0 8px 0 12px;
+  }
+  #{$theme-dark} {
+    background-color: #141414;
+    border-bottom: 1px solid #4c4d4f;
+  }
 
   #{$size-large} {
     height: $header-height + 10px;
@@ -62,16 +95,15 @@ $header-height: 64px;
   #{$size-small} {
     height: $header-height - 10px;
   }
-
   .app-title {
-    #{$size-large} {
-      font-size: 1.2em;
-    }
-    #{$size-small} {
-      font-size: 0.8em;
+    #{$theme-dark} {
+      filter: invert(100%);
     }
   }
 
+  .header-left {
+    @apply: flex-center;
+  }
   .header-right {
     @apply: flex-center;
   }
@@ -89,18 +121,41 @@ $header-height: 64px;
   @apply: flex;
   height: 100vh;
   overflow: hidden;
+
+  background-color: $bg-color-page;
+
+  .page-breadcrumb {
+    margin: 16px 0;
+  }
 }
 .layout-aside {
-  width: 216px;
-  height: 100vh;
-  background-color: var(--el-color-primary-light-8);
+  flex-shrink: 1;
+  height: calc(100vh - $header-height);
+  background-color: #fff;
+  border-right: 1px solid #e4e7ed;
+  position: relative;
+
+  #{$theme-dark} {
+    background-color: #0a0a0a;
+    border-right: 1px solid #4c4d4f;
+  }
+
+  .collapse-action {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    bottom: 15px;
+    left: 0;
+    padding-left: 22px;
+    padding-bottom: 15px;
+  }
 }
 .layout-page {
   flex: 1;
-  height: 100vh;
+  height: calc(100vh - $header-height);
   overflow-y: auto;
 
-  padding: 10px;
+  padding: 0 24px;
 }
 </style>
 
