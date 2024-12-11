@@ -43,7 +43,7 @@
     </ze-table>
 
     <template #content-footer>
-      <ze-pagination class="mt-10" v-model="pagination" />
+      <ze-pagination class="ml-a" v-model="pagination" />
     </template>
   </VPage>
 
@@ -150,6 +150,7 @@ const [editDlgRef, EditDialog] = useModal({
 
 const reset = () => {
   searchFormRef.value?.resetFields()
+  nextTick(() => refresh())
 }
 </script>
 
