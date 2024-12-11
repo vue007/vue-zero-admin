@@ -28,7 +28,7 @@ const currentLayout = shallowRef(BaseLayout)
 const layouts = { base: BaseLayout, blank: BlankLayout }
 watchEffect(() => {
   const layoutName: string = route.meta?.layout as string
-  currentLayout.value = layouts[layoutName || 'base']
+  currentLayout.value = layouts[layoutName || 'blank']
 })
 
 // # switch lang
