@@ -2,8 +2,8 @@
   <VPage>
     <template #header><h2>表单</h2></template>
 
-    <div class="flex gap-20 flex-wrap">
-      <el-card class="w-500">
+    <div class="grid grid-cols-3 xs:grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-16">
+      <el-card>
         <div class="mb-16">表单元素</div>
         <ze-input ref="gtInputRef" v-model="gtInput" />
         <ze-formItem type="text" v-model="form.usename" label="名字" class="mt-10" ref="gtInputItemRef" />
@@ -16,22 +16,26 @@
         <ze-formItem type="datetimerange" v-model="form.datetimerange" label="时间段" />
       </el-card>
 
-      <el-card class="w-500">
+      <el-card>
         <div class="mb-16">表单校验</div>
         <ze-form v-model="form" ref="validationFormRef" :rules="formRules">
           <ze-form-item type="text" v-model="form.usename" label="名字" class="mt-10" ref="gtInputItemRef" />
           <ze-form-item type="number" v-model="form.age" label="年龄" :min="0" />
           <ze-form-item type="radio" v-model="form.sex" label="性别" :enum-list="SEX_ENUM_LIST" />
-          <ze-form-item type="switch" v-model="form.hasPassion" label="有无房贷" />
+          <ze-form-item type="switch" v-model="form.hasPassion" label="有无激情" />
           <ze-form-item type="select" v-model="form.region" label="区域" :enum-list="REGION_ENUM_LIST" />
           <ze-form-item type="date" v-model="form.date" label="开始日期" />
           <ze-form-item type="datetime" v-model="form.date" label="开始时间" />
           <ze-form-item type="daterange" v-model="form.daterange" label="日期段" />
           <ze-form-item type="datetimerange" v-model="form.datetimerange" label="时间段" />
-          <el-form-item>
-            <el-button @click="() => validationFormRef?.resetFields()">重置</el-button>
-            <el-button type="primary" @click="() => validationFormRef?.validate()">校验</el-button>
-          </el-form-item>
+          <ze-form-item>
+            <ze-actions
+              :actions="[
+                { content: '重置', onClick: () => validationFormRef?.resetFields() },
+                { content: '校验', type: 'primary', onClick: () => validationFormRef?.validate() },
+              ]"
+            />
+          </ze-form-item>
         </ze-form>
       </el-card>
     </div>
