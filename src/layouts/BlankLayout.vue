@@ -3,7 +3,7 @@
     <header class="layout-header">
       <div class="header-left mr-auto" id="header-left">
         <div class="app-logo flex">
-          <img class="w-36 h-36 lt-sm:w-50 lt-sm:h-24" src="@/assets/images/logo.png" alt="logo" />
+          <img class="w-36 h-36 lt-sm:w-28 lt-sm:h-28" src="@/assets/images/logo.png" alt="logo" />
         </div>
         <div class="app-title ml-16 flex lt-sm:ml-8"></div>
       </div>
@@ -16,12 +16,10 @@
     </section>
   </div>
 
-  <LayoutActions :to="actionsPosition" :actions="['locale', 'theme']" />
+  <LayoutActions :to="actionsPosition" :actions="['theme', 'locale']" />
 </template>
 
 <script setup lang="ts">
-import { useBaseStore } from '@/stores/base.module'
-
 const { t } = useI18nLocal()
 const actionsPosition = '#header-right'
 
