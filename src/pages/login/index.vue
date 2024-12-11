@@ -7,7 +7,6 @@
     <aside class="login-aside relative">
       <!-- <img width="100%" class="absolute top-0" draggable="false" src="@/assets/images/login/aside-top-bg.png" />
       <img width="100%" class="absolute bottom-0" draggable="false" src="@/assets/images/login/aside-bottom-bg.png" /> -->
-
       <div class="aside-title">
         <div class="mr-10">Welecom to</div>
         <div>Zero Admin</div>
