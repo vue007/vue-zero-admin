@@ -29,7 +29,7 @@
     trigger="click"
     virtual-triggering
   >
-    <span>表格列显示与隐藏</span>
+    <span>列显示/隐藏</span>
     <el-checkbox-group v-model="filterColumns">
       <el-checkbox
         v-for="item in _columns"
