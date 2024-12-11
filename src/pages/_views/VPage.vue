@@ -5,6 +5,9 @@
     </header>
     <section class="page-content">
       <slot></slot>
+      <div class="content-footer">
+        <slot name="content-footer"></slot>
+      </div>
     </section>
     <div class="page-footer">
       <slot name="footer"></slot>
@@ -24,6 +27,11 @@
 
   #{ $theme-dark } {
     background: #141414;
+  }
+
+  .content-footer {
+    display: flex;
+    margin-top: 10px;
   }
 }
 </style>
