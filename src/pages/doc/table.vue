@@ -1,7 +1,13 @@
 <template>
   <VPage>
-    <el-button @click="refresh" :loading="loading">search</el-button>
-    <el-button ref="filterColRef">filter columns</el-button>
+    <template #header>
+      <ze-form inline>
+        <ze-form-item class="ml-auto">
+          <el-button @click="refresh" :loading="loading">search</el-button>
+          <el-button ref="filterColRef">filter columns</el-button>
+        </ze-form-item>
+      </ze-form>
+    </template>
 
     <ze-table
       :data="tableData"
@@ -24,7 +30,9 @@
       </el-table-column>
     </ze-table>
 
-    <ze-pagination v-model="pagination" />
+    <template #content-footer>
+      <ze-pagination class="ml-a" v-model="pagination" />
+    </template>
   </VPage>
 </template>
 
