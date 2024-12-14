@@ -13,7 +13,7 @@
     <template #footer>
       <slot name="footer">
         <div v-if="options.showAction" class="modal-footer">
-          <gt-actions
+          <ze-actions
             :actions="[
               { content: t('base.cancel'), onClick: () => close() },
               { content: t('base.confirm'), type: 'primary', onClick: (e?: Event) => handleConfirm(e), loading: submitting },
@@ -29,7 +29,7 @@
 import 'element-plus/es/components/dialog/style/css'
 import 'element-plus/es/components/drawer/style/css'
 
-import { ElButton, ElDialog, ElDrawer } from 'element-plus'
+import { ElDialog, ElDrawer } from 'element-plus'
 import { isUndefined } from 'es-toolkit'
 let { t } = useI18nLocal()
 
@@ -55,9 +55,10 @@ const options = reactive({
   title: attrs.title,
   showAction: props.showAction,
 })
+
 watch(
   () => props,
-  (val: any) => setData(val),
+  (val) => setData(val),
   { deep: true },
 )
 
