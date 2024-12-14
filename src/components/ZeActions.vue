@@ -81,9 +81,7 @@ const listActions = computed(() => {
   return hasMoreActions.value ? props.actions.slice(0, props.ellipsisStart) : props.actions
 })
 
-const moreActions = computed(() => {
-  return props.actions.slice(props.ellipsisStart)
-})
+const moreActions = computed(() => props.actions.slice(props.ellipsisStart))
 </script>
 
 <style lang="scss" scoped>
