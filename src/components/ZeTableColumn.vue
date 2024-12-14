@@ -1,5 +1,5 @@
 <template>
-  <el-table-column v-bind="toMerged($attrs, props)" class="ze-table-column" ref="rawRef">
+  <el-table-column v-bind="mergeProps($attrs, props)" class="ze-table-column" ref="rawRef">
     <template v-for="(_, name) in $slots" #[name]="scope">
       <slot :name="name" v-bind="scope"></slot>
     </template>
@@ -7,11 +7,14 @@
 </template>
 
 <script setup lang="ts">
-import { toMerged } from 'es-toolkit'
 import type { TableColumnProps } from './types/mixin'
 import type { TableColumnInstance } from 'element-plus'
+import { mergeProps } from 'vue'
 
-const props = withDefaults(defineProps<TableColumnProps>(), {})
+const props = withDefaults(defineProps<TableColumnProps>(), {
+  showOverflowTooltip: true,
+})
+
 const rawRef = ref<TableColumnInstance>()
 
 type ZeTableColumnExpose = TableColumnInstance & {}

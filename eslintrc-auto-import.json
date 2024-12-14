@@ -94,6 +94,14 @@
     "useModal": true,
     "useFormItems": true,
     "useTable": true,
-    "usePagination": true
+    "usePagination": true,
+    "ExtractFields": true,
+    "ExtractObject": true,
+    "FormItemsDatas": true,
+    "IteratorObjctType": true,
+    "UseApiOnErrorFn": true,
+    "UseApiOnSubmitFn": true,
+    "UseApiOnSuccessFn": true,
+    "UseApiReturn": true
   }
 }

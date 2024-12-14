@@ -10,7 +10,7 @@
   >
     <template v-if="isInputComp">
       <component v-bind="getBindValues" :is="InputComp" :placeholder="_PLH" ref="inputEl">
-        <template v-for="(_, n) in $slots" #[n]="scope">
+        <template v-for="(_, n) in omit($slots, ['default'])" #[n]="scope">
           <slot :name="n" v-bind="scope" />
         </template>
       </component>
@@ -39,7 +39,7 @@
     </template>
 
     <!-- <template v-else-if="isUploadType">
-      <ze-upload v-bind="getBindValues" ref="inputEl"><ze-upload>
+      <ze-upload v-bind="getBindValues" ref="inputEl"></ze-uppload>
     </template> -->
     <template v-else>
       <slot v-bind="getBindValues" :placeholder="_PLH"></slot>
@@ -68,6 +68,8 @@ import {
   ElRadioGroup,
   ElSelect,
   ElSwitch,
+  ElTransfer,
+  ElTreeSelect,
 } from 'element-plus'
 import type {
   CheckboxGroupInstance,
@@ -75,6 +77,7 @@ import type {
   FormItemInstance,
   RadioGroupContext,
   SelectContext,
+  TransferInstance,
 } from 'element-plus'
 
 import { isUndefined, omit } from 'es-toolkit'
@@ -87,6 +90,7 @@ import {
   NUMBER_TYPES,
   SWITCH_TYPES,
   type FormItemType,
+  TRANSFER_TYPES,
 } from './types/form'
 import type { ZeInputInstance } from './types'
 import ZeInput from './ZeInput.vue'
@@ -130,16 +134,24 @@ const isTreeType = computed(() => includes([...TREE_TYPES], props.type))
 const isSwitchType = computed(() => includes([...SWITCH_TYPES], props.type))
 const isInputType = computed(() => includes([...INPUT_TYPES], props.type))
 const isEnumType = computed(() => includes([...ENUM_TYPES], props.type))
+const isTransferType = computed(() => includes([...TRANSFER_TYPES], props.type))
 // const isUploadType = computed(() => includes([...UPLOAD_TYPES], props.type))
 const isInputComp = computed(
-  () => isInputType.value || isPickerType.value || isTreeType.value || isNumberType.value || isSwitchType.value,
+  () =>
+    isInputType.value ||
+    isPickerType.value ||
+    isTreeType.value ||
+    isNumberType.value ||
+    isSwitchType.value ||
+    isTransferType.value,
 )
 const InputComp = computed<any>(() => {
   if (isInputType.value) return ZeInput
   else if (isPickerType.value) return ElDatePicker
-  else if (isTreeType.value) return ElCascader
+  else if (isTreeType.value) return ElTreeSelect
   else if (isNumberType.value) return ElInputNumber
   else if (isSwitchType.value) return ElSwitch
+  else if (isTransferType.value) return ElTransfer
   else return undefined
 })
 
@@ -196,6 +208,7 @@ type ZeFormItemInputElType =
   | RadioGroupContext
   | CheckboxGroupInstance
   | DatePickerInstance
+  | TransferInstance
 const [inputEl] = [ref<ZeFormItemInputElType>()]
 // formitem 和内部input元素合并expose
 type ZeFormExposeType = FormItemInstance & ZeFormItemInputElType
@@ -216,7 +229,8 @@ defineExpose<ZeFormExposeType>(
 <style lang="scss" scoped>
 .ze-form-item {
   width: auto;
-  margin-bottom: 24px;
+  margin-bottom: 16px;
+  margin-right: 16px;
 
   .el-select {
     min-width: 200px;
@@ -237,6 +251,20 @@ defineExpose<ZeFormExposeType>(
 
 :deep(.el-select) {
   min-width: 200px;
+}
+
+:deep(.el-transfer) {
+  .el-transfer-panel {
+    margin-top: 6px;
+  }
+  .el-transfer__buttons {
+    width: 80px;
+    padding: 20px;
+    .el-button {
+      margin: 0;
+      margin-top: 14px;
+    }
+  }
 }
 </style>
 

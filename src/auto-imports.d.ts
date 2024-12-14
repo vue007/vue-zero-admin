@@ -93,4 +93,13 @@ declare global {
   // @ts-ignore
   export type { Component, ComponentPublicInstance, ComputedRef, DirectiveBinding, ExtractDefaultPropTypes, ExtractPropTypes, ExtractPublicPropTypes, InjectionKey, PropType, Ref, MaybeRef, MaybeRefOrGetter, VNode, WritableComputedRef } from 'vue'
   import('vue')
+  // @ts-ignore
+  export type { ExtractFields, ExtractObject, IteratorObjctType } from './hooks/_type'
+  import('./hooks/_type')
+  // @ts-ignore
+  export type { UseApiOnSuccessFn, UseApiOnSubmitFn, UseApiOnErrorFn, UseApiReturn } from './hooks/useApi'
+  import('./hooks/useApi')
+  // @ts-ignore
+  export type { FormItemsDatas } from './hooks/useFormItems'
+  import('./hooks/useFormItems')
 }

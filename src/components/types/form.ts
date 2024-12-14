@@ -16,10 +16,11 @@ export const PICKER_TYPES = [
   'daterange',
   'monthrange',
 ] as const
-export const TREE_TYPES = ['cascader'] as const
+export const TREE_TYPES = ['tree'] as const
 export const NUMBER_TYPES = ['number'] as const
 export const SWITCH_TYPES = ['switch'] as const
 export const UPLOAD_TYPES = ['upload'] as const
+export const TRANSFER_TYPES = ['transfer'] as const
 export const FORM_ITEM_TYPES = [
   ...INPUT_TYPES,
   ...ENUM_TYPES,
@@ -28,6 +29,7 @@ export const FORM_ITEM_TYPES = [
   ...NUMBER_TYPES,
   ...SWITCH_TYPES,
   ...UPLOAD_TYPES,
+  ...TRANSFER_TYPES,
 ] as const
 
 export type FormItemType = (typeof FORM_ITEM_TYPES)[number]

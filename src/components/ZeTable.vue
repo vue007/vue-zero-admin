@@ -1,11 +1,9 @@
 <template>
   <el-table
-    :data="props.data"
-    :border="true"
     style="width: 100%"
     maxheight="62vh"
     ref="rawRef"
-    v-bind="omit(attrs, ['data'])"
+    v-bind="mergeProps(attrs, props)"
     v-loading="props.loading"
   >
     <slot name="header"></slot>
@@ -29,7 +27,7 @@
     trigger="click"
     virtual-triggering
   >
-    <span>列显示/隐藏</span>
+    <span>显示/隐藏列</span>
     <el-checkbox-group v-model="filterColumns">
       <el-checkbox
         v-for="item in _columns"
@@ -43,14 +41,27 @@
 </template>
 
 <script setup lang="ts">
-import type { TableColumnCtx, TableInstance } from 'element-plus'
-import { omit } from 'es-toolkit'
-import { type PropType } from 'vue'
+import { watchDebounced } from '@vueuse/core'
+import type { TableColumnCtx, TableInstance, TableProps } from 'element-plus'
+import { mergeProps, type Ref } from 'vue'
 
-export type ZeTableColumns = { hidden?: boolean } & TableColumnCtx<any>
+type ZeTableColumns = { hidden?: boolean } & Partial<TableColumnCtx<any>>
+
+type ZeTableProps<T = any> = TableProps<T> & {
+  data: T[] | any[]
+  columns: ZeTableColumns[]
+  loading: boolean
+  filterColVR?: Ref
+}
 
 const attrs = useAttrs()
 
+// const props = withDefaults(defineProps<ZeTableProps>(), {
+//   border: true,
+//   filterColVR: undefined,
+//   loading: false,
+//   data: [],
+// })
 const props = defineProps({
   data: {
     type: Array as PropType<any[] | never[]>,
@@ -66,14 +77,31 @@ const props = defineProps({
     type: Object as PropType<Ref>,
     default: () => ref(undefined),
   },
+  defaultExpandAll: { type: Boolean, default: () => false },
 })
+
+const isExpandAll = ref(props.defaultExpandAll)
+
+const toggleAllExpansion = () => {
+  console.log(isExpandAll.value, 'isExpandAll.value')
+  isExpandAll.value = !isExpandAll.value
+  toggleExpandAll(props.data, isExpandAll.value)
+}
+
+const toggleExpandAll = (data: any[] = [], status: boolean) => {
+  data.forEach((item) => {
+    rawRef.value?.toggleRowExpansion(item, status)
+    if (item.children && item.children.length > 0) toggleExpandAll(item.children, status)
+  })
+}
+
 const rawRef = ref<TableInstance>()
 
 const emits = defineEmits(['sort-change', 'row-sort', 'selection-change'])
 
 const getColKey = (item) => item.prop || item.type
 const _columns = computed(() => {
-  return props.columns?.filter((item) => !item.hidden) || []
+  return props.columns?.filter((item) => !(item && item.hidden)) || []
 })
 const showedColumns = computed(() => {
   return _columns.value?.filter((item) => filterColumns.value?.includes(getColKey(item)))
@@ -90,13 +118,19 @@ watch(
   { immediate: true },
 )
 
-type ZeTableExpose = TableInstance & {}
+const customExpose = {
+  toggleAllExpansion,
+}
+type ZeTableExpose = TableInstance & { toggleAllExpansion: () => void }
 defineExpose<ZeTableExpose>(
   new Proxy(
     {},
     {
-      get: (_target, prop) => rawRef.value?.[prop],
-      has: (_target, prop) => prop in (rawRef.value || {}),
+      get(_target, prop) {
+        if (rawRef.value?.[prop]) return rawRef.value[prop]
+        if (customExpose?.[prop]) return customExpose[prop]
+      },
+      has: (_target, prop) => prop in (rawRef.value || {}) || prop in (customExpose || {}),
     },
   ) as ZeTableExpose,
 )
@@ -109,5 +143,9 @@ defineExpose<ZeTableExpose>(
 
 :deep(.el-table__expanded-cell) {
   padding: 0 !important;
+}
+
+:deep(.el-table__body) {
+  width: 100% !important;
 }
 </style>

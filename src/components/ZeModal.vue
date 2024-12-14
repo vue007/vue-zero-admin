@@ -13,13 +13,11 @@
     <template #footer>
       <slot name="footer">
         <div v-if="options.showAction" class="modal-footer">
-          <ze-actions
+          <gt-actions
             :actions="[
               { content: t('base.cancel'), onClick: () => close() },
               { content: t('base.confirm'), type: 'primary', onClick: (e?: Event) => handleConfirm(e), loading: submitting },
             ]"
-            @cancel="close"
-            @confirm="handleConfirm"
           />
         </div>
       </slot>
@@ -122,7 +120,7 @@ defineExpose({ toggle, open, close, setData, setTitle, getData, confirm: handleC
 <!-- global style -->
 <style lang="scss">
 .modal-dialog {
-  :deep(.el-dialog) {
+  .el-dialog {
     height: auto;
     width: auto;
     max-height: 50vh;
@@ -132,19 +130,19 @@ defineExpose({ toggle, open, close, setData, setTitle, getData, confirm: handleC
   &.el-drawer {
     .modal-footer {
       display: flex;
-      justify-content: start;
-      flex-direction: row-reverse;
-      position: absolute;
       min-height: 40px;
       margin-top: 40px;
       bottom: 0;
-      padding-bottom: 16px;
+    }
+    .el-drawer__header {
+      margin-bottom: unset;
     }
   }
 
   .modal-title {
     font-size: 22px;
     font-weight: 500;
+    color: $text-color-primary;
   }
 
   .modal-footer {
