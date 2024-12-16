@@ -32,7 +32,11 @@ const PopconfirmButton = (props) => (
     placement='top'
     onConfirm={props.onClick}
   >
-    {{ reference: (h) => <span>{props.tip ? TipButton(props) : ActionButton(props)}</span> }}
+    {{
+      reference: () => (
+        <span>{props.tip ? TipButton(omit(props, ['onClick'])) : ActionButton(omit(props, ['onClick']))}</span>
+      ),
+    }}
   </el-popconfirm>
 )
 
