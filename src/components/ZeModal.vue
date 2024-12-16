@@ -79,7 +79,7 @@ const setTitle = (title: string) => {
   if (!isUndefined(title)) options.title = title
 }
 
-const open = (data = undefined) => {
+const open = (data: object | undefined = undefined) => {
   emit('open', data)
   model.value = true
 
