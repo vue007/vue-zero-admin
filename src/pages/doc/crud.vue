@@ -5,7 +5,7 @@
         <ze-form-item type="text" v-model="searchForm.name" />
         <ze-form-item class="ml-auto">
           <el-button @click="refresh">search</el-button>
-          <el-button @click="reset">reset</el-button>
+          <el-button @click="() => searchFormRef?.resetFields()">reset</el-button>
           <el-button @click="() => editDlgRef.open()">add user</el-button>
           <el-button ref="filterColRef">filter columns</el-button>
         </ze-form-item>
@@ -16,8 +16,8 @@
       :data="tableData"
       :loading="loading"
       :columns="[
-        { type: 'index', label: $t('base.index'), align: 'center', width: '60px', fixed: 'left' },
         { prop: 'id', hidden: true },
+        { type: 'index', label: $t('base.index'), align: 'center', width: '60px', fixed: 'left' },
         { prop: 'name', label: $t('doc.col.name'), minWidth: 150, fixed: true },
         { prop: 'age', label: $t('doc.col.age'), minWidth: 120, headerAlign: 'center', align: 'center' },
         { prop: 'sex', label: $t('doc.col.sex'), minWidth: 120 },
@@ -32,14 +32,18 @@
         <el-switch :modelValue="scope.row.hasPassion" @update:modelValue="scope.row.hasPassion = $event" />
       </template>
 
-      <el-table-column min-width="160">
+      <ze-table-column min-width="180" fixed="right">
         <template #default="scope">
-          <el-button link type="primary" size="small" @click="() => editDlgRef.open(scope.row)">
-            {{ $t('base.edit') }}
-          </el-button>
-          <el-button link type="primary" size="small">{{ $t('base.delete') }}</el-button>
+          <ze-actions
+            :actions="[
+              { content: $t('base.edit'), text: true, onClick: () => editDlgRef.open(scope.row) },
+              { content: '配置', text: true, onClick: () => {} },
+              { content: $t('base.delete'), text: true, confirm: true, onClick: () => handleDel(scope.row) },
+            ]"
+            ellipsis
+          />
         </template>
-      </el-table-column>
+      </ze-table-column>
     </ze-table>
 
     <template #content-footer>
@@ -148,10 +152,7 @@ const [editDlgRef, EditDialog] = useModal({
   submitting,
 })
 
-const reset = () => {
-  searchFormRef.value?.resetFields()
-  nextTick(() => refresh())
-}
+const handleDel = (row) => baseApi.delType(row).then(() => refresh() && ElMessage.success('删除成功'))
 </script>
 
 <style lang="scss" scoped></style>
