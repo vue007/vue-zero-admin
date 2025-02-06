@@ -100,7 +100,7 @@ const close = (e?: Event) => {
 const handleConfirm = async (e?: Event) => {
   console.log('onConfirm')
 
-  if (modalForm.value) {
+  if (!modalForm.value) {
     try {
       await modalForm.value?.validate()
       emit('confirm', e)
