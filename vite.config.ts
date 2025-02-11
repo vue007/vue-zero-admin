@@ -88,7 +88,7 @@ export default defineConfig(({ command, mode }) => {
     config.server = server
 
     // https support
-    const https = true
+    const https = false
     if (https) {
       ;(config.server as any).https = true
       config.plugins = config.plugins?.concat([mkcert()])
