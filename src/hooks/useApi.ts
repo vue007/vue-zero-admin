@@ -1,10 +1,10 @@
 import { ref, type Ref } from 'vue'
 import type { _AxiosResponse } from 'env'
-import { isFunction, isString, merge } from 'es-toolkit'
+import { isFunction, isPlainObject, isString, merge } from 'es-toolkit'
 import { isObject } from 'es-toolkit/compat'
 import type { ApiError, ApiPromise, ApiResponse } from '@/api/_fetch'
 import { iteratorObject } from '@/utils/iteratorObject'
-import type { IteratorObjctType } from './_type'
+import type { BaseType, IteratorObjctType } from './_type'
 
 export type UseApiOnSuccessFn<T> = (res?: _AxiosResponse<ApiResponse<T>>) => void
 export type UseApiOnSubmitFn<T, X = T & { [prop: string]: any }> = (data: X) => Promise<boolean | X>
@@ -45,10 +45,13 @@ export function useApi<P, D>(
 
   const request = async (extraData?: { [prop: string]: any } | (() => { [prop: string]: any })) => {
     loading.value = true
-    const requestData: Partial<P> | any = {}
+    let requestData = {} as P & { [prop: string]: any }
     if (extraData) Object.assign(requestData, isFunction(extraData) ? extraData() : extraData)
-    if (params) Object.assign(requestData, isFunction(params) ? params() : params)
-
+    if (isFunction(isRef(params) ? params.value : params) || isPlainObject(isRef(params) ? params.value : params)) {
+      if (params) Object.assign(requestData, isFunction(params) ? params() : isRef(params) ? params.value : params)
+    } else {
+      requestData = extraData as BaseType | any[] | any
+    }
     const _api = (data: P) =>
       api(data)
         .then((res) => {

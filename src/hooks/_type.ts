@@ -7,3 +7,5 @@ export type ExtractObject<T extends object[]> = T extends [infer First, ...infer
   : {}
 
 export type IteratorObjctType<T extends object[]> = ExtractFields<T> & ExtractObject<T>
+
+export type BaseType = number | string | boolean
