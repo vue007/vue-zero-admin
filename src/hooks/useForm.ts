@@ -25,11 +25,9 @@ type Return<D> = [
   { rules: ComputedRef<Record<string, FormItemRule>> },
 ]
 
-type UseFormItemsReturn<D> = IteratorObjctType<Return<D>>
+type useFormReturn<D> = IteratorObjctType<Return<D>>
 
-export function useFormItems<T extends FormItemsDatas>(
-  formItemDatas: T,
-): UseFormItemsReturn<UnwrapRef<GenerateFormDataType<T>>> {
+export function useForm<T extends FormItemsDatas>(formItemDatas: T): useFormReturn<UnwrapRef<GenerateFormDataType<T>>> {
   const form = ref<GenerateFormDataType<T>>({} as any)
   // 设置为响应式数据，用来控制组件渲染
   const formItems = ref<ZeFormItemProp[]>([])

@@ -95,7 +95,7 @@ const checkAge = (rule, value, cb) => {
   cb() // DO NOT MISSING AT THE END
 }
 
-const [userForm, userFormItems, userFormRules] = useFormItems({
+const [userForm, userFormItems, userFormRules] = useForm({
   id: { value: '', item: { type: 'hidden' } },
   name: {
     value: '',

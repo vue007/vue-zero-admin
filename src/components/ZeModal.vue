@@ -1,5 +1,13 @@
 <template>
-  <Component :is="WarpComp" class="modal-dialog" v-bind="$attrs" v-model="model" @close="close" @submit.prevent>
+  <Component
+    :is="WarpComp"
+    class="modal-dialog"
+    v-bind="$attrs"
+    v-model="model"
+    @close="close"
+    :size="$attrs.size || $attrs.width"
+    @submit.prevent
+  >
     <template #header>
       <slot name="title">
         <span class="modal-title">{{ options.title }}</span>
@@ -26,9 +34,6 @@
 </template>
 
 <script lang="tsx" setup>
-import 'element-plus/es/components/dialog/style/css'
-import 'element-plus/es/components/drawer/style/css'
-
 import { ElDialog, ElDrawer } from 'element-plus'
 import { isUndefined } from 'es-toolkit'
 let { t } = useI18nLocal()
@@ -55,10 +60,9 @@ const options = reactive({
   title: attrs.title,
   showAction: props.showAction,
 })
-
 watch(
   () => props,
-  (val) => setData(val),
+  (val: any) => setData(val),
   { deep: true },
 )
 
@@ -98,9 +102,7 @@ const close = (e?: Event) => {
 }
 
 const handleConfirm = async (e?: Event) => {
-  console.log('onConfirm')
-
-  if (!modalForm.value) {
+  if (modalForm.value) {
     try {
       await modalForm.value?.validate()
       emit('confirm', e)

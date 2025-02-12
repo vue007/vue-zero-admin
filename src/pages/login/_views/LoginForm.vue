@@ -18,7 +18,7 @@ import { useThrottleFn } from '@vueuse/core'
 
 const router = useRouter()
 
-const [loginForm, items, rules] = useFormItems({
+const [loginForm, items, rules] = useForm({
   username: {
     value: import.meta.env.DEV ? 'admin' : '',
     item: { type: 'text', plh: '用户名' },

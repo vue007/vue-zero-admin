@@ -8,13 +8,13 @@
 
 <script setup lang="ts">
 import type { TableColumnProps } from './types/mixin'
-import type { TableColumnInstance } from 'element-plus'
+import { ElTableColumn, type TableColumnInstance } from 'element-plus'
 import { mergeProps } from 'vue'
 
 const props = withDefaults(defineProps<TableColumnProps>(), {
   showOverflowTooltip: true,
+  width: '',
 })
-
 const rawRef = ref<TableColumnInstance>()
 
 type ZeTableColumnExpose = TableColumnInstance & {}

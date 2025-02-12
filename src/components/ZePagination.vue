@@ -5,9 +5,9 @@
     layout="total, sizes, prev, pager, next,jumper"
     :page-sizes="pagination?.pageSizes"
     :total="pagination?.total"
-    :small="size !== 'large'"
     @size-change="(size) => pagination?.sizeChange(size)"
     @current-change="(page) => pagination?.currentChange(page)"
+    :small="size !== 'large'"
   />
 </template>
 

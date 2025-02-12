@@ -34,12 +34,7 @@ export function useTable<P, D>(
   },
 ): UseTableReturn<D> {
   const dt = {
-    path: {
-      data: 'list',
-      total: 'total',
-      pageNo: 'pageNo',
-      pageSize: 'pageSize',
-    },
+    path: { data: 'list', total: 'total', pageNo: 'pageNo', pageSize: 'pageSize' },
     immediate: false,
   }
   if (!options) options = dt

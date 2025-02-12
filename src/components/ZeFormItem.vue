@@ -17,14 +17,14 @@
     </template>
     <template v-else-if="isEnumType">
       <component
-        v-if="'select' === props.type || (props.enumList && !!props.enumList.length) || $slots.default"
-        v-bind="omit($attrs, OMIT_KEYS)"
+        v-if="'select' === props.type || (props.options && !!props.options.length) || $slots.default"
+        v-bind="getBindValues"
         :is="enumComponent"
         :placeholder="_PLH"
       >
         <component
           :is="enumItemComponent"
-          v-for="item in props.enumList"
+          v-for="item in props.options"
           :key="item.value"
           :label="item.label"
           :value="item.value"
@@ -39,7 +39,7 @@
     </template>
 
     <!-- <template v-else-if="isUploadType">
-      <ze-upload v-bind="getBindValues" ref="inputEl"></ze-uppload>
+      <ze-upload v-bind="getBindValues" ref="inputEl"></ZeUpload>
     </template> -->
     <template v-else>
       <slot v-bind="getBindValues" :placeholder="_PLH"></slot>
@@ -56,7 +56,6 @@
 
 <script setup lang="tsx">
 import {
-  ElCascader,
   ElCheckbox,
   ElCheckboxButton,
   ElCheckboxGroup,
@@ -109,10 +108,12 @@ const props = defineProps({
   plh: { type: String, default: undefined },
   plhT: { type: [String, Object], default: undefined },
   isButton: { type: Boolean, default: false },
-  enumList: { type: Array as PropType<Array<any> | any>, default: () => [] }, // 如果enumList为空 且type 属于 ENUM_TYPES 表示为单个 radio 或 checkbox 类型
-  clearable: { type: Boolean, default: () => true },
-  filterable: { type: Boolean, default: () => true },
+  options: { type: Array as PropType<Array<any> | any>, default: () => [] }, // 如果options为空 且type 属于 ENUM_TYPES 表示为单个 radio 或 checkbox 类型
+  clearable: { type: Boolean, default: true },
+  filterable: { type: Boolean, default: true },
+  multiple: { type: Boolean, default: false },
   config: { type: Object, default: () => ({}) },
+  hidden: { type: Boolean, default: false },
 })
 
 const { t } = useI18n()
@@ -120,13 +121,13 @@ const _PLH = computed(() =>
   props.plh
     ? props.plh
     : props.plhT
-      ? t(props.plhT as unknown as string)
+      ? t(props.plhT as string)
       : isInputComp.value
         ? t('placeholder')
         : t('placeholderSelect') + '',
 )
 
-const getBindValues = computed(() => mergeProps(attrs, omit(props, OMIT_KEYS)))
+const getBindValues = computed(() => mergeProps(omit(props, OMIT_KEYS), attrs))
 
 const isNumberType = computed(() => includes([...NUMBER_TYPES], props.type))
 const isPickerType = computed(() => includes([...PICKER_TYPES], props.type))
@@ -157,12 +158,13 @@ const InputComp = computed<any>(() => {
 
 // beta
 const _prop = computed(() => {
-  const str = attrs['onUpdate:modelValue']
-  if (props.prop || !str) return props.prop
+  if (props.prop) return props.prop
 
-  let strArr = str ? str.toString().split('=') : []
-  strArr = strArr[strArr.length - 2].split('.')
-  const p = strArr[strArr.length - 1].trim() || ''
+  const str = attrs['onUpdate:modelValue']?.toString()
+  if (!str) return ''
+
+  const strArr = str.split('=')
+  const p = strArr[strArr.length - 2]?.split('.').pop()?.trim() || ''
   return p
 })
 
@@ -192,14 +194,10 @@ const FORM_ITEM_ATTRS = [
   'inline-message',
   'for',
   'validate-status',
-  'enumList',
+  'options',
 ]
 
 const OMIT_KEYS: any[] = FORM_ITEM_ATTRS
-
-onMounted(() => {
-  // console.log('asdfa', attrs, attrs.on)
-})
 
 // TODO 根据type 切换类型
 type ZeFormItemInputElType =

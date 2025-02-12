@@ -1,12 +1,8 @@
 import { iteratorObject } from '@/utils/iteratorObject'
 
-// type UsePagination = [any, Function, Function, Function]
-/**
- * usePagination
- */
 export function usePagination(
   cb: Function,
-  pageSizes: Array<number> = [10, 20, 50, 100, 200, 500],
+  pageSizes: number[] = [10, 20, 50, 100, 200, 500],
   layout: string = 'total, sizes, prev, pager, next, jumper',
 ) {
   const pagination = reactive({

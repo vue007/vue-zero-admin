@@ -92,7 +92,7 @@
     "watchSyncEffect": true,
     "ElMessage": true,
     "useModal": true,
-    "useFormItems": true,
+    "useForm": true,
     "useTable": true,
     "usePagination": true,
     "ExtractFields": true,
@@ -102,6 +102,7 @@
     "UseApiOnErrorFn": true,
     "UseApiOnSubmitFn": true,
     "UseApiOnSuccessFn": true,
-    "UseApiReturn": true
+    "UseApiReturn": true,
+    "BaseType": true
   }
 }

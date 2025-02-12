@@ -3,7 +3,7 @@
     style="width: 100%"
     maxheight="62vh"
     ref="rawRef"
-    v-bind="mergeProps(attrs, props)"
+    v-bind="mergeProps($attrs, props)"
     v-loading="props.loading"
   >
     <slot name="header"></slot>
@@ -41,9 +41,10 @@
 </template>
 
 <script setup lang="ts">
-import { watchDebounced } from '@vueuse/core'
-import type { TableColumnCtx, TableInstance, TableProps } from 'element-plus'
+import { ElTable, type TableColumnCtx, type TableInstance, type TableProps } from 'element-plus'
 import { mergeProps, type Ref } from 'vue'
+
+const emits = defineEmits([])
 
 type ZeTableColumns = { hidden?: boolean } & Partial<TableColumnCtx<any>>
 
@@ -54,36 +55,29 @@ type ZeTableProps<T = any> = TableProps<T> & {
   filterColVR?: Ref
 }
 
-const attrs = useAttrs()
+const props = withDefaults(defineProps<ZeTableProps>(), {
+  data: undefined,
+  filterColVR: undefined,
+  defaultExpandAll: false,
+  columns: undefined,
 
-// const props = withDefaults(defineProps<ZeTableProps>(), {
-//   border: true,
-//   filterColVR: undefined,
-//   loading: false,
-//   data: [],
-// })
-const props = defineProps({
-  data: {
-    type: Array as PropType<any[] | never[]>,
-    require: true,
-    default: () => [],
-  },
-  columns: {
-    type: Array<Partial<ZeTableColumns>>,
-    require: true,
-  },
-  loading: { type: Boolean, default: false },
-  filterColVR: {
-    type: Object as PropType<Ref>,
-    default: () => ref(undefined),
-  },
-  defaultExpandAll: { type: Boolean, default: () => false },
+  showHeader: ElTable.__defaults?.showHeader,
+  fit: ElTable.__defaults?.fit,
+  highlightCurrentRow: true,
+  border: false,
 })
+
+// const props = defineProps({
+//   data: { type: Array as PropType<any[] | never[]>, require: true, default: () => [] },
+//   columns: { type: Array<Partial<ZeTableColumns>>, require: true },
+//   loading: { type: Boolean, default: false },
+//   filterColVR: { type: Object as PropType<Ref>, default: () => ref(undefined) },
+//   defaultExpandAll: { type: Boolean, default: () => false },
+// })
 
 const isExpandAll = ref(props.defaultExpandAll)
 
 const toggleAllExpansion = () => {
-  console.log(isExpandAll.value, 'isExpandAll.value')
   isExpandAll.value = !isExpandAll.value
   toggleExpandAll(props.data, isExpandAll.value)
 }
@@ -96,8 +90,6 @@ const toggleExpandAll = (data: any[] = [], status: boolean) => {
 }
 
 const rawRef = ref<TableInstance>()
-
-const emits = defineEmits(['sort-change', 'row-sort', 'selection-change'])
 
 const getColKey = (item) => item.prop || item.type
 const _columns = computed(() => {

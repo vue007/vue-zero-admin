@@ -70,7 +70,7 @@ declare global {
   const useAttrs: typeof import('vue')['useAttrs']
   const useCssModule: typeof import('vue')['useCssModule']
   const useCssVars: typeof import('vue')['useCssVars']
-  const useFormItems: typeof import('./hooks/useFormItems')['useFormItems']
+  const useForm: typeof import('./hooks/useForm')['useForm']
   const useI18n: typeof import('vue-i18n')['useI18n']
   const useI18nLocal: typeof import('./hooks/useI18nLocal')['useI18nLocal']
   const useId: typeof import('vue')['useId']
@@ -94,12 +94,12 @@ declare global {
   export type { Component, ComponentPublicInstance, ComputedRef, DirectiveBinding, ExtractDefaultPropTypes, ExtractPropTypes, ExtractPublicPropTypes, InjectionKey, PropType, Ref, MaybeRef, MaybeRefOrGetter, VNode, WritableComputedRef } from 'vue'
   import('vue')
   // @ts-ignore
-  export type { ExtractFields, ExtractObject, IteratorObjctType } from './hooks/_type'
+  export type { ExtractFields, ExtractObject, IteratorObjctType, BaseType } from './hooks/_type'
   import('./hooks/_type')
   // @ts-ignore
   export type { UseApiOnSuccessFn, UseApiOnSubmitFn, UseApiOnErrorFn, UseApiReturn } from './hooks/useApi'
   import('./hooks/useApi')
   // @ts-ignore
-  export type { FormItemsDatas } from './hooks/useFormItems'
-  import('./hooks/useFormItems')
+  export type { FormItemsDatas } from './hooks/useForm'
+  import('./hooks/useForm')
 }
