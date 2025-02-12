@@ -1,3 +1,7 @@
+<route lang="json5">
+{ meta: { layout: 'blank', auth: false } }
+</route>
+
 <template>
   <div class="mb-40 text-24 font-bold">登录</div>
 
