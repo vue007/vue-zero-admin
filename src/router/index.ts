@@ -11,7 +11,7 @@ type AppRouteMeta = {
 }
 export type AppRouteRecordRaw = RouteRecordRaw & { meta: AppRouteMeta }
 
-let routes: Array<RouteRecordRaw> = []
+let routes: Array<RouteRecordRaw> = [{ path: '/', redirect: '/dashboard', meta: {} }]
 
 routes = uniqBy(concat(routes, autoPageRoutes), (item) => item.path)
 

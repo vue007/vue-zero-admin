@@ -1,7 +1,3 @@
-<route lang="json5">
-{ meta: { layout: 'blank', auth: false } }
-</route>
-
 <template>
   <div class="mb-40 text-24 font-bold">登录</div>
 
@@ -16,7 +12,7 @@
 </template>
 
 <script setup lang="ts">
-// import { baseApi } from '@/api/_index'
+import { baseApi } from '@/api/_index'
 import { setToken } from '@/utils/auth'
 import { useThrottleFn } from '@vueuse/core'
 
@@ -34,34 +30,31 @@ const [loginForm, items, rules] = useForm({
     rule: [{ required: true, message: '请输入您的密码' }],
   },
 })
-const submitting = ref(false)
+
 const loginFormRef = ref()
-// const [, fetchLogin, submitting] = useApi(baseApi.login, loginForm, {
-//   onSubmit: async (data) => {
-//     await loginFormRef.value?.validate()
+const [, fetchLogin, submitting] = useApi(baseApi.login, loginForm, {
+  onSubmit: async (data) => {
+    await loginFormRef.value?.validate()
 
-//     data['clientId'] = import.meta.env.VITE_APP_CLIENT_ID
-//     data['rememberMe'] = false
+    data['clientId'] = import.meta.env.VITE_APP_CLIENT_ID
+    data['grantType'] = 'password'
+    data['tenantId'] = '000000'
+    data['rememberMe'] = false
 
-//     return data
-//   },
-//   onSuccess: (res) => {
-//     console.log(res?.apiData.access_token)
-//     setToken(res?.apiData.access_token || '')
-//     setTimeout(() => router.push('/'), 1000)
-//   },
-//   onError: (err) => {
-//     console.log(err.code)
-//   },
-//   onFinally: () => {
-//     console.log('finally')
-//   },
-//   tipSuccess: '登录成功',
-// })
+    return data
+  },
+  onSuccess: (res) => {
+    setToken(res?.apiData.access_token || '')
+    setTimeout(() => router.push('/'), 1000)
+  },
+  onError: (err) => {
+    console.log(err.code)
+  },
+  tipSuccess: '登录成功',
+})
 
 const submitLogin = useThrottleFn(() => {
-  setTimeout(() => router.push('/'), 1000)
-  // fetchLogin()
+  fetchLogin()
 }, 1000)
 </script>
 

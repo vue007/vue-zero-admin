@@ -56,14 +56,14 @@ const baseURL: string = import.meta.env.VITE_APP_BASE_API
 const apifoxToken: string = import.meta.env.VITE_APP_APIFOX_TOKEN
 
 axios.defaults.headers['Content-Type'] = 'application/json;charset=utf-8'
-// axios.defaults.headers['clientid'] = import.meta.env.VITE_APP_CLIENT_ID
+axios.defaults.headers['lang'] = 'zh-CN'
 
 export const ENCRYPT_HEADER = 'encrypt-key'
 export const TOKEN_KEY = 'ADMIN_TOKEN_KEY'
 export const globalApiHeaders = () => {
   return {
     Authorization: 'Bearer ' + getToken(),
-    // clientid: import.meta.env.VITE_APP_CLIENT_ID,
+    clientid: import.meta.env.VITE_APP_CLIENT_ID,
   }
 }
 
@@ -82,6 +82,7 @@ fetch.interceptors.request.use(
 
     if (getToken() && !isToken) {
       config.headers['Authorization'] = globalApiHeaders().Authorization
+      config.headers['clientid'] = globalApiHeaders().clientid // 让每个请求携带自定义token 请根据实际情况自行修改
     }
     if (import.meta.env.DEV) {
       config.headers['apifoxToken'] = apifoxToken
