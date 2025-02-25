@@ -4,6 +4,12 @@
   <ze-form v-model="loginForm" v-bind="{ items, rules, labelWidth: '0px' }" ref="loginFormRef">
     <template #item-username#prefix><svg-icon name="el-user" /></template>
     <template #item-password#prefix><svg-icon class="cursor-pointer" name="el-lock" /></template>
+    <template #item-code#append> 
+      <component is="img" class="cursor-pointer h-30" :src="`data:image/gif;base64,${captchaData?.img}`" @click="fetchCaptcha" />
+    </template>
+    <template #item-rememberMe>
+      <el-checkbox v-model="loginForm.rememberMe" label="保持登录" />
+    </template>
   </ze-form>
 
   <el-button class="w-full mt-8" type="primary" size="large" @click="submitLogin" :loading="submitting">
@@ -29,6 +35,12 @@ const [loginForm, items, rules] = useForm({
     item: { type: 'password', plh: '密码', showPassword: true },
     rule: [{ required: true, message: '请输入您的密码' }],
   },
+  code: {
+    value: '',
+    item: { type: 'text', plh: '验证码' },
+    rule: [{ required: true, message: '请输入验证码' }],
+  },
+  rememberMe: { value: false },
 })
 
 const loginFormRef = ref()
@@ -39,7 +51,7 @@ const [, fetchLogin, submitting] = useApi(baseApi.login, loginForm, {
     data['clientId'] = import.meta.env.VITE_APP_CLIENT_ID
     data['grantType'] = 'password'
     data['tenantId'] = '000000'
-    data['rememberMe'] = false
+    data['uuid'] = captchaData.value?.uuid
 
     return data
   },
@@ -51,6 +63,13 @@ const [, fetchLogin, submitting] = useApi(baseApi.login, loginForm, {
     console.log(err.code)
   },
   tipSuccess: '登录成功',
+})
+
+const [captchaData, fetchCaptcha] = useApi(baseApi.getCaptcha, {}, {
+  immediate: true,
+  onSuccess: (res) => {
+    console.log(res)
+  },
 })
 
 const submitLogin = useThrottleFn(() => {
