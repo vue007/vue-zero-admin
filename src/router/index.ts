@@ -5,6 +5,12 @@ import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
 // @ts-ignore 动态导入pages 下 非_views 页面 name格式： a/b -> a-b
 import autoPageRoutes from '~pages'
 
+type AppRouteMeta = {
+  auth?: boolean
+  layout?: string
+}
+export type AppRouteRecordRaw = RouteRecordRaw & { meta: AppRouteMeta }
+
 let routes: Array<RouteRecordRaw> = []
 
 routes = uniqBy(concat(routes, autoPageRoutes), (item) => item.path)
