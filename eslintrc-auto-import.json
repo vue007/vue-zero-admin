@@ -104,6 +104,7 @@
     "UseApiOnSuccessFn": true,
     "UseApiReturn": true,
     "BaseType": true,
-    "useDict": true
+    "useDict": true,
+    "ElMessageBox": true
   }
 }

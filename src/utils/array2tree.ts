@@ -6,11 +6,7 @@
  * @param {*} children 孩子节点字段 默认 'children'
  */
 export const array2Tree = <T>(data: any[], id?: string, parentId?: string, children?: string): T[] => {
-  const config: {
-    id: string
-    parentId: string
-    childrenList: string
-  } = {
+  const config = {
     id: id || 'id',
     parentId: parentId || 'parentId',
     childrenList: children || 'children',
@@ -22,7 +18,7 @@ export const array2Tree = <T>(data: any[], id?: string, parentId?: string, child
 
   for (const d of data) {
     const parentId = d[config.parentId]
-    if (childrenListMap[parentId] === null) {
+    if (childrenListMap[parentId] === null || childrenListMap[parentId] === undefined) {
       childrenListMap[parentId] = []
     }
     nodeIds[d[config.id]] = d
@@ -31,7 +27,7 @@ export const array2Tree = <T>(data: any[], id?: string, parentId?: string, child
 
   for (const d of data) {
     const parentId = d[config.parentId]
-    if (nodeIds[parentId] === null) {
+    if (nodeIds[parentId] === null || nodeIds[parentId] === undefined) {
       tree.push(d)
     }
   }

@@ -69,7 +69,6 @@ const [, fetchLogin, submitting] = useApi(baseApi.login, loginForm, {
   },
   tipSuccess: '登录成功',
 })
-// e90754c8-9193-49da-b0f3-98bddfd15b2d
 
 const [captchaData, fetchCaptcha] = useApi(
   baseApi.getCaptcha,

@@ -9,8 +9,8 @@ import { getToken } from '@/utils/auth'
 
 /** 分页查询表单 */
 export interface ApiPageForm {
-  pageNo: number
-  pageSize: number
+  pageNo?: number
+  pageSize?: number
 }
 
 export class ApiPagination implements ApiPageForm {
