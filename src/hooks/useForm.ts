@@ -27,6 +27,10 @@ type Return<D> = [
 
 type useFormReturn<D> = IteratorObjctType<Return<D>>
 
+/**
+ * useForm hook
+ * @author Akai
+ */
 export function useForm<T extends FormItemsDatas>(formItemDatas: T): useFormReturn<UnwrapRef<GenerateFormDataType<T>>> {
   const form = ref<GenerateFormDataType<T>>({} as any)
   // 设置为响应式数据，用来控制组件渲染

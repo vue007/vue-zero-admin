@@ -22,7 +22,8 @@ type ReturnFields<D> = [
 type UseTableReturn<D> = IteratorObjctType<ReturnFields<D>>
 
 /**
- * useTable
+ * useTable hook
+ * @author Akai
  */
 export function useTable<P, D>(
   api: (_params: P) => ApiPromisePage<D>,

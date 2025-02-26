@@ -26,6 +26,8 @@ export type UseApiReturn<D> = IteratorObjctType<ReturnFields<D>>
  * @param params request params
  * @param options options
  * @returns [apiData, request, loading]
+ *
+ * @author Akai
  */
 export function useApi<P, D>(
   api: (params: P) => ApiPromise<D>,

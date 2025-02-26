@@ -4,8 +4,13 @@
   <ze-form v-model="loginForm" v-bind="{ items, rules, labelWidth: '0px' }" ref="loginFormRef">
     <template #item-username#prefix><svg-icon name="el-user" /></template>
     <template #item-password#prefix><svg-icon class="cursor-pointer" name="el-lock" /></template>
-    <template #item-code#append> 
-      <component is="img" class="cursor-pointer h-30" :src="`data:image/gif;base64,${captchaData?.img}`" @click="fetchCaptcha" />
+    <template #item-code#append>
+      <component
+        is="img"
+        class="cursor-pointer h-30"
+        :src="`data:image/gif;base64,${captchaData?.img}`"
+        @click="fetchCaptcha"
+      />
     </template>
     <template #item-rememberMe>
       <el-checkbox v-model="loginForm.rememberMe" label="保持登录" />
@@ -64,13 +69,18 @@ const [, fetchLogin, submitting] = useApi(baseApi.login, loginForm, {
   },
   tipSuccess: '登录成功',
 })
+// e90754c8-9193-49da-b0f3-98bddfd15b2d
 
-const [captchaData, fetchCaptcha] = useApi(baseApi.getCaptcha, {}, {
-  immediate: true,
-  onSuccess: (res) => {
-    console.log(res)
+const [captchaData, fetchCaptcha] = useApi(
+  baseApi.getCaptcha,
+  {},
+  {
+    immediate: true,
+    onSuccess: (res) => {
+      console.log(res)
+    },
   },
-})
+)
 
 const submitLogin = useThrottleFn(() => {
   fetchLogin()

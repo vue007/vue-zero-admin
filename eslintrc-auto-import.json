@@ -103,6 +103,7 @@
     "UseApiOnSubmitFn": true,
     "UseApiOnSuccessFn": true,
     "UseApiReturn": true,
-    "BaseType": true
+    "BaseType": true,
+    "useDict": true
   }
 }

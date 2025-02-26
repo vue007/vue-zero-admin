@@ -20,6 +20,12 @@ const _ZeModal = defineAsyncComponent(() => import('@/components/ZeModal.vue'))
 
 const defModalArgs: ModalArgs = { type: 'dialog', content: undefined, onConfirm: () => {}, immediate: false }
 
+/**
+ * useModal hook
+ * @param args
+ * @returns [reference, component] ｜ { reference, component }
+ * @author Akai
+ */
 export const useModal = ({ content, immediate, ...props }: ModalArgs = defModalArgs): UseModalReturn<
   Ref<ZeModalInstance>,
   Component
