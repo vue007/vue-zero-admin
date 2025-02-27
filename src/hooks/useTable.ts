@@ -2,7 +2,7 @@ import type { ApiPromisePage } from '@/api/_fetch'
 import type { UseApiOnSubmitFn } from './useApi'
 import { isFunction, merge } from 'es-toolkit'
 import { isObject } from '@vueuse/core'
-import { iteratorObject } from '@/utils/iteratorObject'
+import { iteratorObject } from '@/utils/iterator-object'
 import type { UnwrapRef } from 'vue'
 import type { IteratorObjctType } from './_type'
 

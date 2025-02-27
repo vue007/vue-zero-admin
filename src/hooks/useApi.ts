@@ -3,7 +3,7 @@ import type { _AxiosResponse } from 'env'
 import { isFunction, isPlainObject, isString, merge } from 'es-toolkit'
 import { isObject } from 'es-toolkit/compat'
 import type { ApiError, ApiPromise, ApiResponse } from '@/api/_fetch'
-import { iteratorObject } from '@/utils/iteratorObject'
+import { iteratorObject } from '@/utils/iterator-object'
 import type { BaseType, IteratorObjctType } from './_type'
 
 export type UseApiOnSuccessFn<T> = (res?: _AxiosResponse<ApiResponse<T>>) => void

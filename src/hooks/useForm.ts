@@ -1,5 +1,5 @@
 import type { ZeFormItemProp } from '@/components/types/form'
-import { iteratorObject } from '@/utils/iteratorObject'
+import { iteratorObject } from '@/utils/iterator-object'
 import type { FormItemRule } from 'element-plus'
 import { forEach, set } from 'es-toolkit/compat'
 import type { Ref, ComputedRef, UnwrapRef } from 'vue'

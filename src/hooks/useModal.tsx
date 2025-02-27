@@ -1,5 +1,5 @@
 import type { ZeModalInstance } from '@/components/types'
-import { iteratorObject } from '@/utils/iteratorObject'
+import { iteratorObject } from '@/utils/iterator-object'
 import { toReactive } from '@vueuse/core'
 import { isString } from 'es-toolkit'
 import { mergeProps, render } from 'vue'

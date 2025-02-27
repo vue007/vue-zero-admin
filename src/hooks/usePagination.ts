@@ -1,4 +1,4 @@
-import { iteratorObject } from '@/utils/iteratorObject'
+import { iteratorObject } from '@/utils/iterator-object'
 
 /**
  * usePagination hook
