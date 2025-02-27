@@ -70,7 +70,7 @@ export function useTable<P, D>(
   })
 
   watchEffect(() => {
-    listData.value = pageData.value?.list || []
+    listData.value = pageData.value?.rows || []
     pagination.setTotal(pageData.value?.total || 0)
   })
 

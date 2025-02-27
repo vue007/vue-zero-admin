@@ -15,10 +15,7 @@
   </div>
 </template>
 
-<script setup lang="ts">
-// const exportColumns = ref<any>([])
-// provide('VPage_exportColumns', exportColumns)
-</script>
+<script setup lang="ts"></script>
 
 <style lang="scss" scoped>
 .view-page {

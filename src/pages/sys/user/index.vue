@@ -85,7 +85,7 @@
 <script setup lang="ts">
 import type { ZeFormInstance } from '@/components/types/form'
 import { userApi } from '@/api/_index'
-import { set, watchDebounced } from '@vueuse/core'
+import { toReactive, watchDebounced } from '@vueuse/core'
 import { validatePassword, validatePhone, validateUsername } from '@/utils/validators'
 import { merge } from 'es-toolkit'
 import type { DeptVO } from '@/api/sys/dept.type'
@@ -122,7 +122,7 @@ const [searchForm, searchFormItems] = useForm({
 })
 watchDebounced(searchForm, () => refresh(), { deep: true, debounce: 666, maxWait: 3000 })
 
-const [tableData, refresh, pagination, loading] = useTable(userApi.listUser, searchForm, {
+const [tableData, refresh, pagination, loading] = useTable(userApi.listUser, toReactive(searchForm), {
   immediate: true,
 })
 

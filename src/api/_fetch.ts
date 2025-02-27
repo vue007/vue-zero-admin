@@ -29,7 +29,7 @@ export interface ApiResponse<T> {
 
 /** 分页数据体 */
 export class ApiPage<T> extends ApiPagination {
-  list!: Array<T>
+  rows!: Array<T>
 
   public static isFinished(page: ApiPage<any>): boolean {
     return page.pageNo * page.pageSize >= page.total
@@ -39,7 +39,7 @@ export class ApiPage<T> extends ApiPagination {
     page.pageSize = data.pageSize
     page.total = data.total
     page.totalPage = data.totalPage
-    page.list = page.list.concat(data.list)
+    page.rows = page.rows.concat(data.rows)
     return page
   }
 }
