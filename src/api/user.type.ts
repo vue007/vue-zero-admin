@@ -1,6 +1,9 @@
-import type { ApiPageForm } from './_fetch'
+import type { PageQuery } from './_fetch'
+import type { BaseEntity } from './_type'
+import type { RoleVO } from './role.types'
+import type { PostVO } from './sys/post.types'
 
-export interface UserSearchForm extends ApiPageForm {}
+export interface UserSearchForm extends PageQuery {}
 
 /**
  * 用户信息

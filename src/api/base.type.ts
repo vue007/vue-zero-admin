@@ -1,3 +1,5 @@
+import type { UserVO } from './user.type'
+
 export type LoginForm = {
   username: string
   password: string
@@ -38,4 +40,10 @@ export interface LoginVo {
    */
   scope?: string
   [property: string]: any
+}
+
+export interface UserInfo {
+  user: UserVO
+  roles: string[]
+  permissions: string[]
 }

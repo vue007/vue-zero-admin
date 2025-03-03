@@ -5,12 +5,20 @@
     <template #item-username#prefix><svg-icon name="el-user" /></template>
     <template #item-password#prefix><svg-icon class="cursor-pointer" name="el-lock" /></template>
     <template #item-code#append>
-      <component
-        is="img"
-        class="cursor-pointer h-30"
-        :src="`data:image/gif;base64,${captchaData?.img}`"
-        @click="fetchCaptcha"
-      />
+      <suspense>
+        <template #default>
+          <component
+            v-show="captchaData?.img"
+            is="img"
+            class="cursor-pointer h-30"
+            :src="`data:image/gif;base64,${captchaData?.img}`"
+            @click="fetchCaptcha"
+          />
+        </template>
+        <template #fallback>
+          <el-button class="ml-4" type="text" @click="() => fetchCaptcha()">刷新验证码</el-button>
+        </template>
+      </suspense>
     </template>
     <template #item-rememberMe>
       <el-checkbox v-model="loginForm.rememberMe" label="保持登录" />
@@ -29,7 +37,18 @@ import { useThrottleFn } from '@vueuse/core'
 
 const router = useRouter()
 
+const [tenantData] = useApi(baseApi.getTenantList, {}, { immediate: true })
+
 const [loginForm, items, rules] = useForm({
+  tenantId: {
+    value: '000000',
+    item: {
+      type: 'select',
+      options: computed(() =>
+        tenantData.value?.voList.map((item) => ({ label: item.companyName, value: item.tenantId })),
+      ),
+    },
+  },
   username: {
     value: import.meta.env.DEV ? 'admin' : '',
     item: { type: 'text', plh: '用户名' },
@@ -55,7 +74,6 @@ const [, fetchLogin, submitting] = useApi(baseApi.login, loginForm, {
 
     data['clientId'] = import.meta.env.VITE_APP_CLIENT_ID
     data['grantType'] = 'password'
-    data['tenantId'] = '000000'
     data['uuid'] = captchaData.value?.uuid
 
     return data

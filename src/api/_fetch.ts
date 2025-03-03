@@ -12,6 +12,7 @@ export interface ApiPageForm {
   pageNo?: number
   pageSize?: number
 }
+export type PageQuery = ApiPageForm
 
 export class ApiPagination implements ApiPageForm {
   pageNo!: 1
