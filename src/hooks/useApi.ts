@@ -48,12 +48,14 @@ export function useApi<P, D>(
   const request = async (extraData?: { [prop: string]: any } | (() => { [prop: string]: any })) => {
     loading.value = true
     let requestData = {} as P & { [prop: string]: any }
+
     if (extraData) Object.assign(requestData, isFunction(extraData) ? extraData() : extraData)
-    if (isFunction(isRef(params) ? params.value : params) || isPlainObject(isRef(params) ? params.value : params)) {
-      if (params) Object.assign(requestData, isFunction(params) ? params() : isRef(params) ? params.value : params)
-    } else {
-      requestData = extraData as BaseType | any[] | any
-    }
+
+    const resolvedParams = isRef(params) ? params.value : params
+    if (isFunction(resolvedParams) || isPlainObject(resolvedParams)) {
+      if (params) Object.assign(requestData, isFunction(params) ? params() : resolvedParams)
+    } else requestData = extraData as BaseType | any[] | any
+
     const _api = (data: P) =>
       api(data)
         .then((res) => {

@@ -32,7 +32,7 @@
         ></component>
       </component>
       <component v-else v-bind="omit($attrs, OMIT_KEYS)" :is="enumItemComponent">
-        <template v-for="(_, n) in $slots" #[n]="scope">
+        <template v-for="(_, n) in omit($slots, ['default'])" #[n]="scope">
           <slot :name="n" v-bind="scope" />
         </template>
       </component>

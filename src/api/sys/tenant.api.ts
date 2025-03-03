@@ -1,3 +1,4 @@
+import { isArray } from 'es-toolkit/compat'
 import { fetch, type ApiPromise, type ApiPromisePage } from '../_fetch'
 import type { TenantForm, TenantQuery, TenantVO } from './tenant.types'
 
@@ -19,7 +20,7 @@ export function getTenant(id: string | number): ApiPromise<TenantVO> {
 }
 
 // 新增租户
-export function addTenant(data: TenantForm) {
+export function addTenant(data: TenantForm) : ApiPromise<TenantVO>{
   return fetch({
     url: '/system/tenant',
     method: 'post',
@@ -32,7 +33,7 @@ export function addTenant(data: TenantForm) {
 }
 
 // 修改租户
-export function updateTenant(data: TenantForm) {
+export function updateTenant(data: TenantForm) : ApiPromise<TenantVO>{
   return fetch({
     url: '/system/tenant',
     method: 'put',
@@ -55,9 +56,9 @@ export function changeTenantStatus({ id, tenantId, status }: TenantVO) {
 }
 
 // 删除租户
-export function delTenant({ id }: Pick<TenantForm, 'id'>) {
+export function delTenant(ids: string): ApiPromise<void> {
   return fetch({
-    url: '/system/tenant/' + id,
+    url: '/system/tenant/' + ids,
     method: 'delete',
   })
 }

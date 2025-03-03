@@ -3,7 +3,7 @@ import type { UseApiOnSubmitFn } from './useApi'
 import { isFunction, merge } from 'es-toolkit'
 import { isObject } from '@vueuse/core'
 import { iteratorObject } from '@/utils/iterator-object'
-import type { Ref, UnwrapRef } from 'vue'
+import type { Reactive, Ref, UnwrapRef } from 'vue'
 import type { IteratorObjctType } from './_type'
 
 type KeyPath = Array<string> | string
@@ -27,7 +27,7 @@ type UseTableReturn<D> = IteratorObjctType<ReturnFields<D>>
  */
 export function useTable<P, D>(
   api: (_params: P) => ApiPromisePage<D>,
-  params?: P | (() => P) | Ref<P>,
+  params?: P | Reactive<P> | Ref<P>,
   options?: {
     path?: { data?: KeyPath; total?: KeyPath; page?: string; pageSize?: string }
     immediate?: boolean

@@ -127,7 +127,7 @@ const handleStatusChange = (row) => {
     .catch(() => cancel())
 }
 
-const [, handleDel] = useApi(tenantApi.delTenant, {}, { onSuccess: () => refresh(), tipSuccess: '删除成功' })
+const [, handleDel] = useApi(tenantApi.delTenant, '', { onSuccess: () => refresh(), tipSuccess: '删除成功' })
 </script>
 
 <style lang="scss" scoped></style>
