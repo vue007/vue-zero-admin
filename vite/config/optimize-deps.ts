@@ -16,8 +16,6 @@ export const ViteConfigOptimizeDeps = {
     '@vueuse/core',
     'vue-i18n',
     'axios',
-
-    'element-plus/es',
-    ...generateElementPlusPaths(elementPlusComponentNames),
+    'element-plus/es/components/**/style/css',
   ], // await vite to solve this bug,
 }
