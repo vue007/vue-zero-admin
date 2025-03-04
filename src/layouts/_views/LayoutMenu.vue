@@ -74,9 +74,8 @@ const LayoutMenuItemSpan = (props) => (
 
 const { t } = useI18nLocal()
 const route = useRoute()
-const router = useRouter()
 const baseStore = useBaseStore()
-const { menu } = baseStore
+const { menu, setting } = baseStore
 const menuList = computed(() => menu.treeList)
 
 const props = defineProps({
@@ -96,7 +95,9 @@ watch(
 )
 
 onMounted(() => {
-  menu.initMenuList()
+  setting.fetchUserInfo().then(() => {
+    menu.initMenuList()
+  })
 })
 </script>
 

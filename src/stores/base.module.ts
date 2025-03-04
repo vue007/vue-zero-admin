@@ -17,6 +17,7 @@ export const useBaseStore = defineStore('base', () => {
     local: useLocalStorage<BaseLang>('setting.local', 'zh-CN'),
     theme: useLocalStorage<BaseTheme>('setting.theme', 'light'),
     size: useLocalStorage<BaseSize>('setting.size', 'default'),
+    userInfo: useLocalStorage('setting.userInfo', {}),
 
     setLocale(locale: BaseLang) {
       setting.local = locale
@@ -26,6 +27,13 @@ export const useBaseStore = defineStore('base', () => {
     },
     setSize(size: BaseSize) {
       setting.size = size
+    },
+
+    fetchUserInfo() {
+      return baseApi.getInfo().then((res) => {
+        setting.userInfo = res.apiData
+        return res.apiData
+      })
     },
   })
 

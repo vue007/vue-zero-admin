@@ -32,6 +32,7 @@
 
 <script setup lang="ts">
 import { baseApi } from '@/api/_index'
+import { useBaseStore } from '@/stores/base.module'
 import { setToken } from '@/utils/auth'
 import { useThrottleFn } from '@vueuse/core'
 
@@ -80,10 +81,10 @@ const [, fetchLogin, submitting] = useApi(baseApi.login, loginForm, {
   },
   onSuccess: (res) => {
     setToken(res?.apiData.access_token || '')
-    setTimeout(() => router.push('/'), 1000)
+    setTimeout(() => router.replace('/'), 1000)
   },
   onError: (err) => {
-    console.log(err.code)
+    console.log(err.message)
   },
   tipSuccess: '登录成功',
 })

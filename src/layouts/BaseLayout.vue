@@ -63,6 +63,7 @@ watchDebounced(
   },
   { debounce: 200, maxWait: 500, immediate: true },
 )
+
 onMounted(() => {
   console.log(t('header'))
 })
