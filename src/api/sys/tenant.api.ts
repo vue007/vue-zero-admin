@@ -1,4 +1,3 @@
-import { isArray } from 'es-toolkit/compat'
 import { fetch, type ApiPromise, type ApiPromisePage } from '../_fetch'
 import type { TenantForm, TenantQuery, TenantVO } from './tenant.types'
 

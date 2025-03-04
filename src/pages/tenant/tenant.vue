@@ -75,12 +75,7 @@ const { sys_normal_disable } = toRefs(useDict('sys_normal_disable'))
 const searchFormRef = ref<ZeFormInstance>()
 
 const [searchForm, searchFormItems] = useForm({
-  tenantId: { value: '' },
-  companyName: { value: '', item: { type: 'text', plh: '请输入企业名称', prefixIcon: 'el-search' } },
-  status: {
-    value: '',
-    item: { type: 'select', label: '状态', options: sys_normal_disable, labelWidth: '50px' },
-  },
+  packageName: { value: '', item: { type: 'text', plh: '请输入套餐名称', prefixIcon: 'el-search' } },
 })
 watchDebounced(searchForm, () => refresh(), { debounce: 666, maxWait: 3000 })
 
@@ -102,6 +97,19 @@ const [editRef, EditModal] = useModal({
 
 const [editForm, editFormItems, editFormRules] = useForm({
   tenantId: { value: '' },
+  companyName: { value: '', item: { type: 'text', label: '企业名称', plh: '请输入企业名称' } },
+  contactUserName: { value: '', item: { type: 'text', label: '联系人', plh: '请输入联系人' } },
+  contactPhone: { value: '', item: { type: 'text', label: '联系电话', plh: '请输入联系电话' } },
+  username: { value: '', item: { type: 'text', label: '用户名', plh: '请输入系统用户名' } },
+  password: { value: '', item: { type: 'password', label: '用户密码', plh: '请输入系统用户密码' } },
+  packageId: { value: '', item: { type: 'select', label: '租户套餐', plh: '请选择租户套餐' } },
+  expireTime: { value: '', item: { type: 'datetime', label: '过期时间', plh: '请选择过期时间' } },
+  accountCount: { value: 0, item: { type: 'number', label: '用户数量', plh: '请输入用户数量' } },
+  domain: { value: '', item: { type: 'text', label: '绑定域名', plh: '请输入绑定域名' } },
+  address: { value: '', item: { type: 'text', label: '企业地址', plh: '请输入企业地址' } },
+  licenseNumber: { value: '', item: { type: 'text', label: '企业代码', plh: '请输入统一社会信用代码' } },
+  intro: { value: '', item: { type: 'text', label: '企业简介', plh: '请输入企业简介' } },
+  remark: { value: '', item: { type: 'text', label: '备注', plh: '请输入备注' } },
 })
 
 const { request: fetchEdit, loading: submitting } = useApi(
