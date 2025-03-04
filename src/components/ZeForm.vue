@@ -4,7 +4,7 @@
     <template v-if="formItems?.length">
       <template v-for="item in formItems" :key="item.prop">
         <slot :name="'item-' + item.prop" v-bind="item">
-          <ze-formItem v-if="!isEmpty(model)" v-model="model[item.prop]" v-bind="item">
+          <ze-form-item v-if="!isEmpty(model)" v-model="model[item.prop]" v-bind="item">
             <template
               v-for="(_, n) in pickBy($slots, (v, k) => startsWith(k.toString(), `item-${item.prop}`))"
               #[n.toString().split(`#`)[1]]="scope"
@@ -12,12 +12,15 @@
               <slot :name="n" v-bind="scope" />
             </template>
             <template
-              v-for="(_, n) in pickBy($slots, (v, k) => !startsWith(k.toString(), `item-${item.prop}`))"
+              v-for="(_, n) in pickBy(
+                omit($slots, ['default']),
+                (v, k) => !startsWith(k.toString(), `item-${item.prop}`),
+              )"
               #[n]="scope"
             >
               <slot :name="n" v-bind="scope" />
             </template>
-          </ze-formItem>
+          </ze-form-item>
         </slot>
       </template>
     </template>

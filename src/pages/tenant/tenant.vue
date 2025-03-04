@@ -95,7 +95,7 @@ const reset = () => {
 const isEdit = computed(() => editForm.value?.tenantId || false)
 
 const [editRef, EditModal] = useModal({
-  title: computed(() => `${isEdit.value ? '编辑' : '添加'}租户类型`),
+  title: computed(() => `${isEdit.value ? '编辑' : '添加'}租户`),
   submitting: computed(() => submitting.value),
   onConfirm: () => fetchEdit(),
 })
