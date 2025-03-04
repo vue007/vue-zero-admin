@@ -20,7 +20,7 @@ export function getTenant(id: string | number): ApiPromise<TenantVO> {
 }
 
 // 新增租户
-export function addTenant(data: TenantForm) : ApiPromise<TenantVO>{
+export function addTenant(data: TenantForm): ApiPromise<TenantVO> {
   return fetch({
     url: '/system/tenant',
     method: 'post',
@@ -33,7 +33,7 @@ export function addTenant(data: TenantForm) : ApiPromise<TenantVO>{
 }
 
 // 修改租户
-export function updateTenant(data: TenantForm) : ApiPromise<TenantVO>{
+export function updateTenant(data: TenantForm): ApiPromise<TenantVO> {
   return fetch({
     url: '/system/tenant',
     method: 'put',
@@ -80,7 +80,7 @@ export function dynamicClear() {
 }
 
 // 同步租户套餐
-export function syncTenantPackage(tenantId: string | number, packageId: string | number) {
+export function syncTenantPackage({ tenantId, packageId }: TenantVO) {
   const data = {
     tenantId,
     packageId,

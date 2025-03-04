@@ -127,6 +127,15 @@ const handleStatusChange = (row) => {
     .catch(() => cancel())
 }
 
+const handleSyncTenantPackage = (row) => {
+  ElMessageBox.confirm(`是否确认同步租户套餐租户编号为"${row.tenantId}"的数据项？`, { type: 'warning' })
+    .then(() => {
+      loading.value = true
+      tenantApi.syncTenantPackage(row).then(() => ElMessage.success('同步成功'))
+    })
+    .finally(() => (loading.value = false))
+}
+
 const [, handleDel] = useApi(tenantApi.delTenant, '', { onSuccess: () => refresh(), tipSuccess: '删除成功' })
 </script>
 
