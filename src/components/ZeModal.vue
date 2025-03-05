@@ -10,7 +10,7 @@
   >
     <template #header>
       <slot name="title">
-        <span class="modal-title">{{ options.title }}</span>
+        <span class="modal-title">{{ $attrs.title }}</span>
       </slot>
     </template>
 
@@ -57,7 +57,6 @@ const props = defineProps({
 const attrs = useAttrs()
 const options = reactive({
   type: props.type,
-  title: attrs.title,
   showAction: props.showAction,
 })
 watch(
@@ -69,18 +68,12 @@ watch(
 const setData = ({ type, showAction, title, submitting }: any) => {
   if (!isUndefined(type)) options.type = type
   if (!isUndefined(showAction)) options.showAction = showAction
-  if (!isUndefined(title)) options.title = title
 }
 const getData = () => {
   return {
     type: options.type,
-    title: options.title,
     showAction: options.showAction,
   }
-}
-
-const setTitle = (title: string) => {
-  if (!isUndefined(title)) options.title = title
 }
 
 const open = (data: object | undefined = undefined) => {
@@ -117,7 +110,7 @@ const handleConfirm = async (e?: Event) => {
 
 const toggle = (isShow: boolean) => (model.value = isShow)
 
-defineExpose({ toggle, open, close, setData, setTitle, getData, confirm: handleConfirm, form: modalForm })
+defineExpose({ toggle, open, close, setData, getData, confirm: handleConfirm, form: modalForm })
 </script>
 
 <!-- global style -->

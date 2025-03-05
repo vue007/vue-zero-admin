@@ -87,7 +87,7 @@ const reset = () => {
   nextTick(() => refresh())
 }
 
-const isEdit = computed(() => editForm.value?.tenantId || false)
+const isEdit = computed(() => Boolean(editForm.value?.id))
 
 const [editRef, EditModal] = useModal({
   title: computed(() => `${isEdit.value ? '编辑' : '添加'}租户`),
@@ -96,6 +96,7 @@ const [editRef, EditModal] = useModal({
 })
 
 const [editForm, editFormItems, editFormRules] = useForm({
+  id: { value: '' },
   tenantId: { value: '' },
   companyName: { value: '', item: { type: 'text', label: '企业名称', plh: '请输入企业名称' } },
   contactUserName: { value: '', item: { type: 'text', label: '联系人', plh: '请输入联系人' } },

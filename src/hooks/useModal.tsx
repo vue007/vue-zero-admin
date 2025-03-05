@@ -33,7 +33,7 @@ export const useModal = ({ content, immediate, ...props }: ModalArgs = defModalA
   const modalRef = ref()
 
   const __Use_Modal = (_props, { slots: _slots, attrs: _attrs }) => (
-    <_ZeModal ref={modalRef} {...toReactive(mergeProps(_attrs, _props, props))}>
+    <_ZeModal ref={modalRef} {...mergeProps(_attrs, _props, toReactive(props))}>
       {{
         default: () => (!content ? _slots.default && _slots.default() : isString(content) ? content : content()),
         footer: () => _slots.footer && _slots.footer(),
