@@ -13,6 +13,8 @@ export type BaseLang = 'en' | 'zh-CN' | 'zh-TW'
 export type BaseArrangement = 'default' | ''
 
 export const useBaseStore = defineStore('base', () => {
+  const router = useRouter()
+
   const setting = reactive({
     local: useLocalStorage<BaseLang>('setting.local', 'zh-CN'),
     theme: useLocalStorage<BaseTheme>('setting.theme', 'light'),
@@ -59,7 +61,6 @@ export const useBaseStore = defineStore('base', () => {
     },
 
     initMenuList() {
-      const router = useRouter()
       const route = useRoute()
 
       return baseApi.getRouters().then((res) => {
@@ -71,12 +72,12 @@ export const useBaseStore = defineStore('base', () => {
 
           const item = authorisedRoutes.find((item) => item.path === r.path)
           if (!item && !['/'].includes(item?.path) && !['/'].includes(item?.alias)) {
-            router.removeRoute(r.name)
+            router?.removeRoute(r.name)
           } else {
             merge(r, { meta: item.meta })
           }
         })
-        menu.setBreadcrumb(authorisedRoutes.find((item) => item.path === route.path)?.meta?.breadcrumb || [])
+        menu.setBreadcrumb(authorisedRoutes.find((item) => item.path === route?.path)?.meta?.breadcrumb || [])
         return res.apiData
       })
     },

@@ -75,7 +75,7 @@ const { sys_normal_disable } = toRefs(useDict('sys_normal_disable'))
 const searchFormRef = ref<ZeFormInstance>()
 
 const [searchForm, searchFormItems] = useForm({
-  packageName: { value: '', item: { type: 'text', plh: '请输入套餐名称', prefixIcon: 'el-search' } },
+  tenantId: { value: '', item: { type: 'text', plh: '请输入租户编号', prefixIcon: 'el-search' } },
 })
 watchDebounced(searchForm, () => refresh(), { debounce: 666, maxWait: 3000 })
 

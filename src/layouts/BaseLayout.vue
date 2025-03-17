@@ -20,10 +20,7 @@
       </aside>
       <div class="layout-page">
         <el-breadcrumb class="page-breadcrumb" separator="/">
-          <el-breadcrumb-item :to="{ path: '/' }">homepage</el-breadcrumb-item>
-          <el-breadcrumb-item>
-            <a href="/">promotion management</a>
-          </el-breadcrumb-item>
+          <el-breadcrumb-item v-for="item in menu.breadcrumb">{{ item }}</el-breadcrumb-item>
         </el-breadcrumb>
 
         <router-view v-slot="{ route, Component: Comp }">
@@ -46,6 +43,7 @@ import { useMediaQuery, watchDebounced } from '@vueuse/core'
 
 const { t } = useI18nLocal()
 const baseStore = useBaseStore()
+const { menu } = baseStore
 const route = useRoute()
 
 const isTab = computed(() => route.meta.isTab)
@@ -127,6 +125,10 @@ $header-height: 64px;
 
   .page-breadcrumb {
     margin: 16px 0;
+
+    .el-breadcrumb__item:last-child :deep(.el-breadcrumb__inner) {
+      color: var(--el-text-color-primary);
+    }
   }
 }
 .layout-aside {
