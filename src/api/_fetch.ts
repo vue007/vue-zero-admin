@@ -78,7 +78,7 @@ const fetch = axios.create({
 fetch.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     // lang
-    config.headers['Content-Language'] = localStorage.getItem('setting.local') || 'zh-CN'
+    config.headers['lang'] = localStorage.getItem('setting.local') || 'zh-CN'
     const isToken = config.headers?.isToken === false
 
     if (getToken() && !isToken) {

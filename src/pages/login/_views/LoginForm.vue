@@ -32,7 +32,7 @@
 
 <script setup lang="ts">
 import { baseApi } from '@/api/_index'
-import { useBaseStore } from '@/stores/base.module'
+// import { useBaseStore } from '@/stores/base.module'
 import { setToken } from '@/utils/auth'
 import { useThrottleFn } from '@vueuse/core'
 
