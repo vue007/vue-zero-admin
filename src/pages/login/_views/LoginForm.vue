@@ -25,7 +25,7 @@
     </template>
   </ze-form>
 
-  <el-button class="w-full mt-8" type="primary" size="large" @click="submitLogin" :loading="submitting">
+  <el-button class="w-full mt-8" prop="submit" type="primary" size="large" @click="submitLogin" :loading="submitting">
     立即登录
   </el-button>
 </template>
@@ -83,9 +83,7 @@ const [, fetchLogin, submitting] = useApi(baseApi.login, loginForm, {
     setToken(res?.apiData.access_token || '')
     setTimeout(() => router.replace('/'), 1000)
   },
-  onError: (err) => {
-    console.log(err.message)
-  },
+  onError: () => refreshCaptcha(),
   tipSuccess: '登录成功',
 })
 
@@ -99,6 +97,7 @@ const [captchaData, fetchCaptcha] = useApi(
     },
   },
 )
+const refreshCaptcha = useThrottleFn(() => fetchCaptcha(), 1000)
 
 const submitLogin = useThrottleFn(() => {
   fetchLogin()
