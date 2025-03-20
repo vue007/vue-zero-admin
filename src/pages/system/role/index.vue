@@ -125,7 +125,7 @@ const searchFormRef = ref<ZeFormInstance>()
 
 const [searchForm, searchFormItems] = useForm({
   roleName: { value: '', item: { type: 'text', plh: '角色名称', prefixIcon: 'el-search' } },
-  // roleKey: { value: '', item: { type: 'text', plh: '权限字符' } },
+  roleKey: { value: '', item: { type: 'text', plh: '权限字符' } },
   status: { value: '', item: { type: 'select', label: '状态', options: sys_normal_disable, labelWidth: '50px' } },
 })
 watchDebounced(searchForm, () => refresh(), { debounce: 666, maxWait: 3000 })

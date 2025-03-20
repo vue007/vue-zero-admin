@@ -73,7 +73,7 @@ const searchForm = reactive({ name: '', pageNo: 1, pageSize: 10 })
 //   pagination,
 //   loading,
 // } = useTable(userApi.list, searchForm, { immediate: true })
-const [tableData, refresh, pagination, loading] = useTable(userApi.list, searchForm, { immediate: true })
+const [tableData, refresh, pagination, loading] = useTable(userApi.listUser, searchForm, { immediate: true })
 
 const filterColRef = ref()
 const isEdit = computed(() => !isEmpty(userForm?.value?.id))
@@ -97,6 +97,7 @@ const checkAge = (rule, value, cb) => {
 
 const [userForm, userFormItems, userFormRules] = useForm({
   id: { value: '', item: { type: 'hidden' } },
+  deptId: { value: '', item: { type: 'hidden' } },
   name: {
     value: '',
     item: { type: 'text', label: '名字' },
@@ -132,7 +133,7 @@ const [userForm, userFormItems, userFormRules] = useForm({
 // 同时支持 对象 和 数组 析构
 // const [,fetchEdit] = useApi(
 const { request: fetchEdit, loading: submitting } = useApi(
-  (data: UserForm) => (isEdit.value ? userApi.update(data) : userApi.create(data)),
+  (data: UserForm) => (isEdit.value ? userApi.updateUser(data) : userApi.addUser(data)),
   toReactive(userForm),
   {
     onSuccess: () => {

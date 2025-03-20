@@ -89,7 +89,7 @@ const toggleExpandAll = (data: any[] = [], status: boolean) => {
   })
 }
 
-const rawRef = ref<TableInstance>()
+const rawRef: Ref<TableInstance | undefined> = ref()
 
 const getColKey = (item) => item.prop || item.type
 const _columns = computed(() => {

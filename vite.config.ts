@@ -94,7 +94,7 @@ export default defineConfig(({ command, mode }) => {
       config.plugins = config.plugins?.concat([mkcert()])
     }
 
-    config.plugins = config.plugins?.concat([vueDevTools()])
+    config.plugins = config.plugins?.concat([vueDevTools({})])
     config.optimizeDeps = ViteConfigOptimizeDeps
     return config
   } else {

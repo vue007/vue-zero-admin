@@ -20,6 +20,7 @@
         { prop: 'createdTime', label: $t('doc.col.createdTime'), minWidth: 160 },
       ]"
       :filterColVR="filterColRef"
+      :loading="loading"
     >
       <template #col-hasPassion="scope">
         <el-switch :modelValue="scope.row.hasPassion" @update:modelValue="scope.row.hasPassion = $event" />
@@ -41,7 +42,7 @@ import { userApi } from '@/api/_index'
 
 const searchForm = reactive({ pageNo: 1, pageSize: 10 })
 
-const [tableData, refresh, pagination, loading] = useTable(userApi.list, searchForm, { immediate: true })
+const [tableData, refresh, pagination, loading] = useTable(userApi.listUser, searchForm, { immediate: true })
 
 const filterColRef = ref()
 
