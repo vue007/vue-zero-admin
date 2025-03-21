@@ -8,15 +8,13 @@
     "nightwatch.conf.*",
     "playwright.config.*"
   ],
-  "exclude": ["**/node_modules/*", "**/.pnpm/*", "node_modules", "**/*.test.ts", "**/test/**/*"],
   "compilerOptions": {
     "composite": true,
     "noEmit": true,
     "resolveJsonModule": true,
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.node.tsbuildinfo",
-    "skipLibCheck": false,
 
-    "module": "ES6",
+    "module": "esnext",
     "moduleResolution": "bundler",
     "types": ["node"]
   }
