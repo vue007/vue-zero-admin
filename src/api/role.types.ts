@@ -1,3 +1,6 @@
+import type { PageQuery } from './_fetch'
+import type { BaseEntity } from './_type'
+
 /**
  * 菜单树形结构类型
  */
@@ -14,7 +17,7 @@ export interface RoleDeptTree {
   depts: DeptTreeOption[]
 }
 
-export interface RoleVO extends Base {
+export interface RoleVO extends BaseEntity {
   roleId: string | number
   roleName: string
   roleKey: string

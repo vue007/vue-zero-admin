@@ -133,7 +133,7 @@ const [userForm, userFormItems, userFormRules] = useForm({
 // 同时支持 对象 和 数组 析构
 // const [,fetchEdit] = useApi(
 const { request: fetchEdit, loading: submitting } = useApi(
-  (data: UserForm) => (isEdit.value ? userApi.updateUser(data) : userApi.addUser(data)),
+  (data: UserForm) => (isEdit.value ? userApi.updateUser(data as any) : userApi.addUser(data as any)),
   toReactive(userForm),
   {
     onSuccess: () => {
@@ -153,7 +153,7 @@ const [editDlgRef, EditDialog] = useModal({
   submitting,
 })
 
-const handleDel = (row) => baseApi.delType(row).then(() => refresh() && ElMessage.success('删除成功'))
+const handleDel = (row) => {} //baseApi.delType(row).then(() => refresh() && ElMessage.success('删除成功'))
 </script>
 
 <style lang="scss" scoped></style>
