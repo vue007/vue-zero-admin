@@ -5,7 +5,7 @@
         <ze-form-item>
           <ze-actions
             :actions="[
-              { icon: 'el-scale-to-original', tip: '显示/隐藏列', onRef: (r) => (filterColRef = r) },
+              { icon: 'ze-table-tree', tip: '显示/隐藏列', onRef: (r) => (filterColRef = r) },
               { icon: 'el-refresh', tip: '重置', onClick: reset },
             ]"
           />

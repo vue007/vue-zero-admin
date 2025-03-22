@@ -5,7 +5,7 @@
         <ze-form-item>
           <ze-actions
             :actions="[
-              { icon: 'ze-tree-table', tip: '展开/折叠行', onClick: () => tableRef.toggleAllExpansion() },
+              { icon: 'ze-table-tree', tip: '展开/折叠行', onClick: () => tableRef.toggleAllExpansion() },
               { icon: 'el-scale-to-original', tip: '显示/隐藏列', onRef: (r) => (filterColRef = r) },
               { icon: 'el-refresh', tip: '重置', onClick: reset },
             ]"
