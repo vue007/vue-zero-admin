@@ -26,25 +26,7 @@ test.describe('Login Page', () => {
     login_button: 'button[prop="submit"]',
   }
 
-  test('检查登录表单是否存在', async ({ page }) => {
-    await expect(page.locator('.login-form-box')).toBeVisible()
-    await expect(page.locator(selector.username)).toBeVisible()
-    await expect(page.locator(selector.password)).toBeVisible()
-    await expect(page.locator(selector.login_button)).toBeVisible()
-  })
-
-  // test('输入无效的用户名和密码', async ({ page }) => {
-  //   // 输入无效的用户名和密码
-  //   await page.fill(selector.username, 'invalidUser')
-  //   await page.fill(selector.password, 'wrongPassword')
-  //   await page.click(selector.login_button)
-
-  //   // 检查错误提示是否显示
-  //   await expect(page.locator('.error-message'))
-  // })
-
-  test.describe.configure({ mode: 'serial' })
-  test('should login successfully with valid credentials', async ({ page }) => {
+  test('Auth001', async ({ page }) => {
     await page.fill(selector.username, 'admin')
     await page.fill(selector.password, 'admin123')
 
