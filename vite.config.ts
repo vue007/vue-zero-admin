@@ -51,14 +51,39 @@ export default defineConfig(({ command, mode }) => {
         },
       },
     },
+
     build: {
       terserOptions: { compress: { drop_console: true, drop_debugger: true } },
       rollupOptions: {
         output: {
-          manualChunks: { 'index-core': ['vue', 'vue-router', 'pinia', '@vueuse/core'] },
+          // manualChunks: { 'index-core': ['vue', 'vue-router', 'pinia', '@vueuse/core'] },
           chunkFileNames: 'js/[name]-[hash].js', // 引入文件名的名称
           entryFileNames: 'js/[name]-[hash].js', // 包的入口文件名称
           assetFileNames: '[ext]/[name]-[hash].[ext]', // 资源文件像 字体，图片等
+          advancedChunks: {
+            minSize: 10 * 1024, // 10kb
+            minModuleSize: 10 * 1024, // 10kb
+            groups: [
+              {
+                // Core framework libraries (change less frequently)
+                test: /[\\/]node_modules[\\/](vue|vue-router|pinia|@vueuse\/core)[\\/]/,
+                name: 'vendor-core',
+                priority: 40,
+              },
+              {
+                // UI libraries
+                test: /[\\/]node_modules[\\/](element-plus|@element-plus)[\\/]/,
+                name: 'vendor-ui',
+                priority: 30,
+              },
+              {
+                // All other dependencies
+                test: /[\\/]node_modules[\\/]/,
+                name: 'vendor-others',
+                priority: 20,
+              },
+            ],
+          },
         },
         external: [], // PLACEHOLDER DONT REMOVE THIS LINE
         plugins: [], // PLACEHOLDER DONT REMOVE THIS LINE
