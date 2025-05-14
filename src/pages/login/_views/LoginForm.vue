@@ -1,5 +1,5 @@
 <template>
-  <div class="mb-40 text-24 font-bold">登录</div>
+  <div class="mb-40 text-24 font-bold">{{ t('title') }}</div>
 
   <ze-form v-model="loginForm" v-bind="{ items, rules, labelWidth: '0px' }" ref="loginFormRef">
     <template #item-username#prefix><svg-icon name="el-user" /></template>
@@ -16,17 +16,17 @@
           />
         </template>
         <template #fallback>
-          <el-button class="ml-4" type="text" @click="() => fetchCaptcha()">刷新验证码</el-button>
+          <el-button class="ml-4" type="text" @click="() => fetchCaptcha()">{{ t('refresh_captcha') }}</el-button>
         </template>
       </suspense>
     </template>
     <template #item-rememberMe>
-      <el-checkbox v-model="loginForm.rememberMe" label="保持登录" />
+      <el-checkbox v-model="loginForm.rememberMe" :label="t('remember_me')" />
     </template>
   </ze-form>
 
   <el-button class="w-full mt-8" prop="submit" type="primary" size="large" @click="submitLogin" :loading="submitting">
-    立即登录
+    {{ t('login_btn') }}
   </el-button>
 </template>
 
@@ -36,6 +36,7 @@ import { baseApi } from '@/api/_index'
 import { setToken } from '@/utils/auth'
 import { useThrottleFn } from '@vueuse/core'
 
+const { t } = useI18nLocal()
 const router = useRouter()
 
 const [tenantData] = useApi(baseApi.getTenantList, {}, { immediate: true })
@@ -52,17 +53,17 @@ const [loginForm, items, rules] = useForm({
   },
   username: {
     value: import.meta.env.DEV ? 'admin' : '',
-    item: { type: 'text', plh: '用户名' },
+    item: { type: 'text', plh: t('username_plh') },
     rule: [{ required: true, message: '请输入您的账号' }],
   },
   password: {
     value: import.meta.env.DEV ? 'admin123' : '',
-    item: { type: 'password', plh: '密码', showPassword: true },
+    item: { type: 'password', plh: t('password_plh'), showPassword: true },
     rule: [{ required: true, message: '请输入您的密码' }],
   },
   code: {
     value: '',
-    item: { type: 'text', plh: '验证码' },
+    item: { type: 'text', plh: t('captcha_plh') },
     rule: [{ required: true, message: '请输入验证码' }],
   },
   rememberMe: { value: false },
@@ -105,3 +106,46 @@ const submitLogin = useThrottleFn(() => {
 </script>
 
 <style lang="scss" scoped></style>
+
+<i18n lang="yaml">
+en:
+  title: 'Login'
+  welcome: 'Welcome to'
+  refresh_captcha: 'Refresh Captcha'
+  login: 'Login'
+  register: 'Register'
+  forget_password: 'Forget Password'
+  remember_me: 'Remember Me'
+  username: 'Username'
+  password: 'Password'
+  login_btn: 'Login'
+  register_btn: 'Register'
+  forget_password_btn: 'Forget Password'
+  login_success: 'Login Success'
+  login_fail: 'Login Failed'
+  username_plh: 'Please enter your username'
+  password_plh: 'Please enter your password'
+  captcha_plh: 'Please enter the captcha'
+  username_error: 'Username cannot be empty'
+  password_error: 'Password cannot be empty'
+zh:
+  title: '登录'
+  welcome: '欢迎使用'
+  refresh_captcha: '刷新验证码'
+  login: '登录'
+  register: '注册'
+  forget_password: '忘记密码'
+  remember_me: '记住我'
+  username: '用户名'
+  password: '密码'
+  login_btn: '立即登录'
+  register_btn: '注册'
+  forget_password_btn: '忘记密码'
+  login_success: '登录成功'
+  login_fail: '登录失败'
+  username_plh: '请输入用户名'
+  password_plh: '请输入密码'
+  captcha_plh: '请输入验证码'
+  username_error: '用户名不能为空'
+  password_error: '密码不能为空'
+</i18n>

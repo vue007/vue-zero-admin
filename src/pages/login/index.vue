@@ -6,7 +6,7 @@
   <div class="login-page">
     <aside class="login-aside relative">
       <div class="aside-title">
-        <div class="mr-10">Welecom to</div>
+        <div class="mr-10">{{ t('welcome') }}</div>
         <div>Zero Admin</div>
       </div>
     </aside>
@@ -23,6 +23,7 @@
 
 <script setup lang="ts">
 import LoginForm from './_views/LoginForm.vue'
+const { t } = useI18nLocal()
 </script>
 
 <style lang="scss" scoped>
@@ -115,3 +116,11 @@ import LoginForm from './_views/LoginForm.vue'
   }
 }
 </style>
+
+<i18n lang="yaml">
+en:
+  welcome: 'Welcome to'
+
+zh:
+  welcome: '欢迎使用'
+</i18n>
