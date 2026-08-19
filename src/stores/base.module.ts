@@ -62,6 +62,7 @@ export const useBaseStore = defineStore('base', () => {
 
     initMenuList() {
       const route = useRoute()
+      console.log('initMenuList', autoPageRoutes)
 
       return baseApi.getRouters().then((res) => {
         menu.setTreeList(res.apiData)

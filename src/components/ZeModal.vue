@@ -54,7 +54,7 @@ const props = defineProps({
   footerConfirmTxt: { type: String, default: () => undefined },
 })
 
-const attrs = useAttrs()
+// const attrs = useAttrs()
 const options = reactive({
   type: props.type,
   showAction: props.showAction,

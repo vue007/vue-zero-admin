@@ -14,15 +14,15 @@
         <SizeCheckTag value="small" text="base.size.small" />
       </el-popover>
 
-      <el-popover v-if="'theme' === action" trigger="hover">
+      <el-popover v-if="'scheme' === action" trigger="hover">
         <template #reference>
           <div class="action cursor-pointer" @click="toggleTheme">
             <svg-icon :name="themeIcon" />
           </div>
         </template>
-        <ThemeCheckTag value="light" icon="ze-sunny" text="base.theme.light" />
-        <ThemeCheckTag value="dark" icon="ze-moon" text="base.theme.dark" />
-        <ThemeCheckTag value="auto" icon="ze-laptop" text="base.theme.auto" />
+        <ThemeCheckTag value="light" icon="ze-sunny" text="base.scheme.light" />
+        <ThemeCheckTag value="dark" icon="ze-moon" text="base.scheme.dark" />
+        <ThemeCheckTag value="auto" icon="ze-laptop" text="base.scheme.auto" />
       </el-popover>
 
       <el-popover v-if="'locale' === action" trigger="hover">
@@ -69,7 +69,7 @@ const { t } = useI18nLocal()
 const baseStore = useBaseStore()
 const { setting } = baseStore
 
-const ACTION_LIST = ['ALL', 'fullscreen', 'size', 'locale', 'theme', 'dropdown'] as const
+const ACTION_LIST = ['ALL', 'fullscreen', 'size', 'locale', 'scheme', 'dropdown'] as const
 export type ActionType = (typeof ACTION_LIST)[number]
 const props = defineProps({
   to: { type: String, default: '#header-right' },
