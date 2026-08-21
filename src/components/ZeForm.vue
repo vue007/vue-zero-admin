@@ -67,7 +67,7 @@ const formRef = ref<FormInstance | null>(null)
 const setFields = (data) => {
   emit('update:modelValue', cloneDeep(data ? data : defaultModelVal.value))
   setTimeout(() => {
-    formRef.value && formRef.value.clearValidate()
+    if (formRef.value) formRef.value.clearValidate()
   })
 }
 const expose = new Proxy(

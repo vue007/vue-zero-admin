@@ -1,6 +1,7 @@
+import fs from 'node:fs'
 import { fileURLToPath, URL } from 'node:url'
 
-import { defineConfig, UserConfig } from 'vite'
+import { defineConfig, UserConfig } from 'vite-plus'
 import vue from '@vitejs/plugin-vue'
 import vueJsx from '@vitejs/plugin-vue-jsx'
 import vueI18n from '@intlify/unplugin-vue-i18n/vite'
@@ -26,7 +27,14 @@ export default defineConfig(({ command, mode }) => {
 
   const config: UserConfig = {
     plugins: [
-      vue(),
+      vue({
+        script: {
+          fs: {
+            fileExists: fs.existsSync,
+            readFile: (file) => fs.readFileSync(file, 'utf8'),
+          },
+        },
+      }),
       vueJsx(),
       vueI18n(),
       ElementPlus({}),

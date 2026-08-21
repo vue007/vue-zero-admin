@@ -1,4 +1,4 @@
-import type { FormInstance, FormItemProps } from 'element-plus'
+import type { FormInstance, FormItemProps, InputProps } from 'element-plus'
 import type ZeFormItem from '../ZeFormItem.vue'
 
 export const INPUT_TYPES = ['text', 'textarea', 'password'] as const

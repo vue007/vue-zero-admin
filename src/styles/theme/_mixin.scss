@@ -6,8 +6,12 @@ $prefix: --#{$namespace};
 @mixin createColors($name, $color, $is-dark: false) {
   #{$prefix}-#{$name}: #{$color};
 
-  $light-color: if($is-dark, #000, #fff);
-  $dark-color: if($is-dark, #fff, #000);
+  $light-color: #fff;
+  $dark-color: #000;
+  @if $is-dark {
+    $light-color: #000;
+    $dark-color: #fff;
+  }
 
   @each $i in (3, 5, 7, 8, 9) {
     #{$prefix}-#{$name}-light-#{$i}: #{color.mix($light-color, $color, math.percentage(math.div($i, 10)))};
@@ -16,8 +20,8 @@ $prefix: --#{$namespace};
 }
 
 @mixin defaultThemeVars() {
-  #{$prefix}-font-family: 'Microsoft YaHei', '微软雅黑', 'PingFang SC', 'Helvetica Neue', Helvetica, 'Hiragino Sans GB',
-    Arial, sans-serif;
+  #{$prefix}-font-family:
+    'Microsoft YaHei', '微软雅黑', 'PingFang SC', 'Helvetica Neue', Helvetica, 'Hiragino Sans GB', Arial, sans-serif;
 
   #{$prefix}-color-primary-rgb: 64, 158, 255;
   #{$prefix}-color-success-rgb: 103, 194, 58;

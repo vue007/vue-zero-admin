@@ -1,21 +1,23 @@
 {
-  "extends": "@tsconfig/node20/tsconfig.json",
+  "extends": "./node_modules/@tsconfig/node24/tsconfig.json",
   "include": [
     "vite/**/*.ts",
     "vite.config.*",
     "vitest.config.*",
     "cypress.config.*",
     "nightwatch.conf.*",
-    "playwright.config.*"
+    "playwright.config.*",
+    "src/auto-imports.d.ts",
+    "src/components.d.ts"
   ],
   "compilerOptions": {
     "composite": true,
-    "noEmit": true,
     "resolveJsonModule": true,
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.node.tsbuildinfo",
 
-    "module": "esnext",
-    "moduleResolution": "bundler",
+    "module": "nodenext",
+    "allowImportingTsExtensions": true,
+    "noEmit": true,
     "types": ["node"]
   }
 }

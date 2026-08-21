@@ -1,14 +1,14 @@
-module.exports = {
+// Shared Prettier config used by both Prettier CLI and Vite+ fmt
+{
   $schema: 'https://json.schemastore.org/prettierrc',
   printWidth: 120,
   tabWidth: 2,
-  tabs: false,
   semi: false,
   singleQuote: true,
   quoteProps: 'as-needed',
   trailingComma: 'all',
   bracketSpacing: true,
-  jsxBracketSameLine: false,
+  bracketSameLine: false,
   singleAttributePerLine: false,
   arrowParens: 'always',
   vueIndentScriptAndStyle: false,

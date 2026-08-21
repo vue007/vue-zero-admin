@@ -21,7 +21,7 @@ const tooltip = (el: HTMLElement, value: string | any) => {
 
 export const basePlugin: Plugin = {
   install: (app, options) => {
-    options // keep line
+    // options // keep line
 
     app.directive('tooltip', {
       // mounted: (el, { value }) => tooltip(el, value),
