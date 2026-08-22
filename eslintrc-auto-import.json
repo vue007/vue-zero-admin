@@ -7,7 +7,6 @@
     "DirectiveBinding": true,
     "EffectScope": true,
     "ElMessage": true,
-    "ElMessageBox": true,
     "ExtractDefaultPropTypes": true,
     "ExtractFields": true,
     "ExtractObject": true,

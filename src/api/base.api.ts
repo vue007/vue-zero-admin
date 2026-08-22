@@ -8,6 +8,13 @@ export function login(data: LoginForm): ApiPromise<LoginVo> {
   return fetch.post('/auth/login', JSON.stringify(data))
 }
 
+export function logout(): ApiPromise<void> {
+  return fetch({
+    url: '/auth/logout',
+    method: 'post',
+  })
+}
+
 export function getCaptcha(): ApiPromise<{ img: string; uuid: string }> {
   return fetch({
     url: '/auth/captcha',

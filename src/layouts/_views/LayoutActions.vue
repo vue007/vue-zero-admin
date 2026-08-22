@@ -50,7 +50,7 @@
             <svg-icon class="mr-10" name="el-setting" />
             个人设置
           </el-dropdown-item> -->
-            <el-dropdown-item divided @click="() => $router.push('/login')">
+            <el-dropdown-item divided @click="() => handleLogout()">
               <svg-icon class="mr-10" name="el-switch-button" />
               退出
             </el-dropdown-item>
@@ -62,6 +62,7 @@
 </template>
 
 <script setup lang="tsx">
+import { logout } from '@/api/base.api'
 import { useBaseStore } from '@/stores/base.module'
 import { includes } from 'es-toolkit/compat'
 
@@ -77,6 +78,12 @@ const props = defineProps({
   actions: {
     type: Array as PropType<Array<ActionType>>,
     default: () => 'ALL',
+  },
+})
+
+const [, handleLogout] = useApi(logout, undefined, {
+  onSuccess: () => {
+    window.location.href = '/login'
   },
 })
 
