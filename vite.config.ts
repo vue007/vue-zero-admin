@@ -13,12 +13,12 @@ import oxlintPlugin from 'vite-plugin-oxlint'
 import mkcert from 'vite-plugin-mkcert'
 import ElementPlus from 'unplugin-element-plus/vite'
 
-import { vitePluginAutoPages } from './vite/plugins/auto-pages'
-import { vitePluginAutoImport } from './vite/plugins/auto-import'
-import { vitePluginComponents } from './vite/plugins/components'
-import { vitePluginSvgIcons } from './vite/plugins/svg-icon'
-import { vitePluginUnocss } from './vite/plugins/unocss'
-import { ViteConfigOptimizeDeps } from './vite/config/optimize-deps'
+import { vitePluginAutoPages } from './vite/plugins/auto-pages.ts'
+import { vitePluginAutoImport } from './vite/plugins/auto-import.ts'
+import { vitePluginComponents } from './vite/plugins/components.ts'
+import { vitePluginSvgIcons } from './vite/plugins/svg-icon.ts'
+import { vitePluginUnocss } from './vite/plugins/unocss.ts'
+import { ViteConfigOptimizeDeps } from './vite/config/optimize-deps.ts'
 
 const pathSrc = fileURLToPath(new URL('./src', import.meta.url))
 
@@ -29,16 +29,21 @@ export default defineConfig(({ command, mode }) => {
     plugins: [
       vue({
         script: {
+          // TypeScript 7 no longer exposes ts.sys; compiler-sfc still needs fs for imported defineProps types.
           fs: {
-            fileExists: fs.existsSync,
-            readFile: (file) => fs.readFileSync(file, 'utf8'),
+            fileExists: (file) => fs.existsSync(file),
+            readFile: (file) => fs.readFileSync(file, 'utf-8'),
+            realpath: (file) => fs.realpathSync(file),
           },
         },
       }),
-      vueJsx(),
-      vueI18n(),
-      ElementPlus({}),
-      oxlintPlugin({ allow: ['no-unsafe-declaration-merging', 'no-unused-vars'] }),
+      vueJsx({}),
+      vueI18n({
+        include: [],
+        strictMessage: false,
+        runtimeOnly: true,
+      }),
+      (oxlintPlugin as any)({ allow: ['no-unsafe-declaration-merging', 'no-unused-vars'] }),
       // eslintPlugin(),
 
       // just remove special plugin when unneed
@@ -47,50 +52,56 @@ export default defineConfig(({ command, mode }) => {
       vitePluginAutoImport(),
       vitePluginComponents(),
       vitePluginSvgIcons(pathSrc),
-    ],
 
+      ElementPlus({}),
+    ],
     resolve: { alias: { '@': pathSrc, '~/': pathSrc + '/' } },
     css: {
       preprocessorOptions: {
         scss: {
           additionalData: `@use "@/styles/vars.scss" as *;`,
-          api: 'modern',
           quietDeps: true,
         },
       },
     },
-
     build: {
-      terserOptions: { compress: { drop_console: true, drop_debugger: true } },
+      chunkSizeWarningLimit: 1200,
       rollupOptions: {
         output: {
-          // manualChunks: { 'index-core': ['vue', 'vue-router', 'pinia', '@vueuse/core'] },
-          chunkFileNames: 'js/[name]-[hash].js', // 引入文件名的名称
-          entryFileNames: 'js/[name]-[hash].js', // 包的入口文件名称
-          assetFileNames: '[ext]/[name]-[hash].[ext]', // 资源文件像 字体，图片等
-          advancedChunks: {
-            minSize: 10 * 1024, // 10kb
-            minModuleSize: 10 * 1024, // 10kb
-            groups: [
-              {
-                // Core framework libraries (change less frequently)
-                test: /[\\/]node_modules[\\/](vue|vue-router|pinia|@vueuse\/core)[\\/]/,
-                name: 'vendor-core',
-                priority: 40,
-              },
-              {
-                // UI libraries
-                test: /[\\/]node_modules[\\/](element-plus|@element-plus)[\\/]/,
-                name: 'vendor-ui',
-                priority: 30,
-              },
-              {
-                // All other dependencies
-                test: /[\\/]node_modules[\\/]/,
-                name: 'vendor-others',
-                priority: 20,
-              },
-            ],
+          chunkFileNames: 'js/[name]-[hash].js',
+          entryFileNames: 'js/[name]-[hash].js',
+          assetFileNames: '[ext]/[name]-[hash].[ext]',
+          // Vite 8 + Rolldown：用 oxc minify 替代已移除的 terserOptions / esbuild.drop
+          ...(mode === 'production'
+            ? {
+                minify: {
+                  compress: {
+                    dropConsole: true,
+                    dropDebugger: true,
+                  },
+                },
+              }
+            : {}),
+
+          manualChunks(id) {
+            const path = id.replace(/\\/g, '/')
+
+            // 依赖分组（兼容 .pnpm 结构，锚定 node_modules 段）
+            if (path.includes('node_modules')) {
+              // Core framework
+              if (
+                /node_modules\/(?:\.pnpm\/[^/]+\/node_modules\/)?(vue|vue-router|pinia)(\/|$)/.test(path) ||
+                /node_modules\/(?:\.pnpm\/[^/]+\/node_modules\/)?@vueuse\//.test(path)
+              ) {
+                return 'vendor-core'
+              }
+              // UI libraries
+              if (/node_modules\/(?:\.pnpm\/[^/]+\/node_modules\/)?(element-plus|@element-plus)(\/|$)/.test(path)) {
+                return 'vendor-ui'
+              }
+              // All other dependencies
+              return 'vendor-others'
+            }
           },
         },
         external: [], // PLACEHOLDER DONT REMOVE THIS LINE

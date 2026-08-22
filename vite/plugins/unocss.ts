@@ -2,8 +2,6 @@ import UnoCSS from 'unocss/vite'
 import presetRemToPx from '@unocss/preset-rem-to-px'
 import transformerDirectives from '@unocss/transformer-directives'
 
-export const vitePluginUnocss = () => UnoCSS({})
-
 import presetWind from '@unocss/preset-wind4'
 
 import transformerVariantGroup from '@unocss/transformer-variant-group'
@@ -12,6 +10,7 @@ import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { breakpoints, breakpointsScssAdditionalData } from '../config/breakpoints.ts'
+import { presetLegacyCompat } from '@unocss/preset-legacy-compat'
 
 function syncBreakpointsScss() {
   const file = join(dirname(fileURLToPath(import.meta.url)), '../config/_breakpoints.scss')
@@ -25,7 +24,13 @@ const vitePluginBreakpointsScss = () => ({
   buildStart: syncBreakpointsScss,
 })
 
-export const vitePluginUncos = () => {
+const presets = [
+  presetAttributify(),
+  presetWind(),
+  presetRemToPx({ baseFontSize: 4 }), // for px by default, like w-100 -> width:100px
+]
+
+export const vitePluginUnocss = () => {
   syncBreakpointsScss()
 
   return [
@@ -40,13 +45,12 @@ export const vitePluginUncos = () => {
         filesystem: ['src/**/*.{vue,ts,tsx,js,jsx}', './node_modules/primevue/**/*.{vue,ts,tsx,js,jsx}'],
       },
 
-      presets: [
-        presetAttributify(),
-        presetWind(),
-        presetRemToPx({ baseFontSize: 4 }), // for px by default, like w-100 -> width:100px
-      ],
+      presets,
       theme: {
         breakpoints,
+        spacing: {
+          DEFAULT: '0.06250rem',
+        },
       },
 
       transformers: [transformerDirectives(), transformerVariantGroup()] as any,
