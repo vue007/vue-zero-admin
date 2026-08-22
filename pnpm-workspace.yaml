@@ -1,3 +1,5 @@
 allowBuilds:
   '@parcel/watcher': false
   esbuild: false
+minimumReleaseAgeExclude:
+  - element-plus@2.14.5
