@@ -20,6 +20,7 @@ declare module 'vue' {
     ElButton: typeof import('element-plus/es')['ElButton']
     ElCard: typeof import('element-plus/es')['ElCard']
     ElCheckbox: typeof import('element-plus/es')['ElCheckbox']
+    ElCheckboxGroup: typeof import('element-plus/es')['ElCheckboxGroup']
     ElCheckTag: typeof import('element-plus/es')['ElCheckTag']
     ElConfigProvider: typeof import('element-plus/es')['ElConfigProvider']
     ElDropdown: typeof import('element-plus/es')['ElDropdown']
@@ -59,6 +60,9 @@ declare module 'vue' {
     ZeTable: typeof import('./components/ZeTable.vue')['default']
     ZeTableColumn: typeof import('./components/ZeTableColumn.vue')['default']
   }
+  export interface GlobalDirectives {
+    vLoading: typeof import('element-plus/es')['ElLoadingDirective']
+  }
 }
 
 // For TSX support
@@ -71,6 +75,7 @@ declare global {
   const ElButton: typeof import('element-plus/es')['ElButton']
   const ElCard: typeof import('element-plus/es')['ElCard']
   const ElCheckbox: typeof import('element-plus/es')['ElCheckbox']
+  const ElCheckboxGroup: typeof import('element-plus/es')['ElCheckboxGroup']
   const ElCheckTag: typeof import('element-plus/es')['ElCheckTag']
   const ElConfigProvider: typeof import('element-plus/es')['ElConfigProvider']
   const ElDropdown: typeof import('element-plus/es')['ElDropdown']

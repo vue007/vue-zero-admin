@@ -9,7 +9,7 @@
     "jsx": "preserve",
     "noEmit": true,
     "noImplicitAny": false,
-    "types": ["primevue/config", "@intlify/unplugin-vue-i18n/messages", "@types/w3c-web-hid"],
+    "types": ["element-plus", "@intlify/unplugin-vue-i18n/messages"],
     "skipLibCheck": true,
     "moduleResolution": "bundler",
     "lib": ["es2024", "dom", "ESNext.Array", "ESNext.Collection", "ESNext.Iterator", "ESNext.Promise"],
