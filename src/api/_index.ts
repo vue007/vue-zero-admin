@@ -1,6 +1,7 @@
 export * as baseApi from './base.api'
 
 // /** System */
+export * as clientApi from './sys/client.api'
 export * as deptApi from './sys/dept.api'
 export * as configApi from './sys/config.api'
 export * as dictApi from './sys/dict.api'
