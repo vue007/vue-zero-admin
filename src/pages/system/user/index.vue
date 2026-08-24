@@ -89,6 +89,7 @@ import { toReactive, watchDebounced } from '@vueuse/core'
 import { validatePassword, validatePhone, validateUsername } from '@/utils/validators'
 import { merge } from 'es-toolkit'
 import type { DeptVO } from '@/api/sys/dept.type'
+import type { UserInfoVO, UserQuery, UserVO } from '@/api/sys/user.type'
 import VUserAuthRole from './_views/VUserAuthRole.vue'
 
 const authRoleRef = ref()
@@ -96,7 +97,7 @@ const authRoleRef = ref()
 const { sys_normal_disable } = toRefs(useDict('sys_normal_disable'))
 const { sys_user_sex } = toRefs(useDict('sys_user_sex'))
 
-const [deptOptions] = useApi(userApi.deptTreeSelect, {}, { immediate: true })
+const [deptOptions] = useApi<undefined, DeptVO[]>(() => userApi.deptTreeSelect(), undefined, { immediate: true })
 
 const [deptTreeRef, deptName] = [ref(), ref('')]
 const filterNode = (value: string, data: any) => {
@@ -122,9 +123,13 @@ const [searchForm, searchFormItems] = useForm({
 })
 watchDebounced(searchForm, () => refresh(), { deep: true, debounce: 666, maxWait: 3000 })
 
-const [tableData, refresh, pagination, loading] = useTable(userApi.listUser, toReactive(searchForm), {
-  immediate: true,
-})
+const [tableData, refresh, pagination, loading] = useTable<UserQuery, UserVO>(
+  userApi.listUser,
+  toReactive(searchForm),
+  {
+    immediate: true,
+  },
+)
 
 const reset = () => (searchFormRef.value?.resetFields(), nextTick(() => refresh()))
 const filterColRef = ref()
@@ -138,7 +143,7 @@ const [editRef, EditModal] = useModal({
   },
   onConfirm: () => fetchEdit(),
 })
-const [userDetail, refreshUserDetail] = useApi(userApi.getUser)
+const [userDetail, refreshUserDetail] = useApi<Pick<UserVO, 'userId'>, UserInfoVO>(userApi.getUser)
 watch(userDetail, () => merge(editForm.value, userDetail.value || {}), { deep: true })
 const [editForm, editFormItems, editFormRules] = useForm({
   userId: { value: '' },
