@@ -66,7 +66,6 @@ export const useBaseStore = defineStore('base', () => {
     },
 
     initMenuList() {
-      const route = useRoute()
       console.log('initMenuList', autoPageRoutes)
 
       return baseApi.getRouters().then((res) => {
@@ -78,14 +77,15 @@ export const useBaseStore = defineStore('base', () => {
           if (!r.meta?.auth) return
 
           const item = authorisedRoutes.find((item) => item.path === r.path)
-          if (!item && !['/'].includes(item?.path) && !['/'].includes(item?.alias)) {
-            router?.removeRoute(r.name)
-          } else {
-            merge(r, { meta: item.meta })
+          if (!item) {
+            if (r.path !== '/' && r.alias !== '/') router?.removeRoute(r.name)
+            return
           }
+          merge(r, { meta: item.meta })
         })
-        const currentRoute = authorisedRoutes.find((item) => item.path === route?.path)
-        menu.setActive(currentRoute?.meta?.activeMenu || route.path)
+        const currentPath = router.currentRoute.value.path
+        const currentRoute = authorisedRoutes.find((item) => item.path === currentPath)
+        menu.setActive(currentRoute?.meta?.activeMenu || currentPath)
         menu.setBreadcrumb(currentRoute?.meta?.breadcrumb || [])
         return res.apiData
       })
@@ -95,16 +95,24 @@ export const useBaseStore = defineStore('base', () => {
   return { setting, menu }
 })
 
-function flattenMenus(routes, basePath = '', breadcrumb = []) {
+function flattenMenus(routes: any[], basePath = '', breadcrumb: any[] = []) {
   const list: any[] = []
-  const stack = routes.map((route) => ({ route, fullPath: basePath, breadcrumb }))
+  const stack: Array<{ route: any; fullPath: string; breadcrumb: any[] }> = (Array.isArray(routes) ? routes : [])
+    .filter(Boolean)
+    .map((route) => ({ route, fullPath: basePath, breadcrumb }))
   while (stack.length) {
-    const { route, fullPath, breadcrumb } = stack.pop()
+    const current = stack.pop()
+    if (!current?.route) continue
+    const { route, fullPath, breadcrumb } = current
     const currentPath = `${fullPath}/${route.path}`.replace(/\/+/g, '/')
     const _nb = [...breadcrumb]
     if (route.meta?.title) _nb.push(route.meta.title)
     if (route.children?.length)
-      stack.push(...route.children.map((child) => ({ route: child, fullPath: currentPath, breadcrumb: _nb })))
+      stack.push(
+        ...route.children
+          .filter(Boolean)
+          .map((child) => ({ route: child, fullPath: currentPath, breadcrumb: _nb })),
+      )
     else list.push({ ...route, path: currentPath, meta: { ...route.meta, breadcrumb: _nb } })
   }
   const visibleRoutes = list.filter((item) => !item.hidden)

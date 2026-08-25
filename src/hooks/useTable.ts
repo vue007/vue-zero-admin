@@ -1,38 +1,57 @@
-import type { ApiPromisePage } from '@/api/_fetch'
+import type { ApiDataOf, ApiPage, ApiPromisePage } from '@/api/_fetch'
 import type { UseApiOnSubmitFn } from './useApi'
 import { isFunction, merge } from 'es-toolkit'
 import { isObject } from '@vueuse/core'
 import { iteratorObject } from '@/utils/iterator-object'
-import type { Reactive, Ref, UnwrapRef } from 'vue'
-import type { IteratorObjctType } from './_type'
+import type { Reactive, Ref } from 'vue'
+import type { IteratorObjectReturn } from './_type'
 
 type KeyPath = Array<string> | string
 
-type _Ref<T> = { value: T } & UnwrapRef<T>
+type UseTableRequest = (evt?: object) => Promise<unknown>
+type UseTableFields<D> = {
+  rows: Ref<D[]>
+  request: UseTableRequest
+  pagination: ReturnType<typeof usePagination>
+  loading: Ref<boolean>
+}
 
-type ReturnFields<D> = [
-  { rows: _Ref<D[]> },
-  {
-    request: (evt?: object) => {}
-  },
-  { pagination: ReturnType<typeof usePagination> },
-  { loading: _Ref<boolean> },
-]
+type UseTableReturn<D> = IteratorObjectReturn<
+  UseTableFields<D>,
+  [
+    UseTableFields<D>['rows'],
+    UseTableFields<D>['request'],
+    UseTableFields<D>['pagination'],
+    UseTableFields<D>['loading'],
+  ]
+>
 
-type UseTableReturn<D> = IteratorObjctType<ReturnFields<D>>
+type UseTableOptions<P> = {
+  path?: { data?: KeyPath; total?: KeyPath; page?: string; pageSize?: string }
+  immediate?: boolean
+  onSubmit?: UseApiOnSubmitFn<P>
+}
+
+type ApiPageItemOf<T> = ApiDataOf<T> extends ApiPage<infer D> ? D : never
 
 /**
  * useTable hook
  * @author Akai
  */
+export function useTable<A extends (params: any) => ApiPromisePage<any>>(
+  api: A,
+  params?: Parameters<A>[0] | Reactive<Parameters<A>[0]> | Ref<Parameters<A>[0]>,
+  options?: UseTableOptions<Parameters<A>[0]>,
+): UseTableReturn<ApiPageItemOf<ReturnType<A>>>
 export function useTable<P, D>(
   api: (_params: P) => ApiPromisePage<D>,
   params?: P | Reactive<P> | Ref<P>,
-  options?: {
-    path?: { data?: KeyPath; total?: KeyPath; page?: string; pageSize?: string }
-    immediate?: boolean
-    onSubmit?: UseApiOnSubmitFn<P>
-  },
+  options?: UseTableOptions<P>,
+): UseTableReturn<D>
+export function useTable<P, D>(
+  api: (_params: P) => ApiPromisePage<D>,
+  params?: P | Reactive<P> | Ref<P>,
+  options?: UseTableOptions<P>,
 ): UseTableReturn<D> {
   const dt = {
     path: { data: 'list', total: 'total', pageNo: 'pageNo', pageSize: 'pageSize' },
@@ -48,12 +67,12 @@ export function useTable<P, D>(
   // console.log(options, 'options')
 
   const pagination = usePagination((extraData?: object) => (extraData ? refresh(extraData) : refresh()))
-  const listData = ref()
+  const listData = shallowRef<D[]>([])
 
   const pageKey = options?.path?.page?.split('.')[options?.path?.page?.split('.').length - 1]
   const pageSizeKey = options?.path?.pageSize?.split('.')[options?.path?.pageSize?.split('.').length - 1]
 
-  const [pageData, request, loading] = useApi(api, isFunction(params) ? params() : params, {
+  const [pageData, request, loading] = useApi<P, ApiPage<D>>(api, isFunction(params) ? params() : params, {
     immediate: options.immediate,
     onSubmit: async (requestData: any) => {
       const pageableData: Partial<P> | any = {
@@ -74,7 +93,7 @@ export function useTable<P, D>(
     pagination.setTotal(pageData.value?.total || 0)
   })
 
-  const refresh = (extraData?: object) => request(extraData)
+  const refresh: UseTableRequest = (extraData?: object) => request(extraData)
 
-  return iteratorObject({ rows: listData, request: refresh, pagination, loading })
+  return iteratorObject<UseTableReturn<D>>({ rows: listData, request: refresh, pagination, loading })
 }

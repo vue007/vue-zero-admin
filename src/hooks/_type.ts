@@ -1,11 +1,8 @@
-export type ExtractFields<T> = {
-  [K in keyof T]: T[K] extends { [key: string]: infer V } ? V : never
-}
-
-export type ExtractObject<T extends object[]> = T extends [infer First, ...infer Rest extends object[]]
-  ? First & ExtractObject<Rest>
-  : {}
-
-export type IteratorObjctType<T extends object[]> = ExtractFields<T> & ExtractObject<T>
+/**
+ * An object that can also be destructured in the order used by iteratorObject.
+ * Keep the object and positional types explicit so refs are not accidentally
+ * flattened by conditional type inference.
+ */
+export type IteratorObjectReturn<TObject extends object, TValues extends unknown[]> = TObject & TValues
 
 export type BaseType = number | string | boolean

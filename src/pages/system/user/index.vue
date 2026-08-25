@@ -140,7 +140,7 @@ const [editRef, EditModal] = useModal({
   submitting: computed(() => submitting.value),
   onOpen: (row) => {
     editForm.value.password = ''
-    const passwordItem = editFormItems.find((item) => item.prop === 'password')
+    const passwordItem = editFormItems.value.find((item) => item.prop === 'password')
     if (passwordItem) passwordItem.hidden = Boolean(row)
     refreshUserDetail(row || { userId: '' })
   },
@@ -219,7 +219,10 @@ const { request: fetchEdit, loading: submitting } = useApi(
   (data: typeof editForm.value) => (isEdit.value ? userApi.updateUser(data) : userApi.addUser(data)),
   editForm,
   {
-    onSuccess: () => refresh() && editRef.value.close(),
+    onSuccess: () => {
+      refresh()
+      editRef.value.close()
+    },
     tipSuccess: computed(() => (isEdit.value ? '保存成功' : '新增成功')),
     tipError: computed(() => (isEdit.value ? '保存失败' : '新增失败')),
   },

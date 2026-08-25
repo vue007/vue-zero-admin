@@ -13,13 +13,13 @@
 </template>
 
 <script setup lang="ts">
-import type { InputInstance, InputProps } from 'element-plus/lib/components/index.js'
+import type { InputInstance } from 'element-plus/lib/components/index.js'
 import { omit } from 'es-toolkit'
 import { mergeProps } from 'vue'
 
 type ElInputType = InputInstance
-type ZeInputProps = Partial<InputProps> & { prefixIcon?: string; suffixIcon?: string }
-const props = withDefaults(defineProps(), { clearable: true }) as ZeInputProps
+type ZeInputProps = { clearable?: boolean; prefixIcon?: string; suffixIcon?: string }
+const props = withDefaults(defineProps<ZeInputProps>(), { clearable: true })
 const rawRef = ref<ElInputType>()
 
 defineExpose<ElInputType>(

@@ -118,7 +118,11 @@ const { request: fetchEdit, loading: submitting } = useApi(
   },
 )
 
-const handleDel = (row) => dictApi.delType(row).then(() => refresh() && ElMessage.success('删除成功'))
+const handleDel = (row) =>
+  dictApi.delType(row).then(() => {
+    refresh()
+    ElMessage.success('删除成功')
+  })
 
 const configRef = ref()
 </script>

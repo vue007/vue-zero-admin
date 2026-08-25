@@ -1,8 +1,9 @@
 import type { ZeModalInstance } from '@/components/types'
+import ZeModal from '@/components/ZeModal.vue'
 import { iteratorObject } from '@/utils/iterator-object'
 import { toReactive } from '@vueuse/core'
 import { isString } from 'es-toolkit'
-import { mergeProps, render } from 'vue'
+import { mergeProps, nextTick, render } from 'vue'
 
 type ModalType = 'dialog' | 'drawer'
 type ModalArgs = {
@@ -15,8 +16,6 @@ type ModalArgs = {
 }
 
 type UseModalReturn<R, C> = { reference: R; component: C } & [R, C]
-
-const _ZeModal = defineAsyncComponent(() => import('@/components/ZeModal.vue'))
 
 const defModalArgs: ModalArgs = { type: 'dialog', content: undefined, onConfirm: () => {}, immediate: false }
 
@@ -33,18 +32,36 @@ export const useModal = ({ content, immediate, ...props }: ModalArgs = defModalA
   const modalRef = ref()
 
   const __Use_Modal = (_props, { slots: _slots, attrs: _attrs }) => (
-    <_ZeModal ref={modalRef} {...mergeProps(_attrs, _props, toReactive(props))}>
+    <ZeModal ref={modalRef} {...mergeProps(_attrs, _props, toReactive(props))}>
       {{
         default: () => (!content ? _slots.default && _slots.default() : isString(content) ? content : content()),
         footer: () => _slots.footer && _slots.footer(),
       }}
-    </_ZeModal>
+    </ZeModal>
   )
 
-  if (immediate) {
-    const nVNode = h(__Use_Modal)
-    render(nVNode, document.body)
-    modalRef.value.open()
+  if (immediate && typeof document !== 'undefined') {
+    const container = document.createElement('div')
+    container.dataset.zeModalHost = ''
+    document.body.appendChild(container)
+
+    let cleaned = false
+    const cleanup = () => {
+      if (cleaned) return
+      cleaned = true
+      queueMicrotask(() => {
+        render(null, container)
+        container.remove()
+      })
+    }
+
+    // Wait for the leave transition and user onClosed callback before unmounting.
+    const nVNode = h(__Use_Modal, { onClosed: cleanup })
+    render(nVNode, container)
+    nextTick(() => {
+      if (modalRef.value) modalRef.value.open()
+      else cleanup()
+    })
   }
 
   return iteratorObject({

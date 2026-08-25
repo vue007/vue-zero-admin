@@ -1,24 +1,38 @@
-import { ref, type Ref } from 'vue'
-import type { _AxiosResponse } from 'env'
+import { isRef, nextTick, ref, type Ref } from 'vue'
+import type { _AxiosResponse } from 'axios'
 import { isFunction, isPlainObject, isString, merge } from 'es-toolkit'
 import { isObject } from 'es-toolkit/compat'
-import type { ApiError, ApiPromise, ApiResponse } from '@/api/_fetch'
+import type { ApiDataOf, ApiError, ApiPromise, ApiResponse } from '@/api/_fetch'
 import { iteratorObject } from '@/utils/iterator-object'
-import type { BaseType, IteratorObjctType } from './_type'
+import type { BaseType, IteratorObjectReturn } from './_type'
 
 export type UseApiOnSuccessFn<T> = (res?: _AxiosResponse<ApiResponse<T>>) => void
 export type UseApiOnSubmitFn<T, X = T & { [prop: string]: any }> = (data: X) => Promise<boolean | X>
 export type UseApiOnErrorFn = (err: ApiError) => void
 
-type ReturnFields<D> = [
-  {
-    data: Ref<D | undefined>
-  },
-  { request: Function },
-  { loading: Ref<boolean> },
-]
+type RequestExtraData = { [prop: string]: any } | (() => { [prop: string]: any })
+type UseApiRequest<D> = (extraData?: RequestExtraData) => Promise<_AxiosResponse<ApiResponse<D>> | void>
 
-export type UseApiReturn<D> = IteratorObjctType<ReturnFields<D>>
+type UseApiFields<D> = {
+  data: Ref<D | undefined>
+  request: UseApiRequest<D>
+  loading: Ref<boolean>
+}
+
+export type UseApiReturn<D> = IteratorObjectReturn<
+  UseApiFields<D>,
+  [UseApiFields<D>['data'], UseApiFields<D>['request'], UseApiFields<D>['loading']]
+>
+
+type UseApiOptions<P, D> = {
+  immediate?: boolean
+  tipError?: boolean | string | Ref
+  tipSuccess?: boolean | string | Ref
+  onSuccess?: UseApiOnSuccessFn<D>
+  onError?: UseApiOnErrorFn
+  onFinally?: () => void
+  onSubmit?: UseApiOnSubmitFn<P>
+}
 
 /**
  * useApi
@@ -29,38 +43,56 @@ export type UseApiReturn<D> = IteratorObjctType<ReturnFields<D>>
  *
  * @author Akai
  */
+export function useApi<A extends (params: any) => ApiPromise<any>>(
+  api: A,
+  params?: any,
+  options?: UseApiOptions<Parameters<A>[0], ApiDataOf<ReturnType<A>>>,
+): UseApiReturn<ApiDataOf<ReturnType<A>>>
 export function useApi<P, D>(
   api: (params: P) => ApiPromise<D>,
   params?: (Partial<P> | any) | (() => Partial<P> | any),
-  options?: {
-    immediate?: boolean
-    tipError?: boolean | string | Ref
-    tipSuccess?: boolean | string | Ref
-    onSuccess?: UseApiOnSuccessFn<D>
-    onError?: UseApiOnErrorFn
-    onFinally?: () => void
-    onSubmit?: UseApiOnSubmitFn<P>
-  },
+  options?: UseApiOptions<P, D>,
+): UseApiReturn<D>
+export function useApi<P, D>(
+  api: (params: P) => ApiPromise<D>,
+  params?: (Partial<P> | any) | (() => Partial<P> | any),
+  options?: UseApiOptions<P, D>,
 ): UseApiReturn<D> {
   const loading = ref(false)
   const apiData = ref<D>()
+  let latestRequestId = 0
+  let activeRequestCount = 0
 
-  const request = async (extraData?: { [prop: string]: any } | (() => { [prop: string]: any })) => {
+  const request: UseApiRequest<D> = async (extraData?: RequestExtraData) => {
+    const requestId = ++latestRequestId
+    activeRequestCount += 1
     loading.value = true
     let requestData = {} as P & { [prop: string]: any }
 
-    if (extraData) Object.assign(requestData, isFunction(extraData) ? extraData() : extraData)
+    const finishRequest = () => {
+      activeRequestCount = Math.max(0, activeRequestCount - 1)
+      loading.value = activeRequestCount > 0
+      options?.onFinally?.()
+    }
 
-    const resolvedParams = isRef(params) ? params.value : params
-    if (isFunction(resolvedParams) || isPlainObject(resolvedParams)) {
-      if (params) Object.assign(requestData, isFunction(params) ? params() : resolvedParams)
-    } else requestData = extraData as BaseType | any[] | any
+    try {
+      if (extraData) Object.assign(requestData, isFunction(extraData) ? extraData() : extraData)
+
+      const resolvedParams = isRef(params) ? params.value : params
+      if (isFunction(resolvedParams) || isPlainObject(resolvedParams)) {
+        if (params) Object.assign(requestData, isFunction(params) ? params() : resolvedParams)
+      } else requestData = extraData as BaseType | any[] | any
+    } catch (error) {
+      finishRequest()
+      throw error
+    }
 
     const _api = (data: P) =>
-      api(data)
+      Promise.resolve()
+        .then(() => api(data))
         .then((res) => {
-          apiData.value = res.apiData
-          if (options?.onSuccess) options?.onSuccess(res)
+          if (requestId === latestRequestId) apiData.value = res.apiData
+          options?.onSuccess?.(res)
           if (options?.tipSuccess)
             ElMessage.success(
               isString(options.tipSuccess)
@@ -72,7 +104,7 @@ export function useApi<P, D>(
           return res
         })
         .catch((err) => {
-          if (options?.onError) options?.onError(err)
+          options?.onError?.(err)
           if (options?.tipError) {
             const message = isString(options.tipError)
               ? options.tipError
@@ -84,8 +116,7 @@ export function useApi<P, D>(
           }
         })
         .finally(() => {
-          loading.value = false
-          if (options?.onFinally) options?.onFinally()
+          finishRequest()
         })
 
     if (options?.onSubmit) {
@@ -97,7 +128,7 @@ export function useApi<P, D>(
         console.log(e)
 
         ElMessage.error('表单校验未通过') // TODO 国际化
-        loading.value = false
+        finishRequest()
         return
       }
     } else {
@@ -107,5 +138,5 @@ export function useApi<P, D>(
 
   if (options?.immediate) nextTick(() => request())
 
-  return iteratorObject({ data: apiData, request, loading })
+  return iteratorObject<UseApiReturn<D>>({ data: apiData, request, loading })
 }

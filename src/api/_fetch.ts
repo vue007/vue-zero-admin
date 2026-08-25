@@ -1,8 +1,7 @@
 import { useThrottleFn } from '@vueuse/core'
-import type { AxiosError, InternalAxiosRequestConfig } from 'axios'
+import type { AxiosError, InternalAxiosRequestConfig, _AxiosResponse } from 'axios'
 import axios, { HttpStatusCode } from 'axios'
 
-import type { AxiosPromiseE } from 'env'
 import { PromiseErr } from '@/utils/primise-error'
 import { getToken } from '@/utils/auth'
 // ------------------------------- Begin 类型定义 -------------------------------
@@ -49,8 +48,15 @@ export interface ApiError extends AxiosError {
   data: ApiResponse<any>
 }
 
-export type ApiPromise<T> = AxiosPromiseE<ApiResponse<T>, ApiError>
-export type ApiPromisePage<T> = AxiosPromiseE<ApiResponse<ApiPage<T>>, ApiError>
+declare const apiDataType: unique symbol
+type ApiPromiseResult<T> = PromiseErr<_AxiosResponse<ApiResponse<T>>, ApiError> & {
+  /** Type-only marker used by generic hooks to infer the resolved API data. */
+  readonly [apiDataType]?: T
+}
+
+export type ApiPromise<T> = ApiPromiseResult<T>
+export type ApiPromisePage<T> = ApiPromiseResult<ApiPage<T>>
+export type ApiDataOf<T> = T extends ApiPromiseResult<infer D> ? D : never
 // ------------------------------- End 类型定义 -------------------------------
 
 const baseURL: string = import.meta.env.VITE_APP_BASE_API

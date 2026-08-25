@@ -151,7 +151,11 @@ const addAtNode = (row) => {
   editForm.value.parentId = row.deptId
 }
 
-const handleDel = (row) => deptApi.delDept(row).then(() => refresh() && ElMessage.success('删除成功'))
+const handleDel = (row) =>
+  deptApi.delDept(row).then(() => {
+    refresh()
+    ElMessage.success('删除成功')
+  })
 </script>
 
 <style lang="scss" scoped></style>
