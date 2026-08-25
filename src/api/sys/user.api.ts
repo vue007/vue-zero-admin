@@ -1,4 +1,4 @@
-import { pick } from 'es-toolkit'
+import { omit, pick } from 'es-toolkit'
 import { fetch, type ApiPromise, type ApiPromisePage } from '../_fetch'
 import type { DeptVO } from './dept.type'
 import type { RoleVO } from './role.types'
@@ -56,7 +56,7 @@ export function updateUser(data: UserForm): ApiPromise<void> {
   return fetch({
     url: '/system/user',
     method: 'put',
-    data: data,
+    data: omit(data, ['password']),
   })
 }
 

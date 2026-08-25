@@ -139,6 +139,9 @@ const [editRef, EditModal] = useModal({
   title: computed(() => `${isEdit.value ? '编辑' : '添加'}用户`),
   submitting: computed(() => submitting.value),
   onOpen: (row) => {
+    editForm.value.password = ''
+    const passwordItem = editFormItems.find((item) => item.prop === 'password')
+    if (passwordItem) passwordItem.hidden = Boolean(row)
     refreshUserDetail(row || { userId: '' })
   },
   onConfirm: () => fetchEdit(),
@@ -185,7 +188,7 @@ const [editForm, editFormItems, editFormRules] = useForm({
   },
   password: {
     value: '',
-    item: { type: 'text', label: '用户密码', plh: '请输入用户密码' },
+    item: { type: 'password', label: '用户密码', plh: '请输入用户密码', showPassword: true },
     rule: [{ validator: validatePassword, trigger: 'blur' }],
   },
   sex: {

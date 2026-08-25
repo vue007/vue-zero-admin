@@ -28,8 +28,8 @@ export interface OssQuery extends PageQuery {
 export interface OssConfigVO {
   ossConfigId: number | string
   configKey: string
-  accessKey: string
-  secretKey: string
+  accessKey?: string
+  secretKey?: string
   bucketName: string
   prefix: string
   endpoint: string

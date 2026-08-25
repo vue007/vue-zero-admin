@@ -76,7 +76,11 @@ const { t } = useI18nLocal()
 const route = useRoute()
 const baseStore = useBaseStore()
 const { menu, setting } = baseStore
-const menuList = computed(() => menu.treeList)
+const filterVisibleMenus = (routes: any[] = []): any[] =>
+  routes
+    .filter((item) => !item.hidden)
+    .map((item) => ({ ...item, children: filterVisibleMenus(item.children) }))
+const menuList = computed(() => filterVisibleMenus(menu.treeList))
 
 const props = defineProps({
   to: { type: String, default: '#layout-aside' },
@@ -85,11 +89,13 @@ const props = defineProps({
 const handleMenuSelect = () => {}
 
 watch(
-  () => route.path,
+  () => [route.path, menu.routeMeta[route.path]],
   () => {
-    let path = route.meta?.isTab ? route.matched[0].path : route.path
+    const currentMeta = menu.routeMeta[route.path] || route.meta
+    const activeMenu = currentMeta?.activeMenu
+    const path = typeof activeMenu === 'string' ? activeMenu : route.meta?.isTab ? route.matched[0].path : route.path
     menu.setActive(path)
-    menu.setBreadcrumb(route.meta?.breadcrumb as string[])
+    menu.setBreadcrumb((currentMeta?.breadcrumb || []) as string[])
   },
   { immediate: true },
 )

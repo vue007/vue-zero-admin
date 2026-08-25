@@ -36,8 +36,17 @@
 
       <el-dropdown v-if="'dropdown' === action" trigger="click">
         <div class="flex items-center">
-          <el-avatar class="cursor-pointer mr-8 w-28! h28! lt-sm:w-24! lt-sm:h-24!" shape="circle" src=""></el-avatar>
-          <span class="w-84 color-[var(--el-text-color-primary)] lt-sm:hidden">Admin</span>
+          <el-avatar
+            class="cursor-pointer mr-8 w-28! h28! lt-sm:w-24! lt-sm:h-24!"
+            shape="circle"
+            :src="currentUser?.avatar || ''"
+          />
+          <span
+            class="max-w-120 truncate color-[var(--el-text-color-primary)] lt-sm:hidden"
+            :title="currentUserName"
+          >
+            {{ currentUserName }}
+          </span>
 
           <div class="ml-10 ml-auto lt-sm:hidden">
             <svg-icon name="el-arrow-down-bold" />
@@ -69,6 +78,8 @@ import { includes } from 'es-toolkit/compat'
 const { t } = useI18nLocal()
 const baseStore = useBaseStore()
 const { setting } = baseStore
+const currentUser = computed(() => setting.userInfo.user)
+const currentUserName = computed(() => currentUser.value?.userName || currentUser.value?.nickName || '-')
 
 const ACTION_LIST = ['ALL', 'fullscreen', 'size', 'locale', 'scheme', 'dropdown'] as const
 export type ActionType = (typeof ACTION_LIST)[number]

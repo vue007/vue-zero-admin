@@ -5,6 +5,7 @@ import { defineStore } from 'pinia'
 import { useLocalStorage } from '@vueuse/core'
 
 import { baseApi } from '@/api/_index'
+import type { UserInfo } from '@/api/user.type'
 import { merge } from 'es-toolkit'
 
 export type BaseSize = 'large' | 'default' | 'small'
@@ -19,7 +20,7 @@ export const useBaseStore = defineStore('base', () => {
     local: useLocalStorage<BaseLang>('setting.local', 'zh-CN'),
     theme: useLocalStorage<BaseTheme>('setting.theme', 'light'),
     size: useLocalStorage<BaseSize>('setting.size', 'default'),
-    userInfo: useLocalStorage('setting.userInfo', {}),
+    userInfo: useLocalStorage<Partial<UserInfo>>('setting.userInfo', {}),
 
     setLocale(locale: BaseLang) {
       setting.local = locale
@@ -43,12 +44,16 @@ export const useBaseStore = defineStore('base', () => {
     collapse: false,
     active: '',
     breadcrumb: [] as any[],
+    routeMeta: {} as Record<string, any>,
     treeList: [] as any[],
     setTreeList(list: any[]) {
       menu.treeList = list
     },
     setBreadcrumb(list: string[]) {
       menu.breadcrumb = list
+    },
+    setRouteMeta(routes: any[]) {
+      menu.routeMeta = Object.fromEntries(routes.map((route) => [route.path, route.meta]))
     },
     setCollapse(flag) {
       menu.collapse = flag
@@ -68,6 +73,7 @@ export const useBaseStore = defineStore('base', () => {
         menu.setTreeList(res.apiData)
 
         const authorisedRoutes = flattenMenus(res.apiData, '/')
+        menu.setRouteMeta(authorisedRoutes)
         autoPageRoutes.forEach((r) => {
           if (!r.meta?.auth) return
 
@@ -78,7 +84,9 @@ export const useBaseStore = defineStore('base', () => {
             merge(r, { meta: item.meta })
           }
         })
-        menu.setBreadcrumb(authorisedRoutes.find((item) => item.path === route?.path)?.meta?.breadcrumb || [])
+        const currentRoute = authorisedRoutes.find((item) => item.path === route?.path)
+        menu.setActive(currentRoute?.meta?.activeMenu || route.path)
+        menu.setBreadcrumb(currentRoute?.meta?.breadcrumb || [])
         return res.apiData
       })
     },
@@ -99,5 +107,15 @@ function flattenMenus(routes, basePath = '', breadcrumb = []) {
       stack.push(...route.children.map((child) => ({ route: child, fullPath: currentPath, breadcrumb: _nb })))
     else list.push({ ...route, path: currentPath, meta: { ...route.meta, breadcrumb: _nb } })
   }
+  const visibleRoutes = list.filter((item) => !item.hidden)
+  list.forEach((item) => {
+    if (!item.hidden) return
+    const activeParent = visibleRoutes
+      .filter((candidate) => item.path.startsWith(`${candidate.path}/`))
+      .sort((a, b) => b.path.length - a.path.length)[0]
+    if (!activeParent) return
+    item.meta.activeMenu = activeParent.path
+    item.meta.breadcrumb = [...(activeParent.meta?.breadcrumb || []), item.meta?.title].filter(Boolean)
+  })
   return list
 }

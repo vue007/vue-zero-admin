@@ -1,5 +1,11 @@
 export * as baseApi from './base.api'
 
+// /** Monitor */
+export * as loginInfoApi from './monitor/logininfor.api'
+export * as operLogApi from './monitor/operlog.api'
+export * as onlineApi from './monitor/online.api'
+export * as cacheApi from './monitor/cache.api'
+
 // /** System */
 export * as clientApi from './sys/client.api'
 export * as deptApi from './sys/dept.api'

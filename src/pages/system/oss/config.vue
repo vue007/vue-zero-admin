@@ -13,7 +13,10 @@
         </ze-form-item>
         <ze-form-item class="mla mr0!">
           <ze-actions
-            :actions="[{ icon: 'el-plus', content: '新增', type: 'primary', onClick: () => editRef.open() }]"
+            :actions="[
+              { content: '腾讯云 COS', type: 'primary', plain: true, onClick: openTencentCosConfig },
+              { icon: 'el-plus', content: '新增', type: 'primary', onClick: () => editRef.open() },
+            ]"
           />
         </ze-form-item>
       </ze-form>
@@ -116,9 +119,22 @@ watch(configDetail, () => merge(editForm.value, configDetail.value || {}), { dee
 const [editRef, EditModal] = useModal({
   title: computed(() => `${isEdit.value ? '编辑' : '添加'}对象存储配置`),
   submitting: computed(() => submitting.value),
-  onOpen: (row?: OssConfigVO) => row && fetchConfigDetail({ ossConfigId: row.ossConfigId }),
+  onOpen: (row?: OssConfigVO) => row?.ossConfigId && fetchConfigDetail({ ossConfigId: row.ossConfigId }),
   onConfirm: () => fetchEdit(),
 })
+
+const validateSecretKey = (_rule: unknown, value: string, callback: (error?: Error) => void) => {
+  if (!isEdit.value && !value) callback(new Error('Secret Key 不能为空'))
+  else callback()
+}
+
+const validateAccessKey = (_rule: unknown, value: string, callback: (error?: Error) => void) => {
+  if (!isEdit.value && !value) callback(new Error('Access Key / SecretId 不能为空'))
+  else if (value && editForm.value.configKey === 'qcloud' && !value.trim().startsWith('AKID')) {
+    callback(new Error('请填写腾讯云 API 密钥 SecretId（通常以 AKID 开头），不要填写 APPID'))
+  }
+  else callback()
+}
 
 const [editForm, editFormItems, editFormRules] = useForm({
   ossConfigId: { value: undefined as number | string | undefined },
@@ -129,30 +145,30 @@ const [editForm, editFormItems, editFormRules] = useForm({
   },
   accessKey: {
     value: '',
-    item: { type: 'text', label: 'Access Key', plh: '请输入 Access Key' },
-    rule: [{ required: true, message: 'Access Key 不能为空', trigger: 'blur' }],
+    item: { type: 'text', label: 'SecretId', plh: '腾讯云 API 密钥，通常以 AKID 开头；编辑留空表示保持原密钥' },
+    rule: [{ validator: validateAccessKey, trigger: 'blur' }],
   },
   secretKey: {
     value: '',
-    item: { type: 'password', label: 'Secret Key', plh: '请输入 Secret Key', showPassword: true },
-    rule: [{ required: true, message: 'Secret Key 不能为空', trigger: 'blur' }],
+    item: { type: 'password', label: 'Secret Key', plh: '新增必填；编辑留空表示保持原密钥', showPassword: true },
+    rule: [{ validator: validateSecretKey, trigger: 'blur' }],
   },
   bucketName: {
     value: '',
-    item: { type: 'text', label: '桶名称', plh: '请输入桶名称' },
+    item: { type: 'text', label: '桶名称', plh: '腾讯云示例：example-1250000000' },
     rule: [{ required: true, message: '桶名称不能为空', trigger: 'blur' }],
   },
   endpoint: {
     value: '',
-    item: { type: 'text', label: '访问站点', plh: '请输入访问站点' },
+    item: { type: 'text', label: '访问站点', plh: '示例：cos.ap-guangzhou.myqcloud.com（不含协议）' },
     rule: [{ required: true, message: '访问站点不能为空', trigger: 'blur' }],
   },
   domain: { value: '', item: { type: 'text', label: '自定义域名' } },
   prefix: { value: '', item: { type: 'text', label: '前缀' } },
-  region: { value: '', item: { type: 'text', label: '域' } },
-  isHttps: { value: 'N', item: { type: 'radio', label: 'HTTPS', options: sys_yes_no } },
+  region: { value: '', item: { type: 'text', label: '地域', plh: '腾讯云示例：ap-guangzhou' } },
+  isHttps: { value: 'Y', item: { type: 'radio', label: 'HTTPS', options: sys_yes_no } },
   accessPolicy: {
-    value: '1',
+    value: '0',
     item: { type: 'radio', label: '桶权限', options: accessPolicyOptions },
     rule: [{ required: true, message: '桶权限不能为空', trigger: 'change' }],
   },
@@ -160,6 +176,36 @@ const [editForm, editFormItems, editFormRules] = useForm({
   ext1: { value: '', item: { type: 'text', label: '扩展字段' } },
   remark: { value: '', item: { type: 'textarea', label: '备注' } },
 })
+
+const openTencentCosConfig = () =>
+  editRef.value.open({
+    configKey: 'qcloud',
+    accessKey: '',
+    secretKey: '',
+    bucketName: '',
+    endpoint: 'cos.ap-guangzhou.myqcloud.com',
+    domain: '',
+    prefix: 'upload',
+    region: 'ap-guangzhou',
+    isHttps: 'Y',
+    accessPolicy: '0',
+    status: '1',
+    ext1: '',
+    remark: '腾讯云 COS（S3 兼容）',
+  })
+
+watch(
+  () => editForm.value.region,
+  (region, oldRegion) => {
+    if (
+      editForm.value.configKey === 'qcloud' &&
+      region &&
+      (!editForm.value.endpoint || editForm.value.endpoint === `cos.${oldRegion}.myqcloud.com`)
+    ) {
+      editForm.value.endpoint = `cos.${region}.myqcloud.com`
+    }
+  },
+)
 
 const { request: fetchEdit, loading: submitting } = useApi(
   (data: typeof editForm.value) => (isEdit.value ? ossApi.updateOssConfig(data) : ossApi.addOssConfig(data)),
@@ -173,8 +219,12 @@ const { request: fetchEdit, loading: submitting } = useApi(
 
 const handleStatusChange = (row: OssConfigVO) => {
   const cancel = () => (row.status = row.status === '0' ? '1' : '0')
-  const text = row.status === '0' ? '设为默认' : '取消默认'
-  ElMessageBox.confirm(`确定要${text}配置 ${row.configKey} 吗？`, { type: 'warning' })
+  if (row.status !== '0') {
+    cancel()
+    ElMessage.info('默认配置不能直接取消，请将其他配置设为默认')
+    return
+  }
+  ElMessageBox.confirm(`确定要将配置 ${row.configKey} 设为默认吗？`, { type: 'warning' })
     .then(() =>
       ossApi
         .changeOssConfigStatus({ ossConfigId: row.ossConfigId, status: row.status, configKey: row.configKey })
