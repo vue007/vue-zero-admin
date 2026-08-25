@@ -41,6 +41,7 @@ export interface UserVO extends ApiPageForm {
   delFlag: string
   loginIp: string
   loginDate: string
+  createTime: string
   remark: string
   deptName: string
   roles: RoleVO[]
@@ -83,4 +84,10 @@ export interface ResetPwdForm {
   oldPassword: string
   newPassword: string
   confirmPassword: string
+}
+
+export type UserProfileForm = Pick<UserVO, 'nickName' | 'phonenumber' | 'email' | 'sex'>
+
+export interface AvatarVO {
+  imgUrl: string
 }

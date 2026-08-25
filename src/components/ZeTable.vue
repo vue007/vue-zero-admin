@@ -1,9 +1,9 @@
 <template>
   <el-table
     style="width: 100%"
-    maxheight="62vh"
+    max-height="62vh"
     ref="rawRef"
-    v-bind="mergeProps($attrs, props)"
+    v-bind="mergeProps($attrs, omit(props, ['columns', 'loading', 'filterColVR']))"
     v-loading="props.loading"
   >
     <slot name="header"></slot>
@@ -33,7 +33,7 @@
         v-for="item in _columns"
         :key="getColKey(item)"
         :label="item.label"
-        :value="item.prop"
+        :value="getColKey(item)"
         :disabled="item.fixed !== undefined"
       />
     </el-checkbox-group>
@@ -41,28 +41,28 @@
 </template>
 
 <script setup lang="ts">
-import { ElTable, type TableColumnCtx, type TableInstance, type TableProps } from 'element-plus'
+import type { Measurable, TableColumnCtx, TableInstance, TableProps } from 'element-plus'
+import { omit } from 'es-toolkit'
 import { mergeProps, type Ref } from 'vue'
 
-const emits = defineEmits([])
-
 type ZeTableColumns = { hidden?: boolean } & Partial<TableColumnCtx<any>>
+type DefaultRow = Record<PropertyKey, any>
 
-type ZeTableProps<T = any> = TableProps<T> & {
-  data: T[] | any[]
-  columns: ZeTableColumns[]
-  loading: boolean
-  filterColVR?: Ref
+type ZeTableProps<T extends DefaultRow = DefaultRow> = Partial<TableProps<T>> & {
+  data?: T[]
+  columns?: ZeTableColumns[]
+  loading?: boolean
+  filterColVR?: Measurable
 }
 
 const props = withDefaults(defineProps<ZeTableProps>(), {
-  data: undefined,
+  data: () => [],
   filterColVR: undefined,
   defaultExpandAll: false,
-  columns: undefined,
-
-  showHeader: ElTable.__defaults?.showHeader,
-  fit: ElTable.__defaults?.fit,
+  columns: () => [],
+  loading: false,
+  showHeader: true,
+  fit: true,
   highlightCurrentRow: true,
   border: false,
 })
@@ -91,22 +91,26 @@ const toggleExpandAll = (data: any[] = [], status: boolean) => {
 
 const rawRef: Ref<TableInstance | undefined> = ref()
 
-const getColKey = (item) => item.prop || item.type
+const getColKey = (item: ZeTableColumns) => String(item.prop ?? item.type ?? item.label ?? '')
 const _columns = computed(() => {
-  return props.columns?.filter((item) => !(item && item.hidden)) || []
+  return props.columns.filter((item) => item && !item.hidden)
 })
 const showedColumns = computed(() => {
-  return _columns.value?.filter((item) => filterColumns.value?.includes(getColKey(item)))
+  return _columns.value.filter((item) => filterColumns.value.includes(getColKey(item)))
 })
 
-const filterColumns = ref<Array<string>>()
-const initFilterColumns = () => {
-  filterColumns.value = _columns.value.map((item) => getColKey(item)) || []
+const filterColumns = ref<string[]>([])
+let previousColumnKeys: string[] = []
+const reconcileFilterColumns = (columnKeys: string[]) => {
+  const previousKeys = new Set(previousColumnKeys)
+  const selectedKeys = new Set(filterColumns.value)
+  filterColumns.value = columnKeys.filter((key) => selectedKeys.has(key) || !previousKeys.has(key))
+  previousColumnKeys = columnKeys
 }
 
 watch(
-  () => props.columns,
-  () => initFilterColumns(),
+  () => _columns.value.map(getColKey),
+  (columnKeys) => reconcileFilterColumns(columnKeys),
   { immediate: true },
 )
 
@@ -119,10 +123,16 @@ defineExpose<ZeTableExpose>(
     {},
     {
       get(_target, prop) {
-        if (rawRef.value?.[prop]) return rawRef.value[prop]
-        if (customExpose?.[prop]) return customExpose[prop]
+        const raw = rawRef.value as unknown as Record<PropertyKey, any> | undefined
+        const custom = customExpose as Record<PropertyKey, any>
+        if (raw && prop in raw) return raw[prop]
+        if (prop in custom) return custom[prop]
       },
-      has: (_target, prop) => prop in (rawRef.value || {}) || prop in (customExpose || {}),
+      has(_target, prop) {
+        const raw = rawRef.value as unknown as Record<PropertyKey, any> | undefined
+        const custom = customExpose as Record<PropertyKey, any>
+        return Boolean(raw && prop in raw) || prop in custom
+      },
     },
   ) as ZeTableExpose,
 )

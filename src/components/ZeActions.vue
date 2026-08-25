@@ -1,14 +1,18 @@
 <template>
-  <template v-for="item in listActions" :key="item.content">
+  <template v-for="(item, index) in listActions" :key="getActionKey(item, index, 'inline')">
     <Action v-bind="item" />
   </template>
   <el-tooltip v-if="hasMoreActions" content="更多操作" placement="top" effect="dark">
     <el-dropdown :hide-on-click="false" trigger="click">
-      <ActionButton icon="el-more" type="primary" text @click=""></ActionButton>
+      <ActionButton icon="el-more" type="primary" text></ActionButton>
 
       <template #dropdown>
         <el-dropdown-menu>
-          <el-dropdown-item v-for="item in moreActions" :key="item.content" class="ze-action-dropdown-item">
+          <el-dropdown-item
+            v-for="(item, index) in moreActions"
+            :key="getActionKey(item, index, 'overflow')"
+            class="ze-action-dropdown-item"
+          >
             <Action v-bind="item" isMoreAction="true" />
           </el-dropdown-item>
         </el-dropdown-menu>
@@ -21,7 +25,7 @@
 import type { ButtonProps } from 'element-plus'
 import { omit } from 'es-toolkit'
 import SvgIcon from './SvgIcon.vue'
-import { mergeProps, type PropType, type Ref } from 'vue'
+import { mergeProps, type ComponentPublicInstance, type PropType } from 'vue'
 
 const Action = (props) => (props.confirm ? PopconfirmButton(props) : props.tip ? TipButton(props) : ActionButton(props))
 
@@ -59,37 +63,40 @@ const ActionButton = (props) => (
   </el-button>
 )
 
-const emit = defineEmits(['click', 'ready'])
-
 type ZeActionItem = {
+  key?: string | number
   confirm?: boolean
   content?: string
   loading?: boolean
   icon?: string
   tip?: string
-  onRef?: (e?: Ref<any>) => void
+  onRef?: (element?: Element | ComponentPublicInstance | null) => void
   onClick?: (e?: Event) => void
 } & Partial<Omit<ButtonProps, 'icon'>>
 
 const props = defineProps({
-  options: { type: Object as PropType<ZeActionItem>, default: () => {} },
+  options: { type: Object as PropType<ZeActionItem>, default: () => ({}) },
   actions: { type: Array as PropType<ZeActionItem[]>, default: () => [] },
   ellipsis: { type: Boolean, default: () => false },
   ellipsisStart: { type: Number, default: 2 },
 })
-const options = ref(props.options)
+const options = computed(() => props.options)
 
-const UnButtonProp = ['confirm', 'content', 'icon']
+const UnButtonProp = ['key', 'confirm', 'content', 'icon', 'tip', 'onRef']
+const overflowStart = computed(() => Math.max(0, props.ellipsisStart))
 
-const hasMoreActions = computed(() => props.actions.length > props.ellipsisStart + 1)
+const hasMoreActions = computed(() => props.ellipsis && props.actions.length > overflowStart.value)
 
 const listActions = computed(() => {
-  return hasMoreActions.value ? props.actions.slice(0, props.ellipsisStart) : props.actions
+  return hasMoreActions.value ? props.actions.slice(0, overflowStart.value) : props.actions
 })
 
 const moreActions = computed(() => {
-  return props.actions.slice(props.ellipsisStart)
+  return hasMoreActions.value ? props.actions.slice(overflowStart.value) : []
 })
+
+const getActionKey = (item: ZeActionItem, index: number, group: string) =>
+  item.key ?? `${group}:${item.content ?? ''}:${item.tip ?? ''}:${item.icon ?? ''}:${index}`
 </script>
 
 <style lang="scss" scoped>

@@ -63,7 +63,7 @@ export function useApi<P, D>(
   let latestRequestId = 0
   let activeRequestCount = 0
 
-  const request: UseApiRequest<D> = async (extraData?: RequestExtraData) => {
+  const executeRequest: UseApiRequest<D> = async (extraData?: RequestExtraData) => {
     const requestId = ++latestRequestId
     activeRequestCount += 1
     loading.value = true
@@ -103,27 +103,27 @@ export function useApi<P, D>(
             )
           return res
         })
-        .catch((err) => {
+        .catch((error) => {
+          const err = normalizeApiError(error)
           options?.onError?.(err)
           if (options?.tipError) {
             const message = isString(options.tipError)
               ? options.tipError
               : isObject(options.tipError)
                 ? options.tipError.value
-                : err.msg
-            // : $t(`error.${err.code}`)
-            ElMessage.error(message === `error.${err.code}` ? err.message : message)
+                : err.data?.msg || err.message || '请求失败'
+            ElMessage.error(message)
           }
+          throw err
         })
         .finally(() => {
           finishRequest()
         })
 
     if (options?.onSubmit) {
+      let result: boolean | (P & { [prop: string]: any })
       try {
-        const result = await options.onSubmit(requestData)
-        if (isObject(result)) merge(requestData, result)
-        return _api(requestData)
+        result = await options.onSubmit(requestData)
       } catch (e) {
         console.log(e)
 
@@ -131,12 +131,29 @@ export function useApi<P, D>(
         finishRequest()
         return
       }
-    } else {
-      return _api(requestData)
+      if (result === false) {
+        finishRequest()
+        return
+      }
+      if (isObject(result)) merge(requestData, result)
     }
+    return _api(requestData)
+  }
+
+  const request: UseApiRequest<D> = (extraData?: RequestExtraData) => {
+    const execution = executeRequest(extraData)
+    // Mark ignored event-handler promises as handled while preserving rejection
+    // for callers that await or attach their own catch handler.
+    void execution.catch(() => undefined)
+    return execution
   }
 
   if (options?.immediate) nextTick(() => request())
 
   return iteratorObject<UseApiReturn<D>>({ data: apiData, request, loading })
+}
+
+const normalizeApiError = (error: unknown): ApiError => {
+  if (isObject(error)) return error as ApiError
+  return Object.assign(new Error(String(error || '请求失败')), { data: undefined }) as unknown as ApiError
 }

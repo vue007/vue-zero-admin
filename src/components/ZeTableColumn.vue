@@ -22,8 +22,14 @@ defineExpose<ZeTableColumnExpose>(
   new Proxy(
     {},
     {
-      get: (_target, prop) => rawRef.value?.[prop],
-      has: (_target, prop) => prop in (rawRef.value || {}),
+      get(_target, prop) {
+        const raw = rawRef.value as unknown as Record<PropertyKey, any> | undefined
+        return raw?.[prop]
+      },
+      has(_target, prop) {
+        const raw = rawRef.value as unknown as Record<PropertyKey, any> | undefined
+        return Boolean(raw && prop in raw)
+      },
     },
   ) as ZeTableColumnExpose,
 )

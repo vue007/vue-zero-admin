@@ -1,10 +1,11 @@
 import type { ApiDataOf, ApiPage, ApiPromisePage } from '@/api/_fetch'
-import type { UseApiOnSubmitFn } from './useApi'
+import { useApi, type UseApiOnSubmitFn } from './useApi'
 import { isFunction, merge } from 'es-toolkit'
 import { isObject } from '@vueuse/core'
 import { iteratorObject } from '@/utils/iterator-object'
-import type { Reactive, Ref } from 'vue'
+import { ref, watchEffect, type Reactive, type Ref } from 'vue'
 import type { IteratorObjectReturn } from './_type'
+import { usePagination } from './usePagination'
 
 type KeyPath = Array<string> | string
 
@@ -53,34 +54,33 @@ export function useTable<P, D>(
   params?: P | Reactive<P> | Ref<P>,
   options?: UseTableOptions<P>,
 ): UseTableReturn<D> {
-  const dt = {
-    path: { data: 'list', total: 'total', pageNo: 'pageNo', pageSize: 'pageSize' },
-    immediate: false,
+  const resolvedOptions = {
+    immediate: options?.immediate ?? false,
+    onSubmit: options?.onSubmit,
+    path: {
+      data: options?.path?.data ?? 'rows',
+      total: options?.path?.total ?? 'total',
+      page: options?.path?.page ?? 'pageNo',
+      pageSize: options?.path?.pageSize ?? 'pageSize',
+    },
   }
-  if (!options) options = dt
-  if (!options.path) options.path = dt.path
-  if (!options.immediate) options.immediate = dt.immediate
-  if (!options.path.data) options.path.data = dt.path.data
-  if (!options.path.total) options.path.total = dt.path.total
-  if (!options.path.page) options.path.page = dt.path.pageNo
-  if (!options.path.pageSize) options.path.pageSize = dt.path.pageSize
-  // console.log(options, 'options')
 
   const pagination = usePagination((extraData?: object) => (extraData ? refresh(extraData) : refresh()))
-  const listData = shallowRef<D[]>([])
+  const listData = ref<D[]>([]) as Ref<D[]>
 
-  const pageKey = options?.path?.page?.split('.')[options?.path?.page?.split('.').length - 1]
-  const pageSizeKey = options?.path?.pageSize?.split('.')[options?.path?.pageSize?.split('.').length - 1]
+  const pageKey = getLastPathSegment(resolvedOptions.path.page)
+  const pageSizeKey = getLastPathSegment(resolvedOptions.path.pageSize)
 
   const [pageData, request, loading] = useApi<P, ApiPage<D>>(api, isFunction(params) ? params() : params, {
-    immediate: options.immediate,
+    immediate: resolvedOptions.immediate,
     onSubmit: async (requestData: any) => {
       const pageableData: Partial<P> | any = {
         [pageKey as string]: pagination.pageNo,
         [pageSizeKey as string]: pagination.pageSize,
       }
-      if (options?.onSubmit) {
-        const result = await options?.onSubmit(requestData)
+      if (resolvedOptions.onSubmit) {
+        const result = await resolvedOptions.onSubmit(requestData)
+        if (result === false) return false
         if (isObject(result)) merge(requestData, result)
       }
       merge(requestData, pageableData)
@@ -89,11 +89,25 @@ export function useTable<P, D>(
   })
 
   watchEffect(() => {
-    listData.value = pageData.value?.rows || []
-    pagination.setTotal(pageData.value?.total || 0)
+    const rows = getPathValue(pageData.value, resolvedOptions.path.data, [])
+    const total = getPathValue(pageData.value, resolvedOptions.path.total, 0)
+    listData.value = Array.isArray(rows) ? (rows as D[]) : []
+    pagination.setTotal(Number(total) || 0)
   })
 
   const refresh: UseTableRequest = (extraData?: object) => request(extraData)
 
   return iteratorObject<UseTableReturn<D>>({ rows: listData, request: refresh, pagination, loading })
+}
+
+const getLastPathSegment = (path: string) => path.split('.').filter(Boolean).at(-1) || path
+
+const getPathValue = <T>(source: unknown, path: KeyPath, fallback: T): unknown | T => {
+  const segments = Array.isArray(path) ? path : path.split('.').filter(Boolean)
+  let value: any = source
+  for (const segment of segments) {
+    if (value == null || typeof value !== 'object' || !(segment in value)) return fallback
+    value = value[segment]
+  }
+  return value ?? fallback
 }

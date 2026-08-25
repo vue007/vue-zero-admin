@@ -55,10 +55,10 @@
 
         <template #dropdown>
           <el-dropdown-menu class="min-w-140">
-            <!-- <el-dropdown-item @click="() => $router.push('/sys/user/setting')">
-            <svg-icon class="mr-10" name="el-setting" />
-            个人设置
-          </el-dropdown-item> -->
+            <el-dropdown-item @click="() => $router.push('/system/user/profile')">
+              <svg-icon class="mr-10" name="el-user" />
+              个人中心
+            </el-dropdown-item>
             <el-dropdown-item divided @click="() => handleLogout()">
               <svg-icon class="mr-10" name="el-switch-button" />
               退出

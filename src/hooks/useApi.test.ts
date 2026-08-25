@@ -43,9 +43,21 @@ describe('useApi', () => {
     const onError = vi.fn()
     const { request, loading } = useApi<unknown, string>(api, undefined, { onError })
 
-    await request()
+    await expect(request()).rejects.toThrow('sync failure')
 
     expect(onError).toHaveBeenCalledOnce()
+    expect(loading.value).toBe(false)
+  })
+
+  it('cancels the api request when onSubmit returns false', async () => {
+    const api = vi.fn(() => Promise.resolve({ apiData: 'unexpected' }) as ApiPromise<string>)
+    const { request, loading } = useApi<unknown, string>(api, undefined, {
+      onSubmit: async () => false,
+    })
+
+    await request()
+
+    expect(api).not.toHaveBeenCalled()
     expect(loading.value).toBe(false)
   })
 })

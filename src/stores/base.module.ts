@@ -77,7 +77,7 @@ export const useBaseStore = defineStore('base', () => {
           if (!r.meta?.auth) return
 
           const item = authorisedRoutes.find((item) => item.path === r.path)
-          if (!item) {
+          if (!item && !r.meta?.menuIndependent) {
             if (r.path !== '/' && r.alias !== '/') router?.removeRoute(r.name)
             return
           }

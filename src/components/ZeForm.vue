@@ -32,21 +32,14 @@
 <script setup lang="tsx">
 import type { FormValidateCallback } from 'element-plus/lib/components/index.js'
 import ZeFormItem from './ZeFormItem.vue'
-import { watchOnce } from '@vueuse/core'
 import type { ZeFormInstance, ZeFormItemProp } from './types/form'
 import { cloneDeep, omit, pickBy, toMerged } from 'es-toolkit'
 import { isEmpty, startsWith } from 'es-toolkit/compat'
 import type { FormInstance } from 'element-plus'
 
 const emit = defineEmits(['update:modelValue', 'submit'])
-const model = defineModel<ZeFormItemProp & { prop?: string }>()
-const defaultModelVal = ref<any>(null)
-
-watchOnce(
-  () => model.value,
-  (val) => (defaultModelVal.value = val),
-  { immediate: true },
-)
+const model = defineModel<Record<string, any>>({ default: () => ({}) })
+const defaultModelVal = ref(cloneDeep(model.value))
 
 const props = defineProps({
   labelWidth: { type: String, default: '120' },
@@ -64,8 +57,8 @@ const formItems = computed(() => props.items.filter((item) => !item.hidden))
 
 const formRef = ref<FormInstance | null>(null)
 
-const setFields = (data) => {
-  emit('update:modelValue', cloneDeep(data ? data : defaultModelVal.value))
+const setFields = (data?: Record<string, any>) => {
+  emit('update:modelValue', cloneDeep(data ?? defaultModelVal.value))
   setTimeout(() => {
     if (formRef.value) formRef.value.clearValidate()
   })
@@ -73,15 +66,23 @@ const setFields = (data) => {
 const expose = new Proxy(
   { setFields },
   {
-    get: (_target, prop) => formRef.value?.[prop],
-    has: (_target, prop) => prop in (formRef.value || {}),
+    get(target, prop, receiver) {
+      if (Reflect.has(target, prop)) return Reflect.get(target, prop, receiver)
+      const form = formRef.value as unknown as Record<PropertyKey, any> | null
+      const value = form?.[prop]
+      return typeof value === 'function' ? value.bind(form) : value
+    },
+    has(target, prop) {
+      const form = formRef.value as unknown as Record<PropertyKey, any> | null
+      return Reflect.has(target, prop) || Boolean(form && prop in form)
+    },
   },
 )
 
 const vFormRef = inject<any>('ZeModal->ZeForm', undefined)
 
 const initInject = () => {
-  if (vFormRef) vFormRef.value = { ...formRef.value, setFields }
+  if (vFormRef) vFormRef.value = expose
 }
 onMounted(() => {
   initInject()

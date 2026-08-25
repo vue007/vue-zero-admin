@@ -2,7 +2,7 @@ import { omit, pick } from 'es-toolkit'
 import { fetch, type ApiPromise, type ApiPromisePage } from '../_fetch'
 import type { DeptVO } from './dept.type'
 import type { RoleVO } from './role.types'
-import type { UserForm, UserInfoVO, UserQuery, UserVO } from './user.type'
+import type { AvatarVO, UserForm, UserInfoVO, UserProfileForm, UserQuery, UserVO } from './user.type'
 
 /**
  * 查询用户列表
@@ -115,7 +115,7 @@ export function getUserProfile(): ApiPromise<UserInfoVO> {
  * 修改用户个人信息
  * @param data 用户信息
  */
-export function updateUserProfile(data: UserForm) {
+export function updateUserProfile(data: UserProfileForm): ApiPromise<void> {
   return fetch({
     url: '/system/user/profile',
     method: 'put',
@@ -128,11 +128,7 @@ export function updateUserProfile(data: UserForm) {
  * @param oldPassword 旧密码
  * @param newPassword 新密码
  */
-export function updateUserPwd(oldPassword: string, newPassword: string) {
-  const data = {
-    oldPassword,
-    newPassword,
-  }
+export function updateUserPwd(data: Pick<import('./user.type').ResetPwdForm, 'oldPassword' | 'newPassword'>): ApiPromise<void> {
   return fetch({
     url: '/system/user/profile/updatePwd',
     method: 'put',
@@ -148,7 +144,7 @@ export function updateUserPwd(oldPassword: string, newPassword: string) {
  * 用户头像上传
  * @param data 头像文件
  */
-export function uploadAvatar(data: FormData) {
+export function uploadAvatar(data: FormData): ApiPromise<AvatarVO> {
   return fetch({
     url: '/system/user/profile/avatar',
     method: 'post',

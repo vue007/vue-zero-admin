@@ -2,7 +2,7 @@ import type { ZeFormItemProp } from '@/components/types/form'
 import { iteratorObject } from '@/utils/iterator-object'
 import type { FormItemRule } from 'element-plus'
 import { forEach, set } from 'es-toolkit/compat'
-import type { Ref, ComputedRef, UnwrapRef } from 'vue'
+import { computed, ref, type Ref, type ComputedRef, type UnwrapRef } from 'vue'
 import type { IteratorObjectReturn } from './_type'
 
 export type FormItemsDatas = {
@@ -39,7 +39,7 @@ export function useForm<T extends FormItemsDatas>(formItemDatas: T): UseFormRetu
   const formRules = ref({})
 
   forEach(formItemDatas, (item, key) => {
-    if (item) formItems.value.push({ ...item.item, prop: key as string })
+    if (item.item) formItems.value.push({ ...item.item, prop: key as string })
 
     set(formRules.value, key, item.rule || [])
     set(form.value, key, formItemDatas[key].value)
