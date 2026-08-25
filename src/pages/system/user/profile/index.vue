@@ -6,7 +6,7 @@
   <VPage class="profile-page p-16 lt-sm:p-10" v-loading="loading">
     <el-row :gutter="16" class="profile-grid">
       <el-col :xs="24" :md="8" :lg="6">
-        <VCard title="个人信息" class="h-full">
+        <VCard title="个人信息" class="h-full" fluid>
           <div class="flex flex-col items-center">
             <UserAvatar :avatar="profile?.user.avatar" @success="handleAvatarSuccess" />
             <div class="mt-14 text-lg font-600">{{ profile?.user.nickName || '-' }}</div>
@@ -26,7 +26,7 @@
       </el-col>
 
       <el-col :xs="24" :md="16" :lg="18">
-        <VCard title="个人设置" class="h-full">
+        <VCard title="个人设置" class="h-full" fluid>
           <el-tabs v-model="activeTab">
             <el-tab-pane label="基本资料" name="userinfo">
               <UserInfo v-if="profile" :user="profile.user" @success="refreshProfile" />
@@ -73,7 +73,9 @@ const handleAvatarSuccess = (avatar: string) => {
 
 <style lang="scss" scoped>
 .profile-grid { row-gap: 16px; }
+.profile-grid > :deep(.el-col) { display: flex; min-width: 0; }
 .profile-list__item { display: flex; justify-content: space-between; gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--el-border-color-lighter); }
 .profile-list__item:last-child { border-bottom: 0; }
-.profile-list__value { max-width: 58%; text-align: right; color: var(--el-text-color-secondary); overflow-wrap: anywhere; }
+.profile-list__item > span:first-child { flex: none; white-space: nowrap; }
+.profile-list__value { min-width: 0; flex: 1; text-align: right; color: var(--el-text-color-secondary); overflow-wrap: anywhere; }
 </style>

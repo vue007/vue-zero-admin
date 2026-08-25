@@ -23,7 +23,19 @@ const [form, items, rules] = useForm({
   sex: { value: '2', item: { type: 'radio', label: '性别', options: sys_user_sex } },
 })
 
-watch(() => props.user, (user) => formRef.value?.setFields({ nickName: user.nickName, phonenumber: user.phonenumber, email: user.email, sex: user.sex }), { immediate: true, deep: true, flush: 'post' })
+watch(
+  () => props.user,
+  (user) => {
+    Object.assign(form.value, {
+      nickName: user.nickName,
+      phonenumber: user.phonenumber,
+      email: user.email,
+      sex: user.sex,
+    })
+    nextTick(() => formRef.value?.clearValidate())
+  },
+  { immediate: true, deep: true },
+)
 const { request: save, loading } = useApi<UserProfileForm, void>(userApi.updateUserProfile, form, { tipSuccess: '修改成功', tipError: true, onSuccess: () => emit('success') })
 const submit = async () => { if (await formRef.value?.validate().catch(() => false)) save() }
 </script>
