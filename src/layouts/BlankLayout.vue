@@ -16,7 +16,7 @@
     </section>
   </div>
 
-  <LayoutActions :to="actionsPosition" :actions="['theme', 'locale']" />
+  <LayoutActions :to="actionsPosition" :actions="['scheme', 'locale']" />
 </template>
 
 <script setup lang="ts">
@@ -45,7 +45,7 @@ $header-height: 64px;
     padding: 0 8px 0 12px;
   }
 
-  #{$theme-dark} {
+  #{$scheme-dark} {
     background-color: #141414;
     border-bottom: 1px solid #4c4d4f;
   }
@@ -58,7 +58,7 @@ $header-height: 64px;
   }
 
   .app-title {
-    #{$theme-dark} {
+    #{$scheme-dark} {
       filter: invert(100%);
     }
   }

@@ -16,13 +16,13 @@
 
       <el-popover v-if="'scheme' === action" trigger="hover">
         <template #reference>
-          <div class="action cursor-pointer" @click="toggleTheme">
-            <svg-icon :name="themeIcon" />
+          <div class="action cursor-pointer" @click="toggleScheme">
+            <svg-icon :name="schemeIcon" />
           </div>
         </template>
-        <ThemeCheckTag value="light" icon="ze-sunny" text="base.scheme.light" />
-        <ThemeCheckTag value="dark" icon="ze-moon" text="base.scheme.dark" />
-        <ThemeCheckTag value="auto" icon="ze-laptop" text="base.scheme.auto" />
+        <SchemeCheckTag value="light" icon="ze-sunny" text="base.scheme.light" />
+        <SchemeCheckTag value="dark" icon="ze-moon" text="base.scheme.dark" />
+        <SchemeCheckTag value="auto" icon="ze-laptop" text="base.scheme.auto" />
       </el-popover>
 
       <el-popover v-if="'locale' === action" trigger="hover">
@@ -100,8 +100,8 @@ const [, handleLogout] = useApi(logout, undefined, {
 
 const hasAction = (action: ActionType) => includes(props.actions, action) || includes(props.actions, 'ALL')
 
-const ThemeCheckTag = ({ text, value, icon }) => (
-  <el-check-tag class='check-item' checked={setting.theme === value} onChange={() => setting.setTheme(value)}>
+const SchemeCheckTag = ({ text, value, icon }) => (
+  <el-check-tag class='check-item' checked={setting.scheme === value} onChange={() => setting.setScheme(value)}>
     <svg-icon v-show={icon} class='mr-12' name={icon} />
     {t(text)}
   </el-check-tag>
@@ -121,16 +121,16 @@ const SizeCheckTag = ({ text, value }) => (
   />
 )
 
-const themeIcon = computed(() => {
-  if ('light' === setting.theme) return 'el-sunny'
-  if ('dark' === setting.theme) return 'el-moon'
-  if ('auto' === setting.theme) return 'el-platform'
+const schemeIcon = computed(() => {
+  if ('light' === setting.scheme) return 'el-sunny'
+  if ('dark' === setting.scheme) return 'el-moon'
+  if ('auto' === setting.scheme) return 'el-platform'
   return 'el-sunny'
 })
-const toggleTheme = () => {
-  if ('auto' === setting.theme) return
-  if ('light' === setting.theme) return setting.setTheme('dark')
-  if ('dark' === setting.theme) return setting.setTheme('light')
+const toggleScheme = () => {
+  if ('auto' === setting.scheme) return
+  if ('light' === setting.scheme) return setting.setScheme('dark')
+  if ('dark' === setting.scheme) return setting.setScheme('light')
 }
 </script>
 

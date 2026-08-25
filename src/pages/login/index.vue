@@ -40,7 +40,7 @@ const { t } = useI18nLocal()
     min-width: 300px;
     background-color: #1290fc;
 
-    #{$theme-dark} {
+    #{$scheme-dark} {
       mix-blend-mode: screen;
       background-color: #0a0a0a;
       border-right: 1px solid #4c4d4f;
@@ -68,7 +68,7 @@ const { t } = useI18nLocal()
     justify-content: center;
     padding: 0 8px;
 
-    #{$theme-dark} {
+    #{$scheme-dark} {
       background-color: #0a0a0a;
     }
   }
@@ -98,7 +98,7 @@ const { t } = useI18nLocal()
       min-height: 400px;
     }
 
-    #{$theme-dark} {
+    #{$scheme-dark} {
       background-color: #141414;
     }
   }
@@ -108,7 +108,7 @@ const { t } = useI18nLocal()
     color: $text-color-secondary;
     font-size: 14px;
 
-    #{$theme-light} {
+    #{$scheme-light} {
       @screen lt-lg {
         color: #fff;
       }

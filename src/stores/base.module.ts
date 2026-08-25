@@ -9,24 +9,35 @@ import type { UserInfo } from '@/api/user.type'
 import { merge } from 'es-toolkit'
 
 export type BaseSize = 'large' | 'default' | 'small'
-export type BaseTheme = 'dark' | 'light' | 'auto'
+export type BaseScheme = 'dark' | 'light' | 'auto'
 export type BaseLang = 'en' | 'zh-CN' | 'zh-TW'
 export type BaseArrangement = 'default' | ''
+
+const getInitialScheme = (): BaseScheme => {
+  const legacyValue = globalThis.localStorage?.getItem('setting.theme')
+  if (!legacyValue) return 'light'
+  try {
+    const value = JSON.parse(legacyValue)
+    return ['dark', 'light', 'auto'].includes(value) ? value : 'light'
+  } catch {
+    return 'light'
+  }
+}
 
 export const useBaseStore = defineStore('base', () => {
   const router = useRouter()
 
   const setting = reactive({
     local: useLocalStorage<BaseLang>('setting.local', 'zh-CN'),
-    theme: useLocalStorage<BaseTheme>('setting.theme', 'light'),
+    scheme: useLocalStorage<BaseScheme>('setting.scheme', getInitialScheme()),
     size: useLocalStorage<BaseSize>('setting.size', 'default'),
     userInfo: useLocalStorage<Partial<UserInfo>>('setting.userInfo', {}),
 
     setLocale(locale: BaseLang) {
       setting.local = locale
     },
-    setTheme(theme: BaseTheme) {
-      setting.theme = theme
+    setScheme(scheme: BaseScheme) {
+      setting.scheme = scheme
     },
     setSize(size: BaseSize) {
       setting.size = size
@@ -77,8 +88,8 @@ export const useBaseStore = defineStore('base', () => {
           if (!r.meta?.auth) return
 
           const item = authorisedRoutes.find((item) => item.path === r.path)
-          if (!item && !r.meta?.menuIndependent) {
-            if (r.path !== '/' && r.alias !== '/') router?.removeRoute(r.name)
+          if (!item) {
+            if (!r.meta?.menuIndependent && r.path !== '/' && r.alias !== '/') router?.removeRoute(r.name)
             return
           }
           merge(r, { meta: item.meta })

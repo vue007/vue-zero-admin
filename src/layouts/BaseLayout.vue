@@ -83,7 +83,7 @@ $header-height: 64px;
   @screen lt-sm {
     padding: 0 8px 0 12px;
   }
-  #{$theme-dark} {
+  #{$scheme-dark} {
     background-color: #141414;
     border-bottom: 1px solid #4c4d4f;
   }
@@ -95,7 +95,7 @@ $header-height: 64px;
     height: $header-height - 10px;
   }
   .app-title {
-    #{$theme-dark} {
+    #{$scheme-dark} {
       filter: invert(100%);
     }
   }
@@ -138,7 +138,7 @@ $header-height: 64px;
   border-right: 1px solid #e4e7ed;
   position: relative;
 
-  #{$theme-dark} {
+  #{$scheme-dark} {
     background-color: #0a0a0a;
     border-right: 1px solid #4c4d4f;
   }

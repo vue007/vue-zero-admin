@@ -6,7 +6,7 @@ export const baseLang = {
     normal: i('中', '中', 'Normal'),
     small: i('小', '小', 'Small'),
   },
-  theme: {
+  scheme: {
     auto: i('自动', '自动', 'Auto'),
     light: i('浅色', '浅色', 'Light'),
     dark: i('深色', '深色', 'Dark'),

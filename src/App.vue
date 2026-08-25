@@ -36,24 +36,24 @@ const langs = { zh_CN: import('element-plus/es/locale/lang/zh-cn'), zh_TW, en }
 const locale = computed(() => langs[setting.local] || zh_CN)
 watchEffect(() => (i18n.locale.value = setting.local))
 
-// # switch theme
-const theme = computed(() => setting.theme)
-const systemTheme = computed(() => {
+// # switch color scheme
+const scheme = computed(() => setting.scheme)
+const systemScheme = computed(() => {
   return useMediaQuery('(prefers-color-scheme: dark)').value ? 'dark' : 'light'
 })
 
 // - switch by user
 watchImmediate(
-  () => theme.value,
+  () => scheme.value,
   () => {
-    if (theme.value === 'auto') document.documentElement.setAttribute('data-theme', systemTheme.value)
-    else document.documentElement.setAttribute('data-theme', theme.value)
+    if (scheme.value === 'auto') document.documentElement.setAttribute('data-scheme', systemScheme.value)
+    else document.documentElement.setAttribute('data-scheme', scheme.value)
   },
 )
 // - auto switch by system
-watchImmediate(systemTheme, () => {
-  if (theme.value !== 'auto') return
-  document.documentElement.setAttribute('data-theme', systemTheme.value)
+watchImmediate(systemScheme, () => {
+  if (scheme.value !== 'auto') return
+  document.documentElement.setAttribute('data-scheme', systemScheme.value)
 })
 
 watchImmediate(

@@ -22,7 +22,7 @@
   background: #fff;
   padding: 24px;
 
-  #{ $theme-dark } {
+  #{ $scheme-dark } {
     background: #141414;
   }
 

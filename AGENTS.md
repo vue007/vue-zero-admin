@@ -49,7 +49,7 @@
 - 使用 `<script setup lang="ts">`；仅在 TSX 能显著简化内部渲染片段或复杂组件时使用 `lang="tsx"`。
 - Vue、Router、Pinia、Element Plus API 大量由自动导入提供。判断是否需要显式 import 前先查看 `vite/plugins/auto-import.ts` 和已有同类文件。
 - 公共文案放 `src/i18n/`；页面局部文案可使用 SFC `<i18n>`。新增用户可见文本时至少考虑 `zh-CN` 和英文，不要继续扩散已有的硬编码文案。
-- 主题通过 `data-theme`、`data-size` 与 `src/styles/theme/` 工作；响应式断点来自 `vite/config/breakpoints.ts`。优先沿用这些变量和 UnoCSS 规则。
+- 深浅配色通过 `data-scheme`、`data-size` 与 `src/styles/theme/` 工作；响应式断点来自 `vite/config/breakpoints.ts`。优先沿用这些变量和 UnoCSS 规则。
 
 ## 数据语义速查
 

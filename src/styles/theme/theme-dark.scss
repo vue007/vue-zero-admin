@@ -1,7 +1,7 @@
 @use './_mixin' as *;
 
 $is-dark: true;
-$mode: ':root[data-theme="dark"]';
+$mode: ':root[data-scheme="dark"]';
 
 #{$mode} {
   color-scheme: dark;

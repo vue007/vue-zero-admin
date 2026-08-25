@@ -1,6 +1,6 @@
-$theme-light: ':root[data-theme="light"] &';
-$theme-dark: ':root[data-theme="dark"] &';
-// $theme-XXX: ':root[data-theme="XXX"] &'; //  support more theme
+$scheme-light: ':root[data-scheme="light"] &';
+$scheme-dark: ':root[data-scheme="dark"] &';
+// $scheme-XXX: ':root[data-scheme="XXX"] &'; // support more color schemes
 
 $size-small: ':root[data-size="small"] &';
 $size-default: ':root[data-size="default"] &';
