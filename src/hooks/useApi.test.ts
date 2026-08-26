@@ -60,4 +60,13 @@ describe('useApi', () => {
     expect(api).not.toHaveBeenCalled()
     expect(loading.value).toBe(false)
   })
+
+  it('lets per-request data override default parameters', async () => {
+    const api = vi.fn(() => Promise.resolve({ apiData: 'ok' }) as ApiPromise<string>)
+    const { request } = useApi<{ cacheName: string }, string>(api, { cacheName: '' })
+
+    await request({ cacheName: 'sys_dict' })
+
+    expect(api).toHaveBeenCalledWith({ cacheName: 'sys_dict' })
+  })
 })

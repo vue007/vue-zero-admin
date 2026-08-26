@@ -114,7 +114,7 @@ const keysVisible = ref(false)
 const currentGroup = ref<CacheGroupVO>()
 const [cacheKeys, fetchCacheKeys, keysLoading] = useApi<{ cacheName: string }, string[]>(
   cacheApi.getCacheKeys,
-  { cacheName: '' },
+  undefined,
   { tipError: computed(() => t('loadKeysFailed')) },
 )
 const keyRows = computed(() => (cacheKeys.value || []).map((cacheKey) => ({ cacheKey })))

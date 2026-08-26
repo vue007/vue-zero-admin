@@ -118,16 +118,25 @@ export default defineConfig(({ command, mode }) => {
       host: '0.0.0.0',
       proxy: {} as any,
     }
-    const createProxy = (target: string, path: string = '/api', rew: RegExp = /^\/api/) => {
+    const createProxy = (
+      target: string,
+      path: string = '/api',
+      rew?: RegExp,
+      rewriteRedirect = false,
+      changeOrigin = true,
+    ) => {
       server.proxy[path] = {
         target,
-        changeOrigin: true,
+        changeOrigin,
         ws: true,
-        rewrite: (p: any) => p.replace(rew, ''),
+        ...(rewriteRedirect ? { autoRewrite: true } : {}),
+        ...(rew ? { rewrite: (p: string) => p.replace(rew, '') } : {}),
       }
     }
 
     createProxy('http://localhost:8080/', '/api', /^\/api/)
+    createProxy('http://localhost:9090/', '/admin', undefined, true, false)
+    createProxy('http://localhost:8800/', '/snail-job', undefined, true, false)
     // createProxy('https://apifoxmock.com/m1/5534148-5210746-default', '/api', /^\/api/)
     config.server = server
 

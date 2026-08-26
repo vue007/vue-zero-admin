@@ -76,12 +76,13 @@ export function useApi<P, D>(
     }
 
     try {
-      if (extraData) Object.assign(requestData, isFunction(extraData) ? extraData() : extraData)
-
       const resolvedParams = isRef(params) ? params.value : params
       if (isFunction(resolvedParams) || isPlainObject(resolvedParams)) {
         if (params) Object.assign(requestData, isFunction(params) ? params() : resolvedParams)
       } else requestData = extraData as BaseType | any[] | any
+
+      // Per-request data must take precedence over the hook's default parameters.
+      if (extraData) Object.assign(requestData, isFunction(extraData) ? extraData() : extraData)
     } catch (error) {
       finishRequest()
       throw error
