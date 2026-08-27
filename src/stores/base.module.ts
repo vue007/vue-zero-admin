@@ -87,7 +87,7 @@ export const useBaseStore = defineStore('base', () => {
         autoPageRoutes.forEach((r) => {
           if (!r.meta?.auth) return
 
-          const item = authorisedRoutes.find((item) => item.path === r.path)
+          const item = authorisedRoutes.find((item) => pathsEqual(item.path, r.path))
           if (!item) {
             if (!r.meta?.menuIndependent && r.path !== '/' && r.alias !== '/') router?.removeRoute(r.name)
             return
@@ -95,7 +95,7 @@ export const useBaseStore = defineStore('base', () => {
           merge(r, { meta: item.meta })
         })
         const currentPath = router.currentRoute.value.path
-        const currentRoute = authorisedRoutes.find((item) => item.path === currentPath)
+        const currentRoute = authorisedRoutes.find((item) => pathsEqual(item.path, currentPath))
         menu.setActive(currentRoute?.meta?.activeMenu || currentPath)
         menu.setBreadcrumb(currentRoute?.meta?.breadcrumb || [])
         return res.apiData
@@ -137,4 +137,9 @@ function flattenMenus(routes: any[], basePath = '', breadcrumb: any[] = []) {
     item.meta.breadcrumb = [...(activeParent.meta?.breadcrumb || []), item.meta?.title].filter(Boolean)
   })
   return list
+}
+
+function pathsEqual(a?: string, b?: string) {
+  const normalize = (path = '') => path.replace(/\/+$/, '').toLowerCase() || '/'
+  return normalize(a) === normalize(b)
 }

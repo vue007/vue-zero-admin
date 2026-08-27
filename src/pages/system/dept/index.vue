@@ -60,6 +60,7 @@
 
 <script setup lang="ts">
 import { deptApi } from '@/api/_index'
+import type { DeptQuery, DeptVO } from '@/api/sys/dept.type'
 import type { ZeFormInstance } from '@/components/types/form'
 import { array2Tree } from '@/utils/array2tree'
 import { watchDebounced } from '@vueuse/core'
@@ -77,8 +78,8 @@ const [searchForm, searchFormItems] = useForm({
 watchDebounced(searchForm, () => refresh(), { deep: true, debounce: 666, maxWait: 3000 })
 const reset = () => (searchFormRef.value?.resetFields(), nextTick(() => refresh()))
 
-const [listData, refresh, loading] = useApi(deptApi.deptList, searchForm, { immediate: true })
-const treeData = computed(() => array2Tree(listData.value || [], 'deptId'))
+const [listData, refresh, loading] = useApi<DeptQuery, DeptVO[]>(deptApi.deptList, searchForm, { immediate: true })
+const treeData = computed(() => array2Tree<DeptVO>(listData.value || [], 'deptId'))
 
 const [tableRef, filterColRef] = [ref(), ref()]
 
@@ -94,7 +95,7 @@ const [editRef, EditModal] = useModal({
 const [parentList, fetchParentList] = useApi((d) =>
   isEdit.value ? deptApi.deptListExcludeChild(d as any) : deptApi.deptList({}),
 )
-const parentTreeData = computed(() => array2Tree(parentList.value || [], 'deptId'))
+const parentTreeData = computed(() => array2Tree<DeptVO>(parentList.value || [], 'deptId'))
 
 const [editForm, editFormItems, editFormRules] = useForm({
   deptId: { value: '0' },

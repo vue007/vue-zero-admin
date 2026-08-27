@@ -13,13 +13,15 @@ type AppRouteMeta = {
 }
 export type AppRouteRecordRaw = RouteRecordRaw & { meta: AppRouteMeta }
 
-let routes: Array<AppRouteRecordRaw> = [{ path: '/', redirect: '/dashboard', meta: { layout: 'base' } }]
+const routes: Array<AppRouteRecordRaw> = uniqBy(
+  concat([{ path: '/', redirect: '/dashboard', meta: { layout: 'base' } }], autoPageRoutes),
+  (item) => item.path,
+)
 
-routes = uniqBy(concat(routes, autoPageRoutes), (item) => item.path)
-
-let router = createRouter({
+const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes,
+  sensitive: true,
 })
 
 export default router

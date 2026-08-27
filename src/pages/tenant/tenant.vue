@@ -66,7 +66,7 @@
 </template>
 
 <script setup lang="ts">
-import { tenantApi } from '@/api/_index'
+import { tenantApi, tenantPackageApi } from '@/api/_index'
 import type { ZeFormInstance } from '@/components/types/form'
 import { watchDebounced } from '@vueuse/core'
 
@@ -89,6 +89,11 @@ const reset = () => {
 
 const isEdit = computed(() => Boolean(editForm.value?.id))
 
+const [tenantPackageList] = useApi(tenantPackageApi.selectTenantPackage, {}, { immediate: true })
+const tenantPackageOptions = computed(() =>
+  (tenantPackageList.value || []).map((item) => ({ label: item.packageName, value: item.packageId })),
+)
+
 const [editRef, EditModal] = useModal({
   title: computed(() => `${isEdit.value ? '编辑' : '添加'}租户`),
   submitting: computed(() => submitting.value),
@@ -103,7 +108,10 @@ const [editForm, editFormItems, editFormRules] = useForm({
   contactPhone: { value: '', item: { type: 'text', label: '联系电话', plh: '请输入联系电话' } },
   username: { value: '', item: { type: 'text', label: '用户名', plh: '请输入系统用户名' } },
   password: { value: '', item: { type: 'password', label: '用户密码', plh: '请输入系统用户密码' } },
-  packageId: { value: '', item: { type: 'select', label: '租户套餐', plh: '请选择租户套餐' } },
+  packageId: {
+    value: '',
+    item: { type: 'select', label: '租户套餐', plh: '请选择租户套餐', options: tenantPackageOptions },
+  },
   expireTime: { value: '', item: { type: 'datetime', label: '过期时间', plh: '请选择过期时间' } },
   accountCount: { value: 0, item: { type: 'number', label: '用户数量', plh: '请输入用户数量' } },
   domain: { value: '', item: { type: 'text', label: '绑定域名', plh: '请输入绑定域名' } },

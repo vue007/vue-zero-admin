@@ -39,7 +39,7 @@ $mode: ':root[data-scheme="dark"]';
   #{$prefix}-fill-color-extra-light: #191919;
   #{$prefix}-fill-color-dark: #39393a;
   #{$prefix}-fill-color-darker: #424243;
-  #{$prefix}-fill-color-blank: transparent;
+  #{$prefix}-fill-color-blank: var(#{$prefix}-bg-color);
   #{$prefix}-mask-color: rgba(0, 0, 0, 0.8);
   #{$prefix}-mask-color-extra-light: rgba(0, 0, 0, 0.3);
 }

@@ -51,7 +51,7 @@ watch(
 )
 const handleTabClick = (tab: TabsPaneContext) => {
   if (tab.props.name === indexTab.value) return
-  indexTab.value = tab.props.label.toString()
+  indexTab.value = tab.props.name?.toString() || ''
   router.push({ name: tab.props.name?.toString().replace(/-index$/, '') })
 }
 </script>

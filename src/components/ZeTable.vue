@@ -95,8 +95,13 @@ const getColKey = (item: ZeTableColumns) => String(item.prop ?? item.type ?? ite
 const _columns = computed(() => {
   return props.columns.filter((item) => item && !item.hidden)
 })
+const fixedColumnKeys = computed(
+  () => new Set(_columns.value.filter((item) => item.fixed !== undefined).map(getColKey)),
+)
 const showedColumns = computed(() => {
-  return _columns.value.filter((item) => filterColumns.value.includes(getColKey(item)))
+  return _columns.value.filter(
+    (item) => fixedColumnKeys.value.has(getColKey(item)) || filterColumns.value.includes(getColKey(item)),
+  )
 })
 
 const filterColumns = ref<string[]>([])
@@ -104,7 +109,9 @@ let previousColumnKeys: string[] = []
 const reconcileFilterColumns = (columnKeys: string[]) => {
   const previousKeys = new Set(previousColumnKeys)
   const selectedKeys = new Set(filterColumns.value)
-  filterColumns.value = columnKeys.filter((key) => selectedKeys.has(key) || !previousKeys.has(key))
+  filterColumns.value = columnKeys.filter(
+    (key) => fixedColumnKeys.value.has(key) || selectedKeys.has(key) || !previousKeys.has(key),
+  )
   previousColumnKeys = columnKeys
 }
 

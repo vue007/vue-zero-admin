@@ -62,6 +62,7 @@
 
 <script setup lang="ts">
 import { menuApi } from '@/api/_index'
+import type { MenuQuery, MenuVO } from '@/api/sys/menu.type'
 import type { ZeFormInstance } from '@/components/types/form'
 import { MenuTypeEnum, MenuTypeEnumList } from '@/constants/menu.enum'
 import { array2Tree } from '@/utils/array2tree'
@@ -81,8 +82,8 @@ const [searchForm, searchFromItems] = useForm({
 watchDebounced(searchForm, () => refresh(), { deep: true, debounce: 666, maxWait: 3000 })
 const reset = () => (searchFormRef.value?.resetFields(), nextTick(() => refresh()))
 
-const [listData, refresh, loading] = useApi(menuApi.listMenu, searchForm, { immediate: true })
-const treeData = computed(() => array2Tree(listData.value || [], 'menuId'))
+const [listData, refresh, loading] = useApi<MenuQuery, MenuVO[]>(menuApi.listMenu, searchForm, { immediate: true })
+const treeData = computed(() => array2Tree<MenuVO>(listData.value || [], 'menuId'))
 
 const [tableRef, filterColRef] = [ref(), ref()]
 
@@ -97,7 +98,7 @@ const [editRef, EditModal] = useModal({
 
 const [parentList, fetchParentList] = useApi(menuApi.listMenu)
 const parentTreeData = computed(() => {
-  return [{ menuId: 0, menuName: '主类目', children: array2Tree(parentList.value || [], 'menuId') }]
+  return [{ menuId: 0, menuName: '主类目', children: array2Tree<MenuVO>(parentList.value || [], 'menuId') }]
 })
 const FLAG_ENUM = (okText = '是', xText = '否') => [
   { label: okText, value: '0' },

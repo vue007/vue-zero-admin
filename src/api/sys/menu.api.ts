@@ -34,7 +34,7 @@ export function roleMenuTreeselect(roleId: string | number): ApiPromise<RoleMenu
   })
 }
 
-// 根据角色ID查询菜单下拉树结构
+// 根据租户套餐ID查询菜单下拉树结构
 export function tenantPackageMenuTreeselect(packageId: string | number): ApiPromise<RoleMenuTree> {
   return fetch({
     url: '/system/menu/tenantPackageMenuTreeselect/' + packageId,
