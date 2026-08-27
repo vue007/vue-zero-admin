@@ -46,7 +46,15 @@
             :options="{ text: true, type: 'primary' }"
             :actions="[
               { content: '修改', text: true, type: 'primary', onClick: () => editRef.open(row) },
-              { content: '同步套餐', text: true, type: 'primary', onClick: () => handleSyncTenantPackage(row) },
+              ...(canSyncTenantPackage(row)
+                ? [
+                    {
+                      content: '同步套餐',
+                      loading: syncingTenantId === row.tenantId,
+                      onClick: () => handleSyncTenantPackage(row),
+                    },
+                  ]
+                : []),
               { content: '删除', confirm: true, onClick: () => handleDel(row) },
             ]"
             ellipsis
@@ -67,8 +75,11 @@
 
 <script setup lang="ts">
 import { tenantApi, tenantPackageApi } from '@/api/_index'
+import type { TenantVO } from '@/api/sys/tenant.types'
 import type { ZeFormInstance } from '@/components/types/form'
 import { watchDebounced } from '@vueuse/core'
+
+const DEFAULT_TENANT_ID = '000000'
 
 const { sys_normal_disable } = toRefs(useDict('sys_normal_disable'))
 
@@ -144,13 +155,34 @@ const handleStatusChange = (row) => {
     .catch(() => cancel())
 }
 
-const handleSyncTenantPackage = (row) => {
-  ElMessageBox.confirm(`是否确认同步租户套餐租户编号为"${row.tenantId}"的数据项？`, { type: 'warning' })
-    .then(() => {
-      loading.value = true
-      tenantApi.syncTenantPackage(row).then(() => ElMessage.success('同步成功'))
+const canSyncTenantPackage = (row: TenantVO) =>
+  String(row.tenantId) !== DEFAULT_TENANT_ID &&
+  row.packageId !== undefined &&
+  row.packageId !== null &&
+  row.packageId !== ''
+
+const syncingTenantId = ref<TenantVO['tenantId']>()
+
+const handleSyncTenantPackage = async (row: TenantVO) => {
+  if (!canSyncTenantPackage(row)) {
+    ElMessage.warning(
+      String(row.tenantId) === DEFAULT_TENANT_ID ? '管理租户无需同步套餐' : '当前租户未绑定套餐',
+    )
+    return
+  }
+
+  try {
+    await ElMessageBox.confirm(`是否确认同步租户套餐租户编号为"${row.tenantId}"的数据项？`, {
+      type: 'warning',
     })
-    .finally(() => (loading.value = false))
+    syncingTenantId.value = row.tenantId
+    await tenantApi.syncTenantPackage({ tenantId: row.tenantId, packageId: row.packageId })
+    ElMessage.success('同步成功')
+  } catch {
+    // 用户取消或接口失败时不改变当前列表。
+  } finally {
+    syncingTenantId.value = undefined
+  }
 }
 
 const [, handleDel] = useApi(tenantApi.delTenant, '', { onSuccess: () => refresh(), tipSuccess: '删除成功' })

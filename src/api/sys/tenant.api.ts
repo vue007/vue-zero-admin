@@ -79,7 +79,7 @@ export function dynamicClear() {
 }
 
 // 同步租户套餐
-export function syncTenantPackage({ tenantId, packageId }: TenantVO) {
+export function syncTenantPackage({ tenantId, packageId }: Pick<TenantVO, 'tenantId' | 'packageId'>): ApiPromise<void> {
   const data = {
     tenantId,
     packageId,
