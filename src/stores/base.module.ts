@@ -10,7 +10,7 @@ import { merge } from 'es-toolkit'
 
 export type BaseSize = 'large' | 'default' | 'small'
 export type BaseScheme = 'dark' | 'light' | 'auto'
-export type BaseLang = 'en' | 'zh-CN' | 'zh-TW'
+export type BaseLang = 'en' | 'zh-CN'
 export type BaseArrangement = 'default' | ''
 
 const getInitialScheme = (): BaseScheme => {
@@ -24,11 +24,20 @@ const getInitialScheme = (): BaseScheme => {
   }
 }
 
+const getInitialLocale = (): BaseLang => {
+  const locale = globalThis.localStorage?.getItem('setting.local')
+  if (locale === 'en' || locale === 'zh-CN') return locale
+
+  // 兼容曾经选择繁体中文的用户，升级后统一回退到简体中文。
+  if (locale) globalThis.localStorage?.setItem('setting.local', 'zh-CN')
+  return 'zh-CN'
+}
+
 export const useBaseStore = defineStore('base', () => {
   const router = useRouter()
 
   const setting = reactive({
-    local: useLocalStorage<BaseLang>('setting.local', 'zh-CN'),
+    local: useLocalStorage<BaseLang>('setting.local', getInitialLocale()),
     scheme: useLocalStorage<BaseScheme>('setting.scheme', getInitialScheme()),
     size: useLocalStorage<BaseSize>('setting.size', 'default'),
     userInfo: useLocalStorage<Partial<UserInfo>>('setting.userInfo', {}),

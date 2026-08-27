@@ -273,7 +273,4 @@ en:
 zh-CN:
   placeholder: 请输入
   placeholderSelect: 请选择
-zh-TW:
-  placeholder: 請輸入
-  placeholderSelect: 請選擇
 </i18n>

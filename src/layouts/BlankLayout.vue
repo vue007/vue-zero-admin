@@ -92,6 +92,4 @@ en:
   header: Header
 zh-CN:
   header: 头部
-zh-TW:
-  header: 頭部
 </i18n>

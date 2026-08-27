@@ -14,7 +14,6 @@ import BaseLayout from './layouts/BaseLayout.vue'
 import BlankLayout from './layouts/BlankLayout.vue'
 
 import zh_CN from 'element-plus/es/locale/lang/zh-cn'
-import zh_TW from 'element-plus/es/locale/lang/zh-tw'
 import en from 'element-plus/es/locale/lang/en'
 import { useMediaQuery, watchImmediate } from '@vueuse/core'
 
@@ -32,7 +31,7 @@ watchEffect(() => {
 })
 
 // # switch lang
-const langs = { zh_CN: import('element-plus/es/locale/lang/zh-cn'), zh_TW, en }
+const langs = { 'zh-CN': zh_CN, en }
 const locale = computed(() => langs[setting.local] || zh_CN)
 watchEffect(() => (i18n.locale.value = setting.local))
 

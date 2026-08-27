@@ -30,7 +30,6 @@
           <div class="action"><svg-icon name="ze-language" /></div>
         </template>
         <LocaleCheckTag value="zh-CN" text="简中" />
-        <LocaleCheckTag value="zh-TW" text="繁中" />
         <LocaleCheckTag value="en" text="English" />
       </el-popover>
 

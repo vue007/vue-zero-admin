@@ -1,4 +1,4 @@
-export const SupportLanguageList = ['zh-CN', 'zh-TW', 'en']
+export const SupportLanguageList = ['zh-CN', 'en']
 
 export function i18nMsgItem(...args: string[]) {
   const box: any = new Array() // 为了区分普通节点 和 子节点
