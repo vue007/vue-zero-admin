@@ -38,12 +38,12 @@ const { t } = useI18nLocal()
     width: 50vw;
     max-width: 632px;
     min-width: 300px;
-    background-color: #1290fc;
+    background-color: $color-primary;
 
     #{$scheme-dark} {
       mix-blend-mode: screen;
-      background-color: #0a0a0a;
-      border-right: 1px solid #4c4d4f;
+      background-color: var(--el-bg-color-page);
+      border-right: 1px solid var(--el-border-color);
       img {
         filter: invert(36%) drop-shadow(0 0 40px #0b58dd) opacity(0.9);
       }
@@ -69,7 +69,7 @@ const { t } = useI18nLocal()
     padding: 0 8px;
 
     #{$scheme-dark} {
-      background-color: #0a0a0a;
+      background-color: var(--el-bg-color-page);
     }
   }
 
@@ -86,7 +86,7 @@ const { t } = useI18nLocal()
     min-width: 450px;
     min-height: 560px;
     border-radius: 12px 12px 12px 12px;
-    background-color: #fff;
+    background-color: var(--el-bg-color);
 
     box-shadow:
       0px 8px 20px 0px rgba(#000, 0.08),
@@ -97,10 +97,6 @@ const { t } = useI18nLocal()
       min-width: 370px;
       min-height: 400px;
     }
-
-    #{$scheme-dark} {
-      background-color: #141414;
-    }
   }
 
   .login-form-title {
@@ -108,7 +104,8 @@ const { t } = useI18nLocal()
     color: $text-color-secondary;
     font-size: 14px;
 
-    #{$scheme-light} {
+    #{$scheme-light},
+    #{$scheme-argon} {
       @screen lt-lg {
         color: #fff;
       }

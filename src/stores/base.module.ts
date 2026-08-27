@@ -9,7 +9,7 @@ import type { UserInfo } from '@/api/user.type'
 import { merge } from 'es-toolkit'
 
 export type BaseSize = 'large' | 'default' | 'small'
-export type BaseScheme = 'dark' | 'light' | 'auto'
+export type BaseScheme = 'dark' | 'light' | 'auto' | 'argon'
 export type BaseLang = 'en' | 'zh-CN'
 export type BaseArrangement = 'default' | ''
 
@@ -18,7 +18,7 @@ const getInitialScheme = (): BaseScheme => {
   if (!legacyValue) return 'light'
   try {
     const value = JSON.parse(legacyValue)
-    return ['dark', 'light', 'auto'].includes(value) ? value : 'light'
+    return ['dark', 'light', 'auto', 'argon'].includes(value) ? value : 'light'
   } catch {
     return 'light'
   }

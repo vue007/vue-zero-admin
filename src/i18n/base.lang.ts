@@ -10,6 +10,7 @@ export const baseLang = {
     auto: i('自动', 'Auto'),
     light: i('浅色', 'Light'),
     dark: i('深色', 'Dark'),
+    argon: i('Argon', 'Argon'),
   },
   index: i('序号', 'Index'),
 

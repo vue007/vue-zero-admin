@@ -22,6 +22,7 @@
         </template>
         <SchemeCheckTag value="light" icon="ze-sunny" text="base.scheme.light" />
         <SchemeCheckTag value="dark" icon="ze-moon" text="base.scheme.dark" />
+        <SchemeCheckTag value="argon" icon="ze-theme" text="base.scheme.argon" />
         <SchemeCheckTag value="auto" icon="ze-laptop" text="base.scheme.auto" />
       </el-popover>
 
@@ -123,11 +124,12 @@ const SizeCheckTag = ({ text, value }) => (
 const schemeIcon = computed(() => {
   if ('light' === setting.scheme) return 'el-sunny'
   if ('dark' === setting.scheme) return 'el-moon'
+  if ('argon' === setting.scheme) return 'ze-theme'
   if ('auto' === setting.scheme) return 'el-platform'
   return 'el-sunny'
 })
 const toggleScheme = () => {
-  if ('auto' === setting.scheme) return
+  if ('auto' === setting.scheme || 'argon' === setting.scheme) return
   if ('light' === setting.scheme) return setting.setScheme('dark')
   if ('dark' === setting.scheme) return setting.setScheme('light')
 }

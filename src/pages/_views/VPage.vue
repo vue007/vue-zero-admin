@@ -19,11 +19,12 @@
 
 <style lang="scss" scoped>
 .view-page {
-  background: #fff;
+  background: var(--el-bg-color);
   padding: 24px;
 
-  #{ $scheme-dark } {
-    background: #141414;
+  #{$scheme-argon} {
+    border-radius: var(--el-border-radius-base);
+    box-shadow: var(--el-box-shadow);
   }
 
   .content-footer {

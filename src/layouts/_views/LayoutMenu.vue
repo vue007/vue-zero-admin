@@ -122,5 +122,46 @@ onMounted(() => {
   :deep(.el-menu) {
     background-color: unset;
   }
+
+  #{$scheme-argon} {
+    padding: 8px;
+
+    :deep(.el-menu-item),
+    :deep(.el-sub-menu__title) {
+      margin: 2px 0;
+      border-radius: 8px;
+      height: var(--el-menu-sub-item-height);
+      line-height: var(--el-menu-sub-item-height);
+    }
+
+    :deep(.el-menu-item .el-icon),
+    :deep(.el-sub-menu__title .el-icon) {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      margin-right: 10px;
+      border-radius: 8px;
+      background: #fff;
+      box-shadow: var(--el-box-shadow-lighter);
+      color: var(--el-color-primary);
+    }
+
+    :deep(.el-menu-item.is-active) {
+      background-color: var(--el-fill-color-light);
+      color: var(--el-text-color-primary);
+
+      .el-icon {
+        background: var(--el-color-primary);
+        color: #fff;
+        box-shadow: var(--el-box-shadow-light);
+      }
+
+      span {
+        color: var(--el-text-color-primary);
+      }
+    }
+  }
 }
 </style>

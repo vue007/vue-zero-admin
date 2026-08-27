@@ -72,7 +72,7 @@ $header-height: 64px;
 .layout-header {
   @apply: fixed top-0 left-0 w-100vw z-10;
   @apply: flex justify-between items-center;
-  background-color: #fff;
+  background-color: var(--el-bg-color);
 
   font-size: 32px;
   height: $header-height;
@@ -83,9 +83,23 @@ $header-height: 64px;
   @screen lt-sm {
     padding: 0 8px 0 12px;
   }
-  #{$scheme-dark} {
-    background-color: #141414;
-    border-bottom: 1px solid #4c4d4f;
+  #{$scheme-argon} {
+    background: transparent;
+    box-shadow: none;
+    color: #fff;
+
+    .app-logo,
+    .app-title {
+      filter: brightness(0) invert(1);
+    }
+
+    .header-right {
+      color: #fff;
+
+      :deep(svg) {
+        color: inherit;
+      }
+    }
   }
 
   #{$size-large} {
@@ -123,24 +137,58 @@ $header-height: 64px;
 
   background-color: $bg-color-page;
 
+  #{$scheme-argon} {
+    position: relative;
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 300px;
+      background: var(--ze-banner, var(--el-color-primary));
+      pointer-events: none;
+    }
+  }
+
   .page-breadcrumb {
     margin: 16px 0;
 
     .el-breadcrumb__item:last-child :deep(.el-breadcrumb__inner) {
       color: var(--el-text-color-primary);
     }
+
+    #{$scheme-argon} {
+      :deep(.el-breadcrumb__inner),
+      :deep(.el-breadcrumb__separator) {
+        color: rgba(255, 255, 255, 0.75);
+      }
+      .el-breadcrumb__item:last-child :deep(.el-breadcrumb__inner) {
+        color: #fff;
+      }
+    }
   }
 }
 .layout-aside {
   flex-shrink: 1;
   height: calc(100vh - $header-height);
-  background-color: #fff;
-  border-right: 1px solid #e4e7ed;
+  background-color: var(--el-bg-color);
+  border-right: 1px solid var(--el-border-color-light);
   position: relative;
+  z-index: 1;
 
   #{$scheme-dark} {
-    background-color: #0a0a0a;
-    border-right: 1px solid #4c4d4f;
+    background-color: var(--el-bg-color-page);
+  }
+
+  #{$scheme-argon} {
+    height: calc(100vh - $header-height - 24px);
+    margin: 12px 0 12px 16px;
+    border: none;
+    border-radius: var(--ze-sidenav-radius, 12px);
+    box-shadow: var(--el-box-shadow);
+    overflow: hidden;
   }
 
   .collapse-action {
@@ -157,6 +205,8 @@ $header-height: 64px;
   flex: 1;
   height: calc(100vh - $header-height);
   overflow-y: auto;
+  position: relative;
+  z-index: 1;
 
   padding: 0 24px;
 }

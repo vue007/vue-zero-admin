@@ -33,7 +33,7 @@ $header-height: 64px;
 .layout-header {
   @apply: fixed top-0 left-0 w-100vw z-10;
   @apply: flex justify-between items-center;
-  background-color: #fff;
+  background-color: var(--el-bg-color);
 
   font-size: 32px;
   height: $header-height;
@@ -46,8 +46,7 @@ $header-height: 64px;
   }
 
   #{$scheme-dark} {
-    background-color: #141414;
-    border-bottom: 1px solid #4c4d4f;
+    border-bottom: 1px solid var(--el-border-color);
   }
 
   #{$size-large} {
