@@ -16,7 +16,7 @@
     </section>
   </div>
 
-  <LayoutActions :to="actionsPosition" :actions="['scheme', 'theme', 'locale']" />
+  <LayoutActions :to="actionsPosition" :actions="['wallpaper', 'scheme', 'theme', 'locale']" />
 </template>
 
 <script setup lang="ts">
@@ -33,7 +33,7 @@ $header-height: 64px;
 .layout-header {
   @apply: fixed top-0 left-0 w-100vw z-10;
   @apply: flex justify-between items-center;
-  background-color: var(--el-bg-color);
+  // background-color: var(--el-bg-color);
 
   font-size: 32px;
   height: $header-height;
@@ -43,10 +43,6 @@ $header-height: 64px;
 
   @screen lt-sm {
     padding: 0 8px 0 12px;
-  }
-
-  #{$scheme-dark} {
-    border-bottom: 1px solid var(--el-border-color);
   }
 
   #{$size-large} {

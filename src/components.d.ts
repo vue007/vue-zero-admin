@@ -13,6 +13,8 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     BaseLayout: typeof import('./layouts/BaseLayout.vue')['default']
+    BgBallpit: typeof import('./components/background/BgBallpit.vue')['default']
+    BgWavys: typeof import('./components/background/BgWavys.vue')['default']
     BlankLayout: typeof import('./layouts/BlankLayout.vue')['default']
     ElAvatar: typeof import('element-plus/es')['ElAvatar']
     ElBreadcrumb: typeof import('element-plus/es')['ElBreadcrumb']
@@ -45,6 +47,7 @@ declare module 'vue' {
     ElPopconfirm: typeof import('element-plus/es')['ElPopconfirm']
     ElPopover: typeof import('element-plus/es')['ElPopover']
     ElRow: typeof import('element-plus/es')['ElRow']
+    ElSlider: typeof import('element-plus/es')['ElSlider']
     ElSubMenu: typeof import('element-plus/es')['ElSubMenu']
     ElSwitch: typeof import('element-plus/es')['ElSwitch']
     ElTable: typeof import('element-plus/es')['ElTable']
@@ -56,6 +59,7 @@ declare module 'vue' {
     ElTree: typeof import('element-plus/es')['ElTree']
     ElUpload: typeof import('element-plus/es')['ElUpload']
     LayoutActions: typeof import('./layouts/_views/LayoutActions.vue')['default']
+    LayoutBackground: typeof import('./layouts/_views/LayoutBackground.vue')['default']
     LayoutMenu: typeof import('./layouts/_views/LayoutMenu.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
@@ -82,6 +86,8 @@ declare module 'vue' {
 // For TSX support
 declare global {
   const BaseLayout: typeof import('./layouts/BaseLayout.vue')['default']
+  const BgBallpit: typeof import('./components/background/BgBallpit.vue')['default']
+  const BgWavys: typeof import('./components/background/BgWavys.vue')['default']
   const BlankLayout: typeof import('./layouts/BlankLayout.vue')['default']
   const ElAvatar: typeof import('element-plus/es')['ElAvatar']
   const ElBreadcrumb: typeof import('element-plus/es')['ElBreadcrumb']
@@ -114,6 +120,7 @@ declare global {
   const ElPopconfirm: typeof import('element-plus/es')['ElPopconfirm']
   const ElPopover: typeof import('element-plus/es')['ElPopover']
   const ElRow: typeof import('element-plus/es')['ElRow']
+  const ElSlider: typeof import('element-plus/es')['ElSlider']
   const ElSubMenu: typeof import('element-plus/es')['ElSubMenu']
   const ElSwitch: typeof import('element-plus/es')['ElSwitch']
   const ElTable: typeof import('element-plus/es')['ElTable']
@@ -125,6 +132,7 @@ declare global {
   const ElTree: typeof import('element-plus/es')['ElTree']
   const ElUpload: typeof import('element-plus/es')['ElUpload']
   const LayoutActions: typeof import('./layouts/_views/LayoutActions.vue')['default']
+  const LayoutBackground: typeof import('./layouts/_views/LayoutBackground.vue')['default']
   const LayoutMenu: typeof import('./layouts/_views/LayoutMenu.vue')['default']
   const RouterLink: typeof import('vue-router')['RouterLink']
   const RouterView: typeof import('vue-router')['RouterView']

@@ -16,6 +16,13 @@ export const baseLang = {
     default: i('默认主题', 'Default theme'),
     argon: i('Argon', 'Argon'),
     primary: i('主题色', 'Primary color'),
+    surface: i('Surface 背景色', 'Surface color'),
+  },
+  wallpaper: {
+    title: i('动态壁纸', 'Animated wallpaper'),
+    Wavy: i('波浪', 'Wavy'),
+    Ballpit: i('光球', 'Ballpit'),
+    opacity: i('透明度', 'Opacity'),
   },
   index: i('序号', 'Index'),
 

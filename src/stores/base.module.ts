@@ -6,15 +6,23 @@ import { useLocalStorage } from '@vueuse/core'
 
 import { baseApi } from '@/api/_index'
 import type { UserInfo } from '@/api/user.type'
-import { isBaseThemeColor, type BaseThemeColor } from '@/styles/theme/theme-colors'
+import {
+  isBaseThemeColor,
+  isBaseThemeSurface,
+  type BaseThemeColor,
+  type BaseThemeSurface,
+} from '@/styles/theme/theme-colors'
 import { merge } from 'es-toolkit'
 
 export type BaseSize = 'large' | 'default' | 'small'
 export type BaseScheme = 'dark' | 'light' | 'auto'
 export type BaseTheme = 'default' | 'argon'
 export type { BaseThemeColor } from '@/styles/theme/theme-colors'
+export type { BaseThemeSurface } from '@/styles/theme/theme-colors'
 export type BaseLang = 'en' | 'zh-CN'
 export type BaseArrangement = 'default' | ''
+export const BASE_WALLPAPERS = ['Wavy', 'Ballpit'] as const
+export type BaseWallpaper = (typeof BASE_WALLPAPERS)[number]
 
 const readStoredSetting = (key: string): unknown => {
   const value = globalThis.localStorage?.getItem(key)
@@ -57,6 +65,11 @@ const migrateAppearanceSettings = (): { scheme: BaseScheme; theme: BaseTheme; th
 
 const initialAppearance = migrateAppearanceSettings()
 
+const getInitialThemeSurface = (): BaseThemeSurface | '' => {
+  const surface = readStoredSetting('setting.themeSurface')
+  return isBaseThemeSurface(surface) ? surface : ''
+}
+
 const getInitialLocale = (): BaseLang => {
   const locale = globalThis.localStorage?.getItem('setting.local')
   if (locale === 'en' || locale === 'zh-CN') return locale
@@ -74,6 +87,9 @@ export const useBaseStore = defineStore('base', () => {
     scheme: useLocalStorage<BaseScheme>('setting.scheme', initialAppearance.scheme),
     theme: useLocalStorage<BaseTheme>('setting.theme', initialAppearance.theme),
     themeColor: useLocalStorage<BaseThemeColor>('setting.themeColor', initialAppearance.themeColor),
+    themeSurface: useLocalStorage<BaseThemeSurface | ''>('setting.themeSurface', getInitialThemeSurface()),
+    wallpaper: useLocalStorage<BaseWallpaper>('setting.loginWallpaper', 'Wavy'),
+    wallpaperOpacity: useLocalStorage<number>('setting.loginWallpaperOpacity', 0.88),
     size: useLocalStorage<BaseSize>('setting.size', 'default'),
     userInfo: useLocalStorage<Partial<UserInfo>>('setting.userInfo', {}),
 
@@ -88,6 +104,15 @@ export const useBaseStore = defineStore('base', () => {
     },
     setThemeColor(themeColor: BaseThemeColor) {
       setting.themeColor = themeColor
+    },
+    setThemeSurface(themeSurface: BaseThemeSurface) {
+      setting.themeSurface = themeSurface
+    },
+    setWallpaper(wallpaper: BaseWallpaper) {
+      setting.wallpaper = wallpaper
+    },
+    setWallpaperOpacity(opacity: number) {
+      setting.wallpaperOpacity = Math.min(1, Math.max(0.1, opacity))
     },
     setSize(size: BaseSize) {
       setting.size = size

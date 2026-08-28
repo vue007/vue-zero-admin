@@ -1,6 +1,9 @@
 <template>
   <ElConfigProvider :locale="locale" :size="setting.size" :z-index="3000">
-    <component :is="currentLayout" />
+    <div class="app-root">
+      <LayoutBackground />
+      <component :is="currentLayout" />
+    </div>
   </ElConfigProvider>
 </template>
 
@@ -9,10 +12,11 @@ import './styles/sanitize.css'
 import './styles/theme/index.scss'
 
 import { useBaseStore } from './stores/base.module'
-import { applyThemeColor } from './styles/theme/theme-colors'
+import { applyThemeColor, applyThemeSurface } from './styles/theme/theme-colors'
 
 import BaseLayout from './layouts/BaseLayout.vue'
 import BlankLayout from './layouts/BlankLayout.vue'
+import LayoutBackground from './layouts/_views/LayoutBackground.vue'
 
 import zh_CN from 'element-plus/es/locale/lang/zh-cn'
 import en from 'element-plus/es/locale/lang/en'
@@ -41,6 +45,7 @@ const scheme = computed(() => setting.scheme)
 const systemScheme = computed(() => {
   return useMediaQuery('(prefers-color-scheme: dark)').value ? 'dark' : 'light'
 })
+const resolvedScheme = computed(() => (scheme.value === 'auto' ? systemScheme.value : scheme.value))
 
 // - switch by user
 watchImmediate(
@@ -64,8 +69,14 @@ watchImmediate(
 
 // # switch primary color (independent from visual theme and color scheme)
 watchImmediate(
-  () => [setting.themeColor, scheme.value === 'auto' ? systemScheme.value : scheme.value] as const,
+  () => [setting.themeColor, resolvedScheme.value] as const,
   ([themeColor, currentScheme]) => applyThemeColor(themeColor, currentScheme),
+)
+
+watchImmediate(
+  () => [setting.themeSurface, resolvedScheme.value] as const,
+  ([themeSurface, currentScheme]) =>
+    applyThemeSurface(themeSurface || (currentScheme === 'dark' ? 'zinc' : 'slate'), currentScheme),
 )
 
 watchImmediate(
@@ -75,6 +86,13 @@ watchImmediate(
 </script>
 
 <style lang="scss" scoped>
+.app-root {
+  position: relative;
+  isolation: isolate;
+  width: 100%;
+  height: 100%;
+}
+
 :global(html) {
   font-family: var(--el-font-family);
   width: 100vw;

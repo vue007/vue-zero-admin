@@ -139,17 +139,7 @@ $header-height: 64px;
 
   #{$theme-argon} {
     position: relative;
-
-    &::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 300px;
-      background: var(--ze-banner-gradient, var(--el-color-primary));
-      pointer-events: none;
-    }
+    background-color: transparent;
   }
 
   .page-breadcrumb {

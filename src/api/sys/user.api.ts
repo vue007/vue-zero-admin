@@ -72,19 +72,14 @@ export function delUser(userId: Array<string | number> | string | number): ApiPr
 }
 
 /**
- * 用户密码重置
+ * 将用户密码重置为系统配置的初始密码
  * @param userId 用户ID
- * @param password 密码
  */
-export function resetUserPwd(data: Pick<UserForm, 'userId' | 'password'>) {
+export function resetUserPwd(data: Pick<UserVO, 'userId'>): ApiPromise<void> {
   return fetch({
     url: '/system/user/resetPwd',
     method: 'put',
-    headers: {
-      isEncrypt: true,
-      repeatSubmit: false,
-    },
-    data: pick(data, ['userId', 'password']),
+    data: pick(data, ['userId']),
   })
 }
 
@@ -124,7 +119,7 @@ export function updateUserProfile(data: UserProfileForm): ApiPromise<void> {
 }
 
 /**
- * 用户密码重置
+ * 修改当前用户密码
  * @param oldPassword 旧密码
  * @param newPassword 新密码
  */
@@ -132,10 +127,6 @@ export function updateUserPwd(data: Pick<import('./user.type').ResetPwdForm, 'ol
   return fetch({
     url: '/system/user/profile/updatePwd',
     method: 'put',
-    headers: {
-      isEncrypt: true,
-      repeatSubmit: false,
-    },
     data: data,
   })
 }

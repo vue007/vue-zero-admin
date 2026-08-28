@@ -244,16 +244,10 @@ const handleStatusChange = (row) => {
 }
 
 const handleResetPwd = (row) => {
-  ElMessageBox.prompt('请输入"' + row.userName + '"的新密码', '重置密码', {
-    closeOnClickModal: false,
-    inputPattern: /^.{5,20}$/,
-    inputErrorMessage: '用户密码长度必须介于 5 和 20 之间',
-    inputValidator: (value) => {
-      if (/<|>|"|'|\||\\/.test(value)) return '不能包含非法字符：< > " \' \\\ |'
-      return true
-    },
-  }).then((res) => {
-    userApi.resetUserPwd({ userId: row.userId, password: res.value }).then(() => ElMessage.success('修改成功！'))
+  ElMessageBox.confirm(`确定要将"${row.userName}"的密码重置为系统默认密码吗？`, '重置密码', {
+    type: 'warning',
+  }).then(() => {
+    userApi.resetUserPwd({ userId: row.userId }).then(() => ElMessage.success('重置成功！'))
   })
 }
 

@@ -1,16 +1,23 @@
 <template>
-  <div class="mb-40 text-24 font-bold">{{ t('title') }}</div>
+  <header class="login-form-heading" :class="{ 'is-argon': isArgon }">
+    <h1>{{ t('title') }}</h1>
+    <p v-if="isArgon">{{ t('subtitle') }}</p>
+  </header>
 
-  <ze-form v-model="loginForm" v-bind="{ items, rules, labelWidth: '0px' }" ref="loginFormRef">
-    <template #item-username#prefix><svg-icon name="el-user" /></template>
-    <template #item-password#prefix><svg-icon class="cursor-pointer" name="el-lock" /></template>
+  <ze-form
+    ref="loginFormRef"
+    v-model="loginForm"
+    class="login-form"
+    :class="{ 'is-argon': isArgon }"
+    v-bind="{ items, rules, labelWidth: '0px' }"
+  >
     <template #item-code#append>
       <suspense>
         <template #default>
           <component
             v-show="captchaData?.img"
             is="img"
-            class="cursor-pointer h-30"
+            class="captcha-image cursor-pointer"
             :src="`data:image/gif;base64,${captchaData?.img}`"
             @click="fetchCaptcha"
           />
@@ -21,23 +28,36 @@
       </suspense>
     </template>
     <template #item-rememberMe>
-      <el-checkbox v-model="loginForm.rememberMe" :label="t('remember_me')" />
+      <label v-if="isArgon" class="remember-switch">
+        <el-switch v-model="loginForm.rememberMe" />
+        <span>{{ t('remember_me') }}</span>
+      </label>
+      <el-checkbox v-else v-model="loginForm.rememberMe" :label="t('remember_me')" />
     </template>
   </ze-form>
 
-  <el-button class="w-full mt-8" prop="submit" type="primary" size="large" @click="submitLogin" :loading="submitting">
+  <el-button
+    class="login-submit"
+    :class="{ 'is-argon': isArgon }"
+    prop="submit"
+    type="primary"
+    :loading="submitting"
+    @click="submitLogin"
+  >
     {{ t('login_btn') }}
   </el-button>
 </template>
 
 <script setup lang="ts">
 import { baseApi } from '@/api/_index'
-// import { useBaseStore } from '@/stores/base.module'
+import { useBaseStore } from '@/stores/base.module'
 import { setToken } from '@/utils/auth'
 import { useThrottleFn } from '@vueuse/core'
 
 const { t } = useI18nLocal()
 const router = useRouter()
+const { setting } = useBaseStore()
+const isArgon = computed(() => setting.theme === 'argon')
 
 const [tenantData] = useApi(baseApi.getTenantList, {}, { immediate: true })
 
@@ -105,11 +125,107 @@ const submitLogin = useThrottleFn(() => {
 }, 1000)
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.login-form-heading {
+  margin-bottom: 40px;
+
+  h1 {
+    margin: 0;
+    color: var(--el-text-color-primary);
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 1.4;
+  }
+
+  &.is-argon {
+    margin-bottom: 24px;
+
+    h1 {
+      font-size: 30px;
+      line-height: 1.37;
+      letter-spacing: -0.8px;
+    }
+
+    p {
+      margin: 24px 0 0;
+      color: var(--el-text-color-secondary);
+      font-size: var(--el-font-size-base);
+      line-height: 1.42;
+    }
+  }
+}
+
+.login-form {
+  :deep(.el-form-item) {
+    margin-right: 0;
+    margin-bottom: 24px;
+  }
+
+  .is-argon {
+    --argon-field-padding-inline: 20px;
+
+    #{$size-small} {
+      --argon-field-padding-inline: 16px;
+    }
+
+    :deep(.el-form-item__content) {
+      min-width: 0;
+    }
+
+    :deep(.el-input),
+    :deep(.el-select) {
+      width: 100%;
+      max-width: 100%;
+    }
+
+    :deep(.el-input__wrapper),
+    :deep(.el-select__wrapper) {
+      padding-right: var(--argon-field-padding-inline);
+      padding-left: var(--argon-field-padding-inline);
+    }
+
+    :deep(.el-input-group__append) {
+      padding-right: 12px;
+      padding-left: 12px;
+    }
+
+    :deep(.el-form-item__error) {
+      padding-top: 3px;
+    }
+  }
+}
+
+.captcha-image {
+  display: block;
+  width: auto;
+  height: min(30px, calc(var(--el-component-size) - 8px));
+}
+
+.remember-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--el-text-color-primary);
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.login-submit {
+  width: 100%;
+  margin-top: 8px;
+
+  &.is-argon {
+    margin-top: 0;
+    font-weight: 700;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+  }
+}
+</style>
 
 <i18n lang="yaml">
 en:
-  title: 'Login'
+  title: 'Sign in'
+  subtitle: 'Enter your account and password to sign in'
   welcome: 'Welcome to'
   refresh_captcha: 'Refresh Captcha'
   login: 'Login'
@@ -118,7 +234,7 @@ en:
   remember_me: 'Remember Me'
   username: 'Username'
   password: 'Password'
-  login_btn: 'Login'
+  login_btn: 'Sign in'
   register_btn: 'Register'
   forget_password_btn: 'Forget Password'
   login_success: 'Login Success'
@@ -130,6 +246,7 @@ en:
   password_error: 'Password cannot be empty'
 zh:
   title: '登录'
+  subtitle: '请输入您的账号和密码登录系统'
   welcome: '欢迎使用'
   refresh_captcha: '刷新验证码'
   login: '登录'

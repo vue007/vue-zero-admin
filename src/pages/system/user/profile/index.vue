@@ -5,8 +5,8 @@
 <template>
   <VPage class="profile-page p-16 lt-sm:p-10" v-loading="loading">
     <el-row :gutter="16" class="profile-grid">
-      <el-col :xs="24" :md="8" :lg="6">
-        <VCard title="个人信息" class="h-full" fluid>
+      <el-col :xs="24" :md="9" :lg="8" :xl="7">
+        <VCard title="个人信息" class="profile-summary-card h-full" fluid>
           <div class="flex flex-col items-center">
             <UserAvatar :avatar="profile?.user.avatar" @success="handleAvatarSuccess" />
             <div class="mt-14 text-lg font-600">{{ profile?.user.nickName || '-' }}</div>
@@ -16,7 +16,7 @@
           <el-divider />
           <div class="profile-list">
             <div v-for="item in summaryItems" :key="item.label" class="profile-list__item">
-              <span class="flex items-center gap-8 font-500">
+              <span class="profile-list__label">
                 <svg-icon :name="item.icon" />{{ item.label }}
               </span>
               <span class="profile-list__value" :title="item.value">{{ item.value || '-' }}</span>
@@ -25,7 +25,7 @@
         </VCard>
       </el-col>
 
-      <el-col :xs="24" :md="16" :lg="18">
+      <el-col :xs="24" :md="15" :lg="16" :xl="17">
         <VCard title="个人设置" class="h-full" fluid>
           <el-tabs v-model="activeTab">
             <el-tab-pane label="基本资料" name="userinfo">
@@ -72,10 +72,40 @@ const handleAvatarSuccess = (avatar: string) => {
 </script>
 
 <style lang="scss" scoped>
-.profile-grid { row-gap: 16px; }
+.profile-grid {
+  width: 100%;
+  margin-right: 0 !important;
+  margin-left: 0 !important;
+  row-gap: 16px;
+}
 .profile-grid > :deep(.el-col) { display: flex; min-width: 0; }
-.profile-list__item { display: flex; justify-content: space-between; gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--el-border-color-lighter); }
+.profile-summary-card :deep(.el-card__body) { padding-right: 16px; padding-left: 16px; }
+.profile-list__item {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--el-border-color-lighter);
+}
 .profile-list__item:last-child { border-bottom: 0; }
-.profile-list__item > span:first-child { flex: none; white-space: nowrap; }
-.profile-list__value { min-width: 0; flex: 1; text-align: right; color: var(--el-text-color-secondary); overflow-wrap: anywhere; }
+.profile-list__label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+.profile-list__value {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--el-text-color-secondary);
+  text-align: right;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (max-width: 991px) {
+  .profile-summary-card :deep(.el-card__body) { padding-right: 20px; padding-left: 20px; }
+}
 </style>
