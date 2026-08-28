@@ -9,6 +9,7 @@ import './styles/sanitize.css'
 import './styles/theme/index.scss'
 
 import { useBaseStore } from './stores/base.module'
+import { applyThemeColor } from './styles/theme/theme-colors'
 
 import BaseLayout from './layouts/BaseLayout.vue'
 import BlankLayout from './layouts/BlankLayout.vue'
@@ -54,6 +55,18 @@ watchImmediate(systemScheme, () => {
   if (scheme.value !== 'auto') return
   document.documentElement.setAttribute('data-scheme', systemScheme.value)
 })
+
+// # switch visual theme (independent from the light/dark color scheme)
+watchImmediate(
+  () => setting.theme,
+  (theme) => document.documentElement.setAttribute('data-theme', theme),
+)
+
+// # switch primary color (independent from visual theme and color scheme)
+watchImmediate(
+  () => [setting.themeColor, scheme.value === 'auto' ? systemScheme.value : scheme.value] as const,
+  ([themeColor, currentScheme]) => applyThemeColor(themeColor, currentScheme),
+)
 
 watchImmediate(
   () => setting.size,

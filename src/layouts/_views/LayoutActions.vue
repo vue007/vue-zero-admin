@@ -22,8 +22,38 @@
         </template>
         <SchemeCheckTag value="light" icon="ze-sunny" text="base.scheme.light" />
         <SchemeCheckTag value="dark" icon="ze-moon" text="base.scheme.dark" />
-        <SchemeCheckTag value="argon" icon="ze-theme" text="base.scheme.argon" />
         <SchemeCheckTag value="auto" icon="ze-laptop" text="base.scheme.auto" />
+      </el-popover>
+
+      <el-popover v-if="'theme' === action" trigger="hover" :width="288">
+        <template #reference>
+          <div class="action"><svg-icon name="ze-theme" /></div>
+        </template>
+        <section class="theme-section">
+          <div class="theme-section-title">{{ t('base.theme.style') }}</div>
+          <div class="theme-style-list">
+            <ThemeCheckTag value="argon" text="base.theme.argon" />
+            <ThemeCheckTag value="default" text="base.theme.default" />
+          </div>
+        </section>
+        <el-divider class="theme-divider" />
+        <section class="theme-section">
+          <div class="theme-section-title">{{ t('base.theme.primary') }}</div>
+          <div class="theme-color-list">
+            <button
+              v-for="item in BASE_THEME_COLORS"
+              :key="item.name"
+              type="button"
+              class="theme-color-item"
+              :class="{ 'is-selected': setting.themeColor === item.name }"
+              :style="{ backgroundColor: item.color }"
+              :title="item.name"
+              :aria-label="item.name"
+              :aria-pressed="setting.themeColor === item.name"
+              @click="setting.setThemeColor(item.name)"
+            />
+          </div>
+        </section>
       </el-popover>
 
       <el-popover v-if="'locale' === action" trigger="hover">
@@ -73,6 +103,7 @@
 <script setup lang="tsx">
 import { logout } from '@/api/base.api'
 import { useBaseStore } from '@/stores/base.module'
+import { BASE_THEME_COLORS } from '@/styles/theme/theme-colors'
 import { includes } from 'es-toolkit/compat'
 
 const { t } = useI18nLocal()
@@ -81,14 +112,14 @@ const { setting } = baseStore
 const currentUser = computed(() => setting.userInfo.user)
 const currentUserName = computed(() => currentUser.value?.userName || currentUser.value?.nickName || '-')
 
-const ACTION_LIST = ['ALL', 'fullscreen', 'size', 'locale', 'scheme', 'dropdown'] as const
+const ACTION_LIST = ['ALL', 'fullscreen', 'size', 'locale', 'scheme', 'theme', 'dropdown'] as const
 export type ActionType = (typeof ACTION_LIST)[number]
 const props = defineProps({
   to: { type: String, default: '#header-right' },
 
   actions: {
     type: Array as PropType<Array<ActionType>>,
-    default: () => 'ALL',
+    default: () => ['ALL'],
   },
 })
 
@@ -103,6 +134,11 @@ const hasAction = (action: ActionType) => includes(props.actions, action) || inc
 const SchemeCheckTag = ({ text, value, icon }) => (
   <el-check-tag class='check-item' checked={setting.scheme === value} onChange={() => setting.setScheme(value)}>
     <svg-icon v-show={icon} class='mr-12' name={icon} />
+    {t(text)}
+  </el-check-tag>
+)
+const ThemeCheckTag = ({ text, value }) => (
+  <el-check-tag class='theme-style-item' checked={setting.theme === value} onChange={() => setting.setTheme(value)}>
     {t(text)}
   </el-check-tag>
 )
@@ -124,12 +160,11 @@ const SizeCheckTag = ({ text, value }) => (
 const schemeIcon = computed(() => {
   if ('light' === setting.scheme) return 'el-sunny'
   if ('dark' === setting.scheme) return 'el-moon'
-  if ('argon' === setting.scheme) return 'ze-theme'
   if ('auto' === setting.scheme) return 'el-platform'
   return 'el-sunny'
 })
 const toggleScheme = () => {
-  if ('auto' === setting.scheme || 'argon' === setting.scheme) return
+  if ('auto' === setting.scheme) return
   if ('light' === setting.scheme) return setting.setScheme('dark')
   if ('dark' === setting.scheme) return setting.setScheme('light')
 }
@@ -158,6 +193,49 @@ const toggleScheme = () => {
   }
   #{$size-small} {
     font-size: var(--el-font-size-extra-small);
+  }
+}
+.theme-divider {
+  margin: 12px 0;
+}
+.theme-section-title {
+  margin-bottom: 8px;
+  color: var(--el-text-color-secondary);
+  font-size: var(--el-font-size-small);
+}
+.theme-style-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+.theme-style-item {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  padding: 7px 10px;
+}
+.theme-color-list {
+  display: grid;
+  grid-template-columns: repeat(8, 24px);
+  gap: 8px;
+}
+.theme-color-item {
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: 2px solid transparent;
+  border-radius: 50%;
+  box-shadow: 0 0 0 1px var(--el-border-color-light);
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    transform: scale(1.08);
+  }
+  &.is-selected {
+    box-shadow: 0 0 0 2px var(--el-bg-color-overlay), 0 0 0 4px var(--el-text-color-primary);
+    transform: scale(1.08);
   }
 }
 </style>

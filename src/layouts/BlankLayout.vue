@@ -16,7 +16,7 @@
     </section>
   </div>
 
-  <LayoutActions :to="actionsPosition" :actions="['scheme', 'locale']" />
+  <LayoutActions :to="actionsPosition" :actions="['scheme', 'theme', 'locale']" />
 </template>
 
 <script setup lang="ts">

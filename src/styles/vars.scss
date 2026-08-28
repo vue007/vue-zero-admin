@@ -1,7 +1,10 @@
 $scheme-light: ':root[data-scheme="light"] &';
 $scheme-dark: ':root[data-scheme="dark"] &';
-$scheme-argon: ':root[data-scheme="argon"] &';
 // $scheme-XXX: ':root[data-scheme="XXX"] &'; // support more color schemes
+
+$theme-default: ':root[data-theme="default"] &';
+$theme-argon: ':root[data-theme="argon"] &';
+// $theme-XXX: ':root[data-theme="XXX"] &'; // support plug-and-play visual themes
 
 $size-small: ':root[data-size="small"] &';
 $size-default: ':root[data-size="default"] &';

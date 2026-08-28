@@ -10,7 +10,12 @@ export const baseLang = {
     auto: i('自动', 'Auto'),
     light: i('浅色', 'Light'),
     dark: i('深色', 'Dark'),
+  },
+  theme: {
+    style: i('主题风格', 'Theme style'),
+    default: i('默认主题', 'Default theme'),
     argon: i('Argon', 'Argon'),
+    primary: i('主题色', 'Primary color'),
   },
   index: i('序号', 'Index'),
 

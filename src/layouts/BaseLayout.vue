@@ -12,11 +12,11 @@
     </header>
 
     <section class="layout-body">
-      <aside class="layout-aside">
+      <aside class="layout-aside" :class="{ 'is-collapse': menu.collapse }">
         <div id="layout-aside-menu"></div>
-        <div class="collapse-action" @click="baseStore.menu.toggleCollapse">
-          <svg-icon name="el-fold" />
-        </div>
+        <button class="collapse-action" type="button" @click="baseStore.menu.toggleCollapse">
+          <svg-icon :name="menu.collapse ? 'el-expand' : 'el-fold'" />
+        </button>
       </aside>
       <div class="layout-page">
         <el-breadcrumb class="page-breadcrumb" separator="/">
@@ -83,7 +83,7 @@ $header-height: 64px;
   @screen lt-sm {
     padding: 0 8px 0 12px;
   }
-  #{$scheme-argon} {
+  #{$theme-argon} {
     background: transparent;
     box-shadow: none;
     color: #fff;
@@ -137,7 +137,7 @@ $header-height: 64px;
 
   background-color: $bg-color-page;
 
-  #{$scheme-argon} {
+  #{$theme-argon} {
     position: relative;
 
     &::before {
@@ -147,7 +147,7 @@ $header-height: 64px;
       left: 0;
       right: 0;
       height: 300px;
-      background: var(--ze-banner, var(--el-color-primary));
+      background: var(--ze-banner-gradient, var(--el-color-primary));
       pointer-events: none;
     }
   }
@@ -159,7 +159,7 @@ $header-height: 64px;
       color: var(--el-text-color-primary);
     }
 
-    #{$scheme-argon} {
+    #{$theme-argon} {
       :deep(.el-breadcrumb__inner),
       :deep(.el-breadcrumb__separator) {
         color: rgba(255, 255, 255, 0.75);
@@ -171,18 +171,39 @@ $header-height: 64px;
   }
 }
 .layout-aside {
-  flex-shrink: 1;
+  --layout-aside-width: 240px;
+  --layout-aside-collapsed-width: 64px;
+
+  flex: 0 0 var(--layout-aside-width);
+  width: var(--layout-aside-width);
+  min-width: var(--layout-aside-width);
   height: calc(100vh - $header-height);
   background-color: var(--el-bg-color);
   border-right: 1px solid var(--el-border-color-light);
   position: relative;
   z-index: 1;
+  transition: width 0.2s ease, min-width 0.2s ease, flex-basis 0.2s ease;
+
+  &.is-collapse {
+    flex-basis: var(--layout-aside-collapsed-width);
+    width: var(--layout-aside-collapsed-width);
+    min-width: var(--layout-aside-collapsed-width);
+  }
+
+  #layout-aside-menu {
+    width: 100%;
+    overflow: hidden;
+  }
 
   #{$scheme-dark} {
     background-color: var(--el-bg-color-page);
   }
 
-  #{$scheme-argon} {
+  #{$theme-argon} {
+    --layout-aside-width: 260px;
+    --layout-aside-collapsed-width: 68px;
+
+    background-color: var(--el-bg-color);
     height: calc(100vh - $header-height - 24px);
     margin: 12px 0 12px 16px;
     border: none;
@@ -193,16 +214,39 @@ $header-height: 64px;
 
   .collapse-action {
     position: absolute;
-    width: 20px;
-    height: 20px;
-    bottom: 15px;
-    left: 0;
-    padding-left: 22px;
-    padding-bottom: 15px;
+    bottom: 12px;
+    left: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border: 0;
+    border-radius: 8px;
+    background: var(--el-fill-color-light);
+    color: var(--el-text-color-secondary);
+    cursor: pointer;
+    transform: translateX(-50%);
+    transition: color 0.2s ease, background-color 0.2s ease;
+
+    :deep(.svg-icon) {
+      width: 20px;
+      height: 20px;
+    }
+
+    &:hover {
+      background: var(--el-fill-color);
+      color: var(--el-color-primary);
+    }
   }
 }
 .layout-page {
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
   height: calc(100vh - $header-height);
   overflow-y: auto;
   position: relative;

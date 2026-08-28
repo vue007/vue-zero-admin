@@ -105,7 +105,7 @@ const { t } = useI18nLocal()
     font-size: 14px;
 
     #{$scheme-light},
-    #{$scheme-argon} {
+    #{$theme-argon} {
       @screen lt-lg {
         color: #fff;
       }

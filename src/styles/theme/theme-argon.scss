@@ -1,84 +1,123 @@
 @use './_mixin' as *;
 
-$is-dark: false;
-$mode: ':root[data-scheme="argon"]';
+$mode: ':root[data-theme="argon"]';
 
 #{$mode} {
-  color-scheme: light;
-  @include defaultThemeVars();
-
-  $color-primary: #5e72e4;
+  $color-primary: #596cff;
   $color-success: #2dce89;
   $color-warning: #fb6340;
   $color-danger: #f5365c;
-  $color-info: #11cdef;
+  $color-info: #8392ab;
 
-  @include createColors('color-primary', $color-primary, $is-dark);
-  @include createColors('color-success', $color-success, $is-dark);
-  @include createColors('color-warning', $color-warning, $is-dark);
-  @include createColors('color-danger', $color-danger, $is-dark);
-  @include createColors('color-info', $color-info, $is-dark);
-
-  #{$prefix}-color-primary-rgb: 94, 114, 228;
+  #{$prefix}-color-primary-rgb: 89, 108, 255;
   #{$prefix}-color-success-rgb: 45, 206, 137;
   #{$prefix}-color-warning-rgb: 251, 99, 64;
   #{$prefix}-color-danger-rgb: 245, 54, 92;
   #{$prefix}-color-error-rgb: 245, 54, 92;
-  #{$prefix}-color-info-rgb: 17, 205, 239;
+  #{$prefix}-color-info-rgb: 131, 146, 171;
 
-  #{$prefix}-bg-color: #ffffff;
-  #{$prefix}-bg-color-page: #f5f7f8;
-  #{$prefix}-bg-color-overlay: #ffffff;
-  #{$prefix}-text-color-primary: #344767;
-  #{$prefix}-text-color-regular: #67748e;
-  #{$prefix}-text-color-secondary: #8392ab;
-  #{$prefix}-text-color-placeholder: #adb5bd;
-  #{$prefix}-text-color-disabled: #ced4da;
-  #{$prefix}-border-color: #e9ecef;
-  #{$prefix}-border-color-light: #e9ecef;
-  #{$prefix}-border-color-lighter: #f6f9fc;
-  #{$prefix}-border-color-extra-light: #f8f9fe;
-  #{$prefix}-border-color-dark: #dee2e6;
-  #{$prefix}-border-color-darker: #ced4da;
-  #{$prefix}-fill-color: #e9ecef;
-  #{$prefix}-fill-color-light: #f6f9fc;
-  #{$prefix}-fill-color-lighter: #f8f9fe;
-  #{$prefix}-fill-color-extra-light: #fcfdfe;
-  #{$prefix}-fill-color-dark: #e9ecef;
-  #{$prefix}-fill-color-darker: #dee2e6;
-  #{$prefix}-fill-color-blank: #ffffff;
-  #{$prefix}-border-radius-base: 16px;
-  #{$prefix}-border-radius-small: 8px;
+  #{$prefix}-border-radius-base: 8px;
+  #{$prefix}-border-radius-small: 6px;
   #{$prefix}-border-radius-round: 24px;
   #{$prefix}-font-family:
     'Open Sans', 'Microsoft YaHei', '微软雅黑', 'PingFang SC', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  #{$prefix}-box-shadow: 0 20px 27px 0 rgba(0, 0, 0, 0.05);
-  #{$prefix}-box-shadow-light: 0 4px 6px rgba(50, 50, 93, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08);
+  #{$prefix}-box-shadow: 0 5px 14px 0 rgba(0, 0, 0, 0.05);
+  #{$prefix}-box-shadow-light: 0 5px 14px rgba(50, 50, 93, 0.1), 0 1px 3px rgba(0, 0, 0, 0.06);
   #{$prefix}-box-shadow-lighter: 0 1px 3px rgba(50, 50, 93, 0.08);
   #{$prefix}-box-shadow-dark:
     0 15px 35px rgba(50, 50, 93, 0.1),
     0 5px 15px rgba(0, 0, 0, 0.07);
-  #{$prefix}-disabled-bg-color: var(#{$prefix}-fill-color-light);
-  #{$prefix}-disabled-text-color: var(#{$prefix}-text-color-placeholder);
-  #{$prefix}-disabled-border-color: var(#{$prefix}-border-color-light);
   #{$prefix}-overlay-color: rgba(23, 43, 77, 0.8);
   #{$prefix}-overlay-color-light: rgba(23, 43, 77, 0.7);
   #{$prefix}-overlay-color-lighter: rgba(23, 43, 77, 0.5);
-  #{$prefix}-mask-color: rgba(255, 255, 255, 0.9);
-  #{$prefix}-mask-color-extra-light: rgba(255, 255, 255, 0.3);
-  #{$prefix}-border-width: 1px;
-  #{$prefix}-border-style: solid;
-  #{$prefix}-border-color-hover: var(#{$prefix}-text-color-disabled);
-  #{$prefix}-border: var(#{$prefix}-border-width) var(#{$prefix}-border-style) var(#{$prefix}-border-color);
-  #{$prefix}-svg-monochrome-grey: var(#{$prefix}-border-color);
   #{$prefix}-menu-item-height: 54px;
   #{$prefix}-menu-sub-item-height: 42px;
-  #{$prefix}-menu-text-color: #67748e;
-  #{$prefix}-menu-hover-text-color: #344767;
-  #{$prefix}-menu-bg-color: transparent;
-  #{$prefix}-menu-hover-bg-color: #f6f9fc;
-  #{$prefix}-menu-active-color: #344767;
   --ze-banner: #{$color-primary};
-  --ze-banner-gradient: linear-gradient(310deg, #5e72e4, #825ee4);
+  --ze-banner-gradient: linear-gradient(310deg, #596cff 0%, #825ee4 58%, #11cdef 125%);
   --ze-sidenav-radius: 12px;
+  --ze-card-radius: 20px;
+
+  &[data-scheme='light'] {
+    @include createColors('color-primary', $color-primary);
+    @include createColors('color-success', $color-success);
+    @include createColors('color-warning', $color-warning);
+    @include createColors('color-danger', $color-danger);
+    @include createColors('color-info', $color-info);
+
+    #{$prefix}-bg-color: #ffffff;
+    #{$prefix}-bg-color-page: #f5f7f8;
+    #{$prefix}-bg-color-overlay: #ffffff;
+    #{$prefix}-text-color-primary: #172b4d;
+    #{$prefix}-text-color-regular: #67748e;
+    #{$prefix}-text-color-secondary: #8392ab;
+    #{$prefix}-text-color-placeholder: #adb5bd;
+    #{$prefix}-text-color-disabled: #ced4da;
+    #{$prefix}-border-color: #e9ecef;
+    #{$prefix}-border-color-light: #edf0f2;
+    #{$prefix}-border-color-lighter: #f3f5f7;
+    #{$prefix}-border-color-extra-light: #f8f9fe;
+    #{$prefix}-border-color-dark: #dee2e6;
+    #{$prefix}-border-color-darker: #ced4da;
+    #{$prefix}-fill-color: #e9ecef;
+    #{$prefix}-fill-color-light: #f6f9fc;
+    #{$prefix}-fill-color-lighter: #f8f9fe;
+    #{$prefix}-fill-color-extra-light: #fcfdfe;
+    #{$prefix}-fill-color-dark: #e9ecef;
+    #{$prefix}-fill-color-darker: #dee2e6;
+    #{$prefix}-fill-color-blank: #ffffff;
+    #{$prefix}-menu-text-color: #67748e;
+    #{$prefix}-menu-hover-text-color: #172b4d;
+    #{$prefix}-menu-bg-color: transparent;
+    #{$prefix}-menu-hover-bg-color: #f6f9fc;
+    #{$prefix}-menu-active-color: #172b4d;
+  }
+
+  &[data-scheme='dark'] {
+    @include createColors('color-primary', $color-primary, true);
+    @include createColors('color-success', $color-success, true);
+    @include createColors('color-warning', $color-warning, true);
+    @include createColors('color-danger', $color-danger, true);
+    @include createColors('color-info', $color-info, true);
+
+    #{$prefix}-bg-color: #172033;
+    #{$prefix}-bg-color-page: #101625;
+    #{$prefix}-bg-color-overlay: #202a3d;
+    #{$prefix}-text-color-primary: #f6f9fc;
+    #{$prefix}-text-color-regular: #d1d8e6;
+    #{$prefix}-text-color-secondary: #9eabc0;
+    #{$prefix}-text-color-placeholder: #78869e;
+    #{$prefix}-text-color-disabled: #5d6b82;
+    #{$prefix}-border-color: #3b465a;
+    #{$prefix}-border-color-light: #303b4f;
+    #{$prefix}-border-color-lighter: #293448;
+    #{$prefix}-border-color-extra-light: #242e40;
+    #{$prefix}-border-color-dark: #465269;
+    #{$prefix}-border-color-darker: #536078;
+    #{$prefix}-fill-color: #2b3548;
+    #{$prefix}-fill-color-light: #252f42;
+    #{$prefix}-fill-color-lighter: #202a3c;
+    #{$prefix}-fill-color-extra-light: #1c2638;
+    #{$prefix}-fill-color-dark: #354055;
+    #{$prefix}-fill-color-darker: #3e4a61;
+    #{$prefix}-fill-color-blank: #172033;
+    #{$prefix}-menu-text-color: #d1d8e6;
+    #{$prefix}-menu-hover-text-color: #f6f9fc;
+    #{$prefix}-menu-bg-color: transparent;
+    #{$prefix}-menu-hover-bg-color: #252f42;
+    #{$prefix}-menu-active-color: #f6f9fc;
+    #{$prefix}-mask-color: rgba(7, 12, 22, 0.82);
+    #{$prefix}-mask-color-extra-light: rgba(7, 12, 22, 0.35);
+  }
+
+  .el-card,
+  .el-dialog {
+    border-color: transparent;
+    border-radius: var(--ze-card-radius);
+    box-shadow: var(#{$prefix}-box-shadow);
+  }
+
+  .el-table {
+    --el-table-border-color: var(#{$prefix}-border-color-light);
+    --el-table-header-bg-color: var(#{$prefix}-fill-color-extra-light);
+  }
 }

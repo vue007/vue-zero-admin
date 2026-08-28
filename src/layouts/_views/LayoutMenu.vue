@@ -34,6 +34,7 @@
       class="layout-menu"
       :defaultActive="menu.active"
       :collapse="menu.collapse"
+      :collapse-transition="false"
       @select="handleMenuSelect"
       router
     >
@@ -68,7 +69,7 @@ const LayoutMenuItemSpan = (props) => (
         <svg-icon name={props.meta.icon} />
       </el-icon>
     ) : null}
-    <span class='min-w-100'>{props.meta?.title}</span>
+    <span>{props.meta?.title}</span>
   </>
 )
 
@@ -109,6 +110,8 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 .layout-menu {
+  box-sizing: border-box;
+  width: 100%;
   border-right: unset;
   background-color: unset;
   margin-top: 12px;
@@ -123,7 +126,7 @@ onMounted(() => {
     background-color: unset;
   }
 
-  #{$scheme-argon} {
+  #{$theme-argon} {
     padding: 8px;
 
     :deep(.el-menu-item),
@@ -134,8 +137,8 @@ onMounted(() => {
       line-height: var(--el-menu-sub-item-height);
     }
 
-    :deep(.el-menu-item .el-icon),
-    :deep(.el-sub-menu__title .el-icon) {
+    :deep(.el-menu-item > .el-icon),
+    :deep(.el-sub-menu__title > .el-icon:not(.el-sub-menu__icon-arrow)) {
       display: inline-flex;
       align-items: center;
       justify-content: center;
@@ -143,9 +146,63 @@ onMounted(() => {
       height: 32px;
       margin-right: 10px;
       border-radius: 8px;
-      background: #fff;
+      background: var(--el-bg-color-overlay);
       box-shadow: var(--el-box-shadow-lighter);
       color: var(--el-color-primary);
+      font-size: 18px;
+
+      svg {
+        width: 18px;
+        height: 18px;
+      }
+    }
+
+    :deep(.el-sub-menu__icon-arrow) {
+      top: 50%;
+      right: 14px;
+      width: 16px;
+      height: 16px;
+      margin: -8px 0 0;
+      padding: 0;
+      border-radius: 0;
+      background: transparent;
+      box-shadow: none;
+      color: var(--el-text-color-secondary);
+      font-size: 16px;
+
+      svg {
+        width: 16px;
+        height: 16px;
+      }
+    }
+
+    &.el-menu--collapse {
+      width: 100%;
+
+      :deep(.el-menu-item),
+      :deep(.el-sub-menu__title) {
+        display: flex;
+        justify-content: center;
+        padding: 0 !important;
+      }
+
+      :deep(.el-menu-item > .el-icon),
+      :deep(.el-sub-menu__title > .el-icon:not(.el-sub-menu__icon-arrow)) {
+        flex: 0 0 32px;
+        margin-right: 0;
+      }
+
+      :deep(.el-menu-item > span),
+      :deep(.el-sub-menu__title > span) {
+        flex: 0 0 0;
+        width: 0;
+        min-width: 0;
+        margin: 0;
+      }
+
+      :deep(.el-sub-menu__icon-arrow) {
+        display: none;
+      }
     }
 
     :deep(.el-menu-item.is-active) {

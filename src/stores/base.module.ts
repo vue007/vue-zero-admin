@@ -6,23 +6,56 @@ import { useLocalStorage } from '@vueuse/core'
 
 import { baseApi } from '@/api/_index'
 import type { UserInfo } from '@/api/user.type'
+import { isBaseThemeColor, type BaseThemeColor } from '@/styles/theme/theme-colors'
 import { merge } from 'es-toolkit'
 
 export type BaseSize = 'large' | 'default' | 'small'
-export type BaseScheme = 'dark' | 'light' | 'auto' | 'argon'
+export type BaseScheme = 'dark' | 'light' | 'auto'
+export type BaseTheme = 'default' | 'argon'
+export type { BaseThemeColor } from '@/styles/theme/theme-colors'
 export type BaseLang = 'en' | 'zh-CN'
 export type BaseArrangement = 'default' | ''
 
-const getInitialScheme = (): BaseScheme => {
-  const legacyValue = globalThis.localStorage?.getItem('setting.theme')
-  if (!legacyValue) return 'light'
+const readStoredSetting = (key: string): unknown => {
+  const value = globalThis.localStorage?.getItem(key)
+  if (!value) return undefined
   try {
-    const value = JSON.parse(legacyValue)
-    return ['dark', 'light', 'auto', 'argon'].includes(value) ? value : 'light'
+    // Accept the JSON-encoded values used by older releases.
+    return JSON.parse(value)
   } catch {
-    return 'light'
+    // VueUse stores string values as-is.
+    return value
   }
 }
+
+const migrateAppearanceSettings = (): { scheme: BaseScheme; theme: BaseTheme; themeColor: BaseThemeColor } => {
+  const storedScheme = readStoredSetting('setting.scheme')
+  const storedTheme = readStoredSetting('setting.theme')
+  const storedThemeColor = readStoredSetting('setting.themeColor')
+  const schemes: BaseScheme[] = ['dark', 'light', 'auto']
+
+  // `argon` used to be stored as a color scheme. Keep that preference while
+  // separating visual theme from light/dark color scheme.
+  const scheme = schemes.includes(storedScheme as BaseScheme)
+    ? (storedScheme as BaseScheme)
+    : schemes.includes(storedTheme as BaseScheme)
+      ? (storedTheme as BaseScheme)
+      : 'light'
+  const theme: BaseTheme = storedTheme === 'default' ? 'default' : 'argon'
+  const themeColor: BaseThemeColor = isBaseThemeColor(storedThemeColor) ? storedThemeColor : 'indigo'
+
+  try {
+    globalThis.localStorage?.setItem('setting.scheme', scheme)
+    globalThis.localStorage?.setItem('setting.theme', theme)
+    globalThis.localStorage?.setItem('setting.themeColor', themeColor)
+  } catch {
+    // Storage may be unavailable in private/SSR contexts; VueUse will fall back.
+  }
+
+  return { scheme, theme, themeColor }
+}
+
+const initialAppearance = migrateAppearanceSettings()
 
 const getInitialLocale = (): BaseLang => {
   const locale = globalThis.localStorage?.getItem('setting.local')
@@ -38,7 +71,9 @@ export const useBaseStore = defineStore('base', () => {
 
   const setting = reactive({
     local: useLocalStorage<BaseLang>('setting.local', getInitialLocale()),
-    scheme: useLocalStorage<BaseScheme>('setting.scheme', getInitialScheme()),
+    scheme: useLocalStorage<BaseScheme>('setting.scheme', initialAppearance.scheme),
+    theme: useLocalStorage<BaseTheme>('setting.theme', initialAppearance.theme),
+    themeColor: useLocalStorage<BaseThemeColor>('setting.themeColor', initialAppearance.themeColor),
     size: useLocalStorage<BaseSize>('setting.size', 'default'),
     userInfo: useLocalStorage<Partial<UserInfo>>('setting.userInfo', {}),
 
@@ -47,6 +82,12 @@ export const useBaseStore = defineStore('base', () => {
     },
     setScheme(scheme: BaseScheme) {
       setting.scheme = scheme
+    },
+    setTheme(theme: BaseTheme) {
+      setting.theme = theme
+    },
+    setThemeColor(themeColor: BaseThemeColor) {
+      setting.themeColor = themeColor
     },
     setSize(size: BaseSize) {
       setting.size = size
