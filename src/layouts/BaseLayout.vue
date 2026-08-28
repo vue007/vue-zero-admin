@@ -18,9 +18,9 @@
           <svg-icon :name="menu.collapse ? 'el-expand' : 'el-fold'" />
         </button>
       </aside>
-      <div class="layout-page">
-        <el-breadcrumb class="page-breadcrumb" separator="/">
-          <el-breadcrumb-item v-for="item in menu.breadcrumb">{{ item }}</el-breadcrumb-item>
+      <div class="layout-page" :class="{ 'without-breadcrumb': !menu.breadcrumb.length }">
+        <el-breadcrumb v-if="menu.breadcrumb.length" class="page-breadcrumb" separator="/">
+          <el-breadcrumb-item v-for="item in menu.breadcrumb" :key="item">{{ item }}</el-breadcrumb-item>
         </el-breadcrumb>
 
         <router-view v-slot="{ route, Component: Comp }">
@@ -167,7 +167,7 @@ $header-height: 64px;
   flex: 0 0 var(--layout-aside-width);
   width: var(--layout-aside-width);
   min-width: var(--layout-aside-width);
-  height: calc(100vh - $header-height);
+  height: 100%;
   background-color: var(--el-bg-color);
   border-right: 1px solid var(--el-border-color-light);
   position: relative;
@@ -181,8 +181,28 @@ $header-height: 64px;
   }
 
   #layout-aside-menu {
+    box-sizing: border-box;
     width: 100%;
-    overflow: hidden;
+    height: 100%;
+    padding-bottom: 56px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-color: var(--el-border-color) transparent;
+    scrollbar-width: thin;
+
+    &::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      border-radius: 4px;
+      background: var(--el-border-color);
+    }
   }
 
   #{$scheme-dark} {
@@ -194,7 +214,7 @@ $header-height: 64px;
     --layout-aside-collapsed-width: 68px;
 
     background-color: var(--el-bg-color);
-    height: calc(100vh - $header-height - 24px);
+    height: calc(100% - 24px);
     margin: 12px 0 12px 16px;
     border: none;
     border-radius: var(--ze-sidenav-radius, 12px);
@@ -237,12 +257,21 @@ $header-height: 64px;
   flex-direction: column;
   min-width: 0;
   min-height: 0;
-  height: calc(100vh - $header-height);
+  height: 100%;
   overflow-y: auto;
   position: relative;
   z-index: 1;
 
   padding: 0 24px;
+
+  #{$theme-argon} {
+    padding-bottom: 12px;
+  }
+}
+.layout-page.without-breadcrumb {
+  #{$theme-argon} {
+    padding-top: 12px;
+  }
 }
 </style>
 

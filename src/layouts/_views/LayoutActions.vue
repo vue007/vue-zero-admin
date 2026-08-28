@@ -110,20 +110,17 @@
       </el-popover>
 
       <el-dropdown v-if="'dropdown' === action" trigger="click">
-        <div class="flex items-center">
+        <div class="user-entry">
           <el-avatar
-            class="cursor-pointer mr-8 w-28! h28! lt-sm:w-24! lt-sm:h-24!"
+            class="user-entry__avatar w-28! h28! lt-sm:w-24! lt-sm:h-24!"
             shape="circle"
             :src="currentUser?.avatar || ''"
           />
-          <span
-            class="max-w-120 truncate color-[var(--el-text-color-primary)] lt-sm:hidden"
-            :title="currentUserName"
-          >
+          <span class="user-entry__name lt-sm:hidden" :title="currentUserName">
             {{ currentUserName }}
           </span>
 
-          <div class="ml-10 ml-auto lt-sm:hidden">
+          <div class="user-entry__arrow lt-sm:hidden">
             <svg-icon name="el-arrow-down-bold" />
           </div>
         </div>
@@ -244,6 +241,61 @@ const wallpaperOpacityPercent = computed({
     font-size: 18px;
   }
 }
+.user-entry {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  padding: 4px 7px 4px 4px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  color: var(--el-text-color-primary);
+  cursor: pointer;
+  outline: none;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+
+  &:hover {
+    border-color: var(--el-border-color-light);
+    background: var(--el-fill-color-light);
+  }
+
+  #{$theme-argon} {
+    color: #fff;
+
+    &:hover {
+      border-color: rgba(255, 255, 255, 0.22);
+      background: rgba(255, 255, 255, 0.12);
+    }
+  }
+}
+.user-entry__avatar {
+  flex: none;
+  border: 2px solid color-mix(in srgb, currentColor 24%, transparent);
+  background: var(--el-fill-color);
+}
+.user-entry__name {
+  max-width: 120px;
+  margin-left: 8px;
+  overflow: hidden;
+  color: inherit;
+  font-weight: 500;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.user-entry__arrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  margin-left: 6px;
+  color: inherit;
+  opacity: 0.72;
+
+  :deep(.svg-icon) {
+    width: 12px;
+    height: 12px;
+  }
+}
 .check-item {
   width: 100%;
   margin-bottom: 5px;
@@ -290,13 +342,17 @@ const wallpaperOpacityPercent = computed({
   border-radius: 50%;
   box-shadow: 0 0 0 1px var(--el-border-color-light);
   cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 
   &:hover {
     transform: scale(1.08);
   }
   &.is-selected {
-    box-shadow: 0 0 0 2px var(--el-bg-color-overlay), 0 0 0 4px var(--el-text-color-primary);
+    box-shadow:
+      0 0 0 2px var(--el-bg-color-overlay),
+      0 0 0 4px var(--el-text-color-primary);
     transform: scale(1.08);
   }
 }
@@ -320,7 +376,10 @@ const wallpaperOpacityPercent = computed({
   background: var(--el-fill-color-extra-light);
   color: var(--el-text-color-regular);
   cursor: pointer;
-  transition: border-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
 
   &:hover {
     border-color: var(--el-border-color);
@@ -352,8 +411,7 @@ const wallpaperOpacityPercent = computed({
       radial-gradient(circle at 18% 30%, #ec4899 0 12%, transparent 13%),
       radial-gradient(circle at 62% 62%, var(--el-color-primary) 0 18%, transparent 19%),
       radial-gradient(circle at 86% 25%, #06b6d4 0 14%, transparent 15%),
-      radial-gradient(circle at 25% 88%, #f59e0b 0 10%, transparent 11%),
-      var(--el-fill-color-light);
+      radial-gradient(circle at 25% 88%, #f59e0b 0 10%, transparent 11%), var(--el-fill-color-light);
   }
 }
 .wallpaper-opacity-header {
