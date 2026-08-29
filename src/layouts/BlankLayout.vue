@@ -3,7 +3,7 @@
     <header class="layout-header">
       <div class="header-left mr-auto" id="header-left">
         <div class="app-logo flex">
-          <img class="w-36 h-36 lt-sm:w-28 lt-sm:h-28" src="@/assets/images/logo.png" alt="logo" />
+          <AppLogo class="w-36 h-36 lt-sm:w-28 lt-sm:h-28" />
         </div>
         <div class="app-title ml-16 flex lt-sm:ml-8"></div>
       </div>
@@ -20,6 +20,8 @@
 </template>
 
 <script setup lang="ts">
+import AppLogo from '@/components/AppLogo.vue'
+
 const { t } = useI18nLocal()
 const actionsPosition = '#header-right'
 

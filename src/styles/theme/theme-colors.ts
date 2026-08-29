@@ -20,6 +20,10 @@ export const BASE_THEME_COLORS = [
 
 export const BASE_THEME_SURFACES = [
   {
+    name: 'hope',
+    palette: ['#ffffff', '#e9ecef', '#e3e6ea', '#dee2e6', '#ced4da', '#adb5bd', '#8a92a6', '#59627a', '#404969', '#30384f', '#222738', '#151824'],
+  },
+  {
     name: 'slate',
     palette: ['#ffffff', '#f8fafc', '#f1f5f9', '#e2e8f0', '#cbd5e1', '#94a3b8', '#64748b', '#475569', '#334155', '#1e293b', '#0f172a', '#020617'],
   },
@@ -62,6 +66,11 @@ export const isBaseThemeColor = (value: unknown): value is BaseThemeColor =>
 export const isBaseThemeSurface = (value: unknown): value is BaseThemeSurface =>
   BASE_THEME_SURFACES.some((item) => item.name === value)
 
+export const getThemeSurfaceFallback = (
+  theme: 'default' | 'argon',
+  scheme: ResolvedScheme,
+): BaseThemeSurface => (theme === 'default' ? 'hope' : scheme === 'dark' ? 'zinc' : 'slate')
+
 const hexToRgb = (hex: string) => {
   const value = Number.parseInt(hex.slice(1), 16)
   return [(value >> 16) & 255, (value >> 8) & 255, value & 255] as const
@@ -91,6 +100,7 @@ export function applyThemeColor(name: BaseThemeColor, scheme: ResolvedScheme) {
     root.style.setProperty(`--el-color-primary-light-${step}`, mixHex(item.color, lightTarget, step / 10))
   })
   root.style.setProperty('--el-color-primary-dark-2', mixHex(item.color, darkTarget, 0.2))
+  root.style.setProperty('--el-menu-active-color', mixHex(item.color, darkTarget, 0.2))
 
   // Argon's header remains recognizable while following the selected primary.
   root.style.setProperty('--ze-banner', item.color)
@@ -132,7 +142,6 @@ export function applyThemeSurface(name: BaseThemeSurface, scheme: ResolvedScheme
           '--el-menu-text-color': s200,
           '--el-menu-hover-text-color': s50,
           '--el-menu-hover-bg-color': s800,
-          '--el-menu-active-color': s50,
         }
       : {
           '--el-bg-color': s0,
@@ -159,7 +168,6 @@ export function applyThemeSurface(name: BaseThemeSurface, scheme: ResolvedScheme
           '--el-menu-text-color': s700,
           '--el-menu-hover-text-color': s900,
           '--el-menu-hover-bg-color': s50,
-          '--el-menu-active-color': s900,
         }
 
   root.setAttribute('data-theme-surface', item.name)

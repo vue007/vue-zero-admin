@@ -27,6 +27,10 @@
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
 
+  "workbench.editorAssociations": {
+    "*.svg": "default"
+  },
+
   "unocss.remToPxRatio": 4,
   "css.customData": [".vscode/unocss.json"],
   "oxc.enable": true

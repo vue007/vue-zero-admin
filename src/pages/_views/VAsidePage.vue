@@ -80,6 +80,12 @@ const drawerSize = computed(() => `${Math.min(props.asideWidth + 32, 320)}px`)
   overflow: hidden;
   background-color: var(--el-bg-color);
 
+  #{$theme-default} {
+    border: 1px solid var(--el-border-color-extra-light);
+    border-radius: var(--ze-card-radius, 8px);
+    box-shadow: var(--el-box-shadow-light);
+  }
+
   #{$theme-argon} {
     border-radius: var(--ze-card-radius, var(--el-border-radius-base));
     box-shadow: var(--el-box-shadow);
@@ -114,6 +120,12 @@ const drawerSize = computed(() => `${Math.min(props.asideWidth + 32, 320)}px`)
     overflow: hidden;
 
     #{$theme-argon} {
+      border-radius: 0;
+      box-shadow: none;
+    }
+
+    #{$theme-default} {
+      border: 0;
       border-radius: 0;
       box-shadow: none;
     }

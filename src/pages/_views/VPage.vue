@@ -35,6 +35,12 @@ const props = defineProps<{
   background: var(--el-bg-color);
   padding: 24px;
 
+  #{$theme-default} {
+    border: 1px solid var(--el-border-color-extra-light);
+    border-radius: var(--ze-card-radius, 8px);
+    box-shadow: var(--el-box-shadow-light);
+  }
+
   #{$theme-argon} {
     border-radius: var(--ze-card-radius, var(--el-border-radius-base));
     box-shadow: var(--el-box-shadow);

@@ -145,7 +145,7 @@
 <script setup lang="tsx">
 import { logout } from '@/api/base.api'
 import { BASE_WALLPAPERS, useBaseStore } from '@/stores/base.module'
-import { BASE_THEME_COLORS, BASE_THEME_SURFACES } from '@/styles/theme/theme-colors'
+import { BASE_THEME_COLORS, BASE_THEME_SURFACES, getThemeSurfaceFallback } from '@/styles/theme/theme-colors'
 import { useMediaQuery } from '@vueuse/core'
 import { includes } from 'es-toolkit/compat'
 
@@ -215,7 +215,7 @@ const systemDark = useMediaQuery('(prefers-color-scheme: dark)')
 const resolvedThemeSurface = computed(() => {
   if (setting.themeSurface) return setting.themeSurface
   const isDark = setting.scheme === 'dark' || (setting.scheme === 'auto' && systemDark.value)
-  return isDark ? 'zinc' : 'slate'
+  return getThemeSurfaceFallback(setting.theme, isDark ? 'dark' : 'light')
 })
 const toggleScheme = () => {
   if ('auto' === setting.scheme) return

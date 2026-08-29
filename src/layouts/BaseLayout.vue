@@ -3,7 +3,7 @@
     <header class="layout-header">
       <div class="header-left mr-auto" id="header-left">
         <div class="app-logo flex">
-          <img class="w-36 h-36 lt-sm:w-28 lt-sm:h-28" src="@/assets/images/logo.png" alt="logo" />
+          <AppLogo class="w-36 h-36 lt-sm:w-28 lt-sm:h-28" />
         </div>
         <div class="app-title ml-16 flex lt-sm:ml-8"></div>
       </div>
@@ -38,6 +38,7 @@
 </template>
 
 <script setup lang="ts">
+import AppLogo from '@/components/AppLogo.vue'
 import { useBaseStore } from '@/stores/base.module'
 import { useMediaQuery, watchDebounced } from '@vueuse/core'
 
@@ -88,7 +89,6 @@ $header-height: 64px;
     box-shadow: none;
     color: #fff;
 
-    .app-logo,
     .app-title {
       filter: brightness(0) invert(1);
     }
@@ -100,6 +100,11 @@ $header-height: 64px;
         color: inherit;
       }
     }
+  }
+
+  #{$theme-default} {
+    border-bottom: 1px solid var(--el-border-color-extra-light);
+    box-shadow: var(--el-box-shadow-lighter);
   }
 
   #{$size-large} {
@@ -172,7 +177,10 @@ $header-height: 64px;
   border-right: 1px solid var(--el-border-color-light);
   position: relative;
   z-index: 1;
-  transition: width 0.2s ease, min-width 0.2s ease, flex-basis 0.2s ease;
+  transition:
+    width 0.2s ease,
+    min-width 0.2s ease,
+    flex-basis 0.2s ease;
 
   &.is-collapse {
     flex-basis: var(--layout-aside-collapsed-width);
@@ -209,6 +217,15 @@ $header-height: 64px;
     background-color: var(--el-bg-color-page);
   }
 
+  #{$theme-default} {
+    --layout-aside-width: 256px;
+    --layout-aside-collapsed-width: 72px;
+
+    background-color: #fff;
+    border-right-color: #e9ecef;
+    box-shadow: 4px 0 24px rgba(17, 38, 146, 0.04);
+  }
+
   #{$theme-argon} {
     --layout-aside-width: 260px;
     --layout-aside-collapsed-width: 68px;
@@ -238,7 +255,9 @@ $header-height: 64px;
     color: var(--el-text-color-secondary);
     cursor: pointer;
     transform: translateX(-50%);
-    transition: color 0.2s ease, background-color 0.2s ease;
+    transition:
+      color 0.2s ease,
+      background-color 0.2s ease;
 
     :deep(.svg-icon) {
       width: 20px;
@@ -248,6 +267,18 @@ $header-height: 64px;
     &:hover {
       background: var(--el-fill-color);
       color: var(--el-color-primary);
+    }
+
+    #{$theme-default} {
+      border-radius: 50%;
+      background: var(--el-color-primary);
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(var(--el-color-primary-rgb), 0.24);
+
+      &:hover {
+        background: var(--el-color-primary-dark-2);
+        color: #fff;
+      }
     }
   }
 }
@@ -263,6 +294,10 @@ $header-height: 64px;
   z-index: 1;
 
   padding: 0 24px;
+
+  #{$theme-default} {
+    padding-bottom: 24px;
+  }
 
   #{$theme-argon} {
     padding-bottom: 12px;

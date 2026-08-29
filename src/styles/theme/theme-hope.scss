@@ -1,0 +1,48 @@
+@use './_mixin' as *;
+
+// Hope UI is the plug-and-play visual layer used by the `default` theme.
+// Scheme and user-selected primary/Surface palettes remain independent.
+$mode: ':root[data-theme="default"]';
+
+#{$mode} {
+  #{$prefix}-font-family:
+    Inter, 'Microsoft YaHei', '微软雅黑', 'PingFang SC', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  #{$prefix}-border-radius-base: 4px;
+  #{$prefix}-border-radius-small: 4px;
+  #{$prefix}-border-radius-round: 4px;
+  #{$prefix}-box-shadow: 0 4px 40px rgba(17, 38, 146, 0.1);
+  #{$prefix}-box-shadow-light: 0 10px 30px rgba(17, 38, 146, 0.08);
+  #{$prefix}-box-shadow-lighter: 0 4px 12px rgba(17, 38, 146, 0.06);
+  #{$prefix}-menu-item-height: 44px;
+  #{$prefix}-menu-sub-item-height: 44px;
+  --ze-card-radius: 8px;
+  --ze-sidenav-radius: 0;
+
+  &[data-scheme='light'] {
+    #{$prefix}-box-shadow-light: 0 10px 30px rgba(17, 38, 146, 0.05);
+  }
+
+  &[data-scheme='dark'] {
+    #{$prefix}-box-shadow: 0 4px 40px rgba(0, 0, 0, 0.18);
+    #{$prefix}-box-shadow-light: 0 10px 30px rgba(0, 0, 0, 0.16);
+    #{$prefix}-box-shadow-lighter: 0 4px 12px rgba(0, 0, 0, 0.12);
+  }
+
+  .el-card,
+  .el-dialog,
+  .el-message-box,
+  .el-popover.el-popper {
+    border-radius: var(--ze-card-radius);
+  }
+
+  .el-card:not(.is-never-shadow),
+  .el-dialog,
+  .el-message-box {
+    box-shadow: var(#{$prefix}-box-shadow-light);
+  }
+
+  .el-table {
+    --el-table-border-color: var(#{$prefix}-border-color-lighter);
+    --el-table-header-bg-color: var(#{$prefix}-fill-color-light);
+  }
+}

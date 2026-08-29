@@ -126,6 +126,76 @@ onMounted(() => {
     background-color: unset;
   }
 
+  #{$theme-default} {
+    --el-menu-text-color: #8a92a6;
+    --el-menu-hover-text-color: #222738;
+    --el-menu-hover-bg-color: #f5f6fa;
+
+    margin-top: 16px;
+
+    :deep(.el-menu-item),
+    :deep(.el-sub-menu__title) {
+      height: var(--el-menu-item-height);
+      margin: 2px 12px;
+      border-radius: 4px;
+      line-height: var(--el-menu-item-height);
+      color: var(--el-menu-text-color);
+    }
+
+    :deep(.el-menu-item > .el-icon),
+    :deep(.el-sub-menu__title > .el-icon:not(.el-sub-menu__icon-arrow)) {
+      width: 20px;
+      height: 20px;
+      margin-right: 12px;
+      color: var(--el-text-color-secondary);
+      font-size: 20px;
+
+      svg {
+        width: 20px;
+        height: 20px;
+      }
+    }
+
+    :deep(.el-menu-item:hover),
+    :deep(.el-sub-menu__title:hover) {
+      background-color: var(--el-menu-hover-bg-color);
+      color: var(--el-menu-hover-text-color);
+    }
+
+    :deep(.el-sub-menu.is-active > .el-sub-menu__title) {
+      color: var(--el-menu-active-color);
+
+      > .el-icon:not(.el-sub-menu__icon-arrow) {
+        color: var(--el-menu-active-color);
+      }
+    }
+
+    :deep(.el-menu-item.is-active) {
+      background-color: var(--el-color-primary);
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(var(--el-color-primary-rgb), 0.22);
+
+      > .el-icon,
+      > span {
+        color: #fff;
+      }
+    }
+
+    &.el-menu--collapse {
+      :deep(.el-menu-item),
+      :deep(.el-sub-menu__title) {
+        display: flex;
+        justify-content: center;
+        padding: 0 !important;
+      }
+
+      :deep(.el-menu-item > .el-icon),
+      :deep(.el-sub-menu__title > .el-icon:not(.el-sub-menu__icon-arrow)) {
+        margin-right: 0;
+      }
+    }
+  }
+
   #{$theme-argon} {
     padding: 8px;
 
@@ -148,7 +218,7 @@ onMounted(() => {
       border-radius: 8px;
       background: var(--el-bg-color-overlay);
       box-shadow: var(--el-box-shadow-lighter);
-      color: var(--el-color-primary);
+      color: var(--el-text-color-secondary);
       font-size: 18px;
 
       svg {
@@ -207,7 +277,7 @@ onMounted(() => {
 
     :deep(.el-menu-item.is-active) {
       background-color: var(--el-fill-color-light);
-      color: var(--el-text-color-primary);
+      color: var(--el-menu-active-color);
 
       .el-icon {
         background: var(--el-color-primary);
@@ -216,7 +286,7 @@ onMounted(() => {
       }
 
       span {
-        color: var(--el-text-color-primary);
+        color: var(--el-menu-active-color);
       }
     }
   }

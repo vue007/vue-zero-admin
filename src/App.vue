@@ -12,7 +12,7 @@ import './styles/sanitize.css'
 import './styles/theme/index.scss'
 
 import { useBaseStore } from './stores/base.module'
-import { applyThemeColor, applyThemeSurface } from './styles/theme/theme-colors'
+import { applyThemeColor, applyThemeSurface, getThemeSurfaceFallback } from './styles/theme/theme-colors'
 
 import BaseLayout from './layouts/BaseLayout.vue'
 import BlankLayout from './layouts/BlankLayout.vue'
@@ -74,9 +74,9 @@ watchImmediate(
 )
 
 watchImmediate(
-  () => [setting.themeSurface, resolvedScheme.value] as const,
-  ([themeSurface, currentScheme]) =>
-    applyThemeSurface(themeSurface || (currentScheme === 'dark' ? 'zinc' : 'slate'), currentScheme),
+  () => [setting.themeSurface, setting.theme, resolvedScheme.value] as const,
+  ([themeSurface, theme, currentScheme]) =>
+    applyThemeSurface(themeSurface || getThemeSurfaceFallback(theme, currentScheme), currentScheme),
 )
 
 watchImmediate(
