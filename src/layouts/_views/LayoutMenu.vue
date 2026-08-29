@@ -68,7 +68,9 @@ const LayoutMenuItemSpan = (props) => (
       <el-icon>
         <svg-icon name={props.meta.icon} />
       </el-icon>
-    ) : null}
+    ) : (
+      <span class='menu-item-dot' aria-hidden='true' />
+    )}
     <span>{props.meta?.title}</span>
   </>
 )
@@ -110,6 +112,10 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 .layout-menu {
+  --el-menu-text-color: var(--el-text-color-secondary);
+  --el-menu-hover-text-color: var(--el-text-color-primary);
+  --el-menu-hover-bg-color: var(--el-fill-color-light);
+
   box-sizing: border-box;
   width: 100%;
   border-right: unset;
@@ -126,10 +132,26 @@ onMounted(() => {
     background-color: unset;
   }
 
+  :deep(.el-menu-item:hover),
+  :deep(.el-sub-menu__title:hover) {
+    background-color: var(--el-menu-hover-bg-color);
+    color: var(--el-menu-hover-text-color);
+  }
+
+  :deep(.el-sub-menu.is-active > .el-sub-menu__title) {
+    color: var(--el-menu-active-color);
+  }
+
+  :deep(.el-menu-item.is-active) {
+    background-color: var(--el-color-primary);
+    color: #fff;
+    box-shadow: 0 10px 15px rgba(var(--el-color-primary-rgb), 0.08);
+  }
+
   #{$theme-default} {
-    --el-menu-text-color: #8a92a6;
-    --el-menu-hover-text-color: #222738;
-    --el-menu-hover-bg-color: #f5f6fa;
+    --el-menu-base-level-padding: 24px;
+    --el-menu-level-padding: 16px;
+    --el-menu-icon-width: 24px;
 
     margin-top: 16px;
 
@@ -139,59 +161,19 @@ onMounted(() => {
       margin: 2px 12px;
       border-radius: 4px;
       line-height: var(--el-menu-item-height);
-      color: var(--el-menu-text-color);
     }
 
     :deep(.el-menu-item > .el-icon),
     :deep(.el-sub-menu__title > .el-icon:not(.el-sub-menu__icon-arrow)) {
-      width: 20px;
-      height: 20px;
-      margin-right: 12px;
-      color: var(--el-text-color-secondary);
-      font-size: 20px;
+      width: 24px;
+      height: 24px;
+      margin-right: 16px;
+      color: inherit;
+      font-size: 24px;
 
       svg {
-        width: 20px;
-        height: 20px;
-      }
-    }
-
-    :deep(.el-menu-item:hover),
-    :deep(.el-sub-menu__title:hover) {
-      background-color: var(--el-menu-hover-bg-color);
-      color: var(--el-menu-hover-text-color);
-    }
-
-    :deep(.el-sub-menu.is-active > .el-sub-menu__title) {
-      color: var(--el-menu-active-color);
-
-      > .el-icon:not(.el-sub-menu__icon-arrow) {
-        color: var(--el-menu-active-color);
-      }
-    }
-
-    :deep(.el-menu-item.is-active) {
-      background-color: var(--el-color-primary);
-      color: #fff;
-      box-shadow: 0 4px 12px rgba(var(--el-color-primary-rgb), 0.22);
-
-      > .el-icon,
-      > span {
-        color: #fff;
-      }
-    }
-
-    &.el-menu--collapse {
-      :deep(.el-menu-item),
-      :deep(.el-sub-menu__title) {
-        display: flex;
-        justify-content: center;
-        padding: 0 !important;
-      }
-
-      :deep(.el-menu-item > .el-icon),
-      :deep(.el-sub-menu__title > .el-icon:not(.el-sub-menu__icon-arrow)) {
-        margin-right: 0;
+        width: 24px;
+        height: 24px;
       }
     }
   }
@@ -216,9 +198,9 @@ onMounted(() => {
       height: 32px;
       margin-right: 10px;
       border-radius: 8px;
-      background: var(--el-bg-color-overlay);
+      background: color-mix(in srgb, currentColor 8%, transparent);
       box-shadow: var(--el-box-shadow-lighter);
-      color: var(--el-text-color-secondary);
+      color: inherit;
       font-size: 18px;
 
       svg {
@@ -237,7 +219,7 @@ onMounted(() => {
       border-radius: 0;
       background: transparent;
       box-shadow: none;
-      color: var(--el-text-color-secondary);
+      color: inherit;
       font-size: 16px;
 
       svg {
@@ -246,49 +228,78 @@ onMounted(() => {
       }
     }
 
-    &.el-menu--collapse {
-      width: 100%;
-
-      :deep(.el-menu-item),
-      :deep(.el-sub-menu__title) {
-        display: flex;
-        justify-content: center;
-        padding: 0 !important;
-      }
-
-      :deep(.el-menu-item > .el-icon),
-      :deep(.el-sub-menu__title > .el-icon:not(.el-sub-menu__icon-arrow)) {
-        flex: 0 0 32px;
-        margin-right: 0;
-      }
-
-      :deep(.el-menu-item > span),
-      :deep(.el-sub-menu__title > span) {
-        flex: 0 0 0;
-        width: 0;
-        min-width: 0;
-        margin: 0;
-      }
-
-      :deep(.el-sub-menu__icon-arrow) {
-        display: none;
-      }
-    }
-
     :deep(.el-menu-item.is-active) {
-      background-color: var(--el-fill-color-light);
+      background: transparent;
       color: var(--el-menu-active-color);
+      box-shadow: none;
 
-      .el-icon {
+      > .el-icon {
         background: var(--el-color-primary);
         color: #fff;
         box-shadow: var(--el-box-shadow-light);
       }
-
-      span {
-        color: var(--el-menu-active-color);
-      }
     }
+  }
+
+  &.el-menu--collapse.el-menu--collapse {
+    width: 100%;
+    padding: 4px;
+
+    :deep(.el-menu-item.el-menu-item),
+    :deep(.el-sub-menu__title.el-sub-menu__title) {
+      justify-content: center;
+      height: var(--el-menu-item-height);
+      margin: 2px 4px;
+      padding: 0 !important;
+      line-height: var(--el-menu-item-height);
+    }
+
+    :deep(.el-menu-item > .el-icon),
+    :deep(.el-sub-menu__title > .el-icon:not(.el-sub-menu__icon-arrow)) {
+      flex: 0 0 40px;
+      width: 40px;
+      height: 40px;
+      margin-right: auto;
+      margin-left: auto;
+    }
+
+    :deep(.menu-item-dot.menu-item-dot) {
+      display: block;
+      visibility: visible;
+      flex: 0 0 6px;
+      width: 6px;
+      height: 6px;
+      margin-right: auto;
+      margin-left: auto;
+    }
+
+    :deep(.el-sub-menu__icon-arrow) {
+      display: none;
+    }
+
+    :deep(.el-sub-menu.is-active > .el-sub-menu__title > .el-icon:not(.el-sub-menu__icon-arrow)) {
+      box-sizing: border-box;
+      border: 1px solid var(--el-color-primary);
+      border-radius: var(--el-border-radius-base);
+      background: transparent;
+      color: var(--el-color-primary);
+      box-shadow: none;
+    }
+
+    :deep(.el-sub-menu.is-active > .el-sub-menu__title > .menu-item-dot) {
+      color: var(--el-color-primary);
+      box-shadow: 0 0 0 6px rgba(var(--el-color-primary-rgb), 0.16);
+    }
+  }
+
+  :deep(.menu-item-dot) {
+    flex: 0 0 auto;
+    width: 6px;
+    height: 6px;
+    margin-right: 16px;
+    border-radius: 50%;
+    background-color: currentColor;
+    opacity: 0.82;
   }
 }
 </style>

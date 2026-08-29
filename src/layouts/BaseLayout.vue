@@ -1,11 +1,11 @@
 <template>
   <div>
-    <header class="layout-header">
+    <header class="layout-header" :class="{ 'is-menu-collapse': menu.collapse }">
       <div class="header-left mr-auto" id="header-left">
         <div class="app-logo flex">
           <AppLogo class="w-36 h-36 lt-sm:w-28 lt-sm:h-28" />
         </div>
-        <div class="app-title ml-16 flex lt-sm:ml-8"></div>
+        <div class="app-title ml-12 flex lt-sm:hidden">Zero Admin</div>
       </div>
 
       <div class="header-right" id="header-right" />
@@ -87,14 +87,14 @@ $header-height: 64px;
   #{$theme-argon} {
     background: transparent;
     box-shadow: none;
-    color: #fff;
+    color: var(--el-text-color-primary);
 
     .app-title {
       filter: brightness(0) invert(1);
     }
 
     .header-right {
-      color: #fff;
+      color: inherit;
 
       :deep(svg) {
         color: inherit;
@@ -114,8 +114,14 @@ $header-height: 64px;
     height: $header-height - 10px;
   }
   .app-title {
+    color: var(--el-text-color-primary);
+    font-size: 24px;
+    font-weight: 600;
+    line-height: 1.3;
+    white-space: nowrap;
+
     #{$scheme-dark} {
-      filter: invert(100%);
+      color: var(--el-text-color-primary);
     }
   }
 
@@ -124,6 +130,13 @@ $header-height: 64px;
   }
   .header-right {
     @apply: flex-center;
+  }
+
+  &.is-menu-collapse .app-title {
+    width: 0;
+    margin-left: 0;
+    overflow: hidden;
+    opacity: 0;
   }
 }
 
@@ -221,9 +234,9 @@ $header-height: 64px;
     --layout-aside-width: 256px;
     --layout-aside-collapsed-width: 72px;
 
-    background-color: #fff;
-    border-right-color: #e9ecef;
-    box-shadow: 4px 0 24px rgba(17, 38, 146, 0.04);
+    background-color: var(--el-bg-color);
+    border-right-color: var(--el-border-color-light);
+    box-shadow: var(--el-box-shadow-lighter);
   }
 
   #{$theme-argon} {
@@ -270,15 +283,25 @@ $header-height: 64px;
     }
 
     #{$theme-default} {
+      position: fixed;
+      top: 17px;
+      left: calc(var(--layout-aside-width) - 15px);
+      z-index: 11;
       border-radius: 50%;
       background: var(--el-color-primary);
       color: #fff;
-      box-shadow: 0 4px 12px rgba(var(--el-color-primary-rgb), 0.24);
+      box-shadow: 0 2px 4px rgba(var(--el-color-info-rgb), 0.3);
 
       &:hover {
         background: var(--el-color-primary-dark-2);
         color: #fff;
       }
+    }
+  }
+
+  &.is-collapse .collapse-action {
+    #{$theme-default} {
+      left: calc(var(--layout-aside-collapsed-width) - 15px);
     }
   }
 }

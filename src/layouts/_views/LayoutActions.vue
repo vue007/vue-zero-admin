@@ -259,11 +259,11 @@ const wallpaperOpacityPercent = computed({
   }
 
   #{$theme-argon} {
-    color: #fff;
+    color: inherit;
 
     &:hover {
-      border-color: rgba(255, 255, 255, 0.22);
-      background: rgba(255, 255, 255, 0.12);
+      border-color: color-mix(in srgb, currentColor 22%, transparent);
+      background: color-mix(in srgb, currentColor 12%, transparent);
     }
   }
 }
