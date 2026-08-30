@@ -51,7 +51,7 @@ type DefaultRow = Record<PropertyKey, any>
 
 type ZeTableProps<T extends DefaultRow = DefaultRow> = Partial<TableProps<T>> & {
   data?: T[]
-  // SFC props cannot reliably infer T from sibling props; callers use defineTableColumns<T>() for static checking.
+  // 页面私有静态列优先内联在模板中；需要跨位置复用或在脚本中生成时，可使用 defineTableColumns<T>() 校验字段。
   columns?: ZeTableColumn<any>[]
   loading?: boolean
   filterColVR?: Measurable

@@ -9,7 +9,6 @@
 export {}
 declare global {
   const DEFAULT_PAGE_SIZES: typeof import('./hooks/usePagination').DEFAULT_PAGE_SIZES
-  const DEFAULT_PAGINATION_LAYOUT: typeof import('./hooks/usePagination').DEFAULT_PAGINATION_LAYOUT
   const EffectScope: typeof import('vue').EffectScope
   const ElMessage: typeof import('element-plus/es').ElMessage
   const ElMessageBox: typeof import('element-plus/es').ElMessageBox
@@ -86,9 +85,7 @@ declare global {
   const useLink: typeof import('vue-router').useLink
   const useModal: typeof import('./hooks/useModal').useModal
   const useModel: typeof import('vue').useModel
-  const useMutation: typeof import('./hooks/useApi').useMutation
   const usePagination: typeof import('./hooks/usePagination').usePagination
-  const useQuery: typeof import('./hooks/useApi').useQuery
   const useRoute: typeof import('vue-router').useRoute
   const useRouter: typeof import('vue-router').useRouter
   const useSlots: typeof import('vue').useSlots

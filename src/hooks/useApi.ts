@@ -162,44 +162,6 @@ export function useApi<P, D>(
   return iteratorObject({ data: apiData, request, loading }, ['data', 'request', 'loading'] as const) as UseApiReturn<D>
 }
 
-type UseQueryOptions<P, D> = Omit<UseApiOptions<P, D>, 'concurrency'>
-
-export function useQuery<A extends (params: any) => ApiPromise<any>>(
-  api: A,
-  params?: any,
-  options?: UseQueryOptions<Parameters<A>[0], ApiDataOf<ReturnType<A>>>,
-): UseApiReturn<ApiDataOf<ReturnType<A>>>
-export function useQuery<P, D>(
-  api: (params: P) => ApiPromise<D>,
-  params?: (Partial<P> | any) | (() => Partial<P> | any),
-  options?: UseQueryOptions<P, D>,
-): UseApiReturn<D>
-export function useQuery<P, D>(
-  api: (params: P) => ApiPromise<D>,
-  params?: (Partial<P> | any) | (() => Partial<P> | any),
-  options?: UseQueryOptions<P, D>,
-): UseApiReturn<D> {
-  return useApi(api, params, { ...options, concurrency: 'takeLatest' })
-}
-
-export function useMutation<A extends (params: any) => ApiPromise<any>>(
-  api: A,
-  params?: any,
-  options?: UseQueryOptions<Parameters<A>[0], ApiDataOf<ReturnType<A>>>,
-): UseApiReturn<ApiDataOf<ReturnType<A>>>
-export function useMutation<P, D>(
-  api: (params: P) => ApiPromise<D>,
-  params?: (Partial<P> | any) | (() => Partial<P> | any),
-  options?: UseQueryOptions<P, D>,
-): UseApiReturn<D>
-export function useMutation<P, D>(
-  api: (params: P) => ApiPromise<D>,
-  params?: (Partial<P> | any) | (() => Partial<P> | any),
-  options?: UseQueryOptions<P, D>,
-): UseApiReturn<D> {
-  return useApi(api, params, { ...options, concurrency: 'parallel' })
-}
-
 const normalizeApiError = (error: unknown): ApiError => {
   if (isObject(error)) return error as ApiError
   return Object.assign(new Error(String(error || '请求失败')), {

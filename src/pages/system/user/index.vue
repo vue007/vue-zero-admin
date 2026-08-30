@@ -28,7 +28,21 @@
         </ze-form-item>
       </ze-form>
     </template>
-    <ze-table ref="tableRef" :data="tableData" :loading="loading" :columns="userColumns" :filterColVR="filterColRef">
+    <ze-table
+      ref="tableRef"
+      :data="tableData"
+      :loading="loading"
+      :columns="[
+        { prop: 'userId', label: '用户编号', hidden: true },
+        { prop: 'userName', label: '用户名称', minWidth: 138, fixed: true },
+        { prop: 'nickName', label: '用户昵称', minWidth: 138 },
+        { prop: 'deptName', label: '部门', minWidth: 100 },
+        { prop: 'phonenumber', label: '手机号码', width: 140 },
+        { prop: 'status', label: '状态', width: 80 },
+        { prop: 'createTime', label: '创建时间', minWidth: 180 },
+      ]"
+      :filterColVR="filterColRef"
+    >
       <template #col-status="{ row }">
         <el-switch v-model="row.status" active-value="0" inactive-value="1" @click="() => handleStatusChange(row)" />
       </template>
@@ -60,7 +74,6 @@ import { merge } from 'es-toolkit'
 import type { DeptVO } from '@/api/sys/dept.type'
 import type { UserInfoVO, UserQuery, UserVO } from '@/api/sys/user.type'
 import { defineActions, type ZeActionItem } from '@/components/types/action'
-import { defineTableColumns } from '@/components/types/table'
 import VUserAuthRole from './_views/VUserAuthRole.vue'
 
 const authRoleRef = ref()
@@ -69,8 +82,9 @@ const filterColRef = ref()
 const { sys_normal_disable } = toRefs(useDict('sys_normal_disable'))
 const { sys_user_sex } = toRefs(useDict('sys_user_sex'))
 
-const { data: deptOptions } = useQuery<undefined, DeptVO[]>(() => userApi.deptTreeSelect(), undefined, {
+const { data: deptOptions } = useApi<undefined, DeptVO[]>(() => userApi.deptTreeSelect(), undefined, {
   immediate: true,
+  concurrency: 'takeLatest',
 })
 
 const deptTreeRef = ref()
@@ -125,16 +139,6 @@ const reset = async () => {
   if (alreadyEmpty) await refreshFromFirstPage()
 }
 
-const userColumns = defineTableColumns<UserVO>([
-  { prop: 'userId', label: '用户编号', hidden: true },
-  { prop: 'userName', label: '用户名称', minWidth: 138, fixed: true },
-  { prop: 'nickName', label: '用户昵称', minWidth: 138 },
-  { prop: 'deptName', label: '部门', minWidth: 100 },
-  { prop: 'phonenumber', label: '手机号码', width: 140 },
-  { prop: 'status', label: '状态', width: 80 },
-  { prop: 'createTime', label: '创建时间', minWidth: 180 },
-])
-
 const toolbarActions = defineActions([
   {
     key: 'columns',
@@ -159,7 +163,11 @@ const { reference: editRef, component: EditModal } = useModal({
   },
   onConfirm: () => fetchEdit(),
 })
-const { data: userDetail, request: refreshUserDetail } = useQuery<Pick<UserVO, 'userId'>, UserInfoVO>(userApi.getUser)
+const { data: userDetail, request: refreshUserDetail } = useApi<Pick<UserVO, 'userId'>, UserInfoVO>(
+  userApi.getUser,
+  undefined,
+  { concurrency: 'takeLatest' },
+)
 watch(userDetail, (detail) => {
   if (detail) merge(editForm.value, detail)
 })
@@ -234,7 +242,7 @@ const {
   },
 })
 
-const { request: fetchEdit, loading: submitting } = useMutation(
+const { request: fetchEdit, loading: submitting } = useApi(
   (data: typeof editForm.value) => (isEdit.value ? userApi.updateUser(data) : userApi.addUser(data)),
   editForm,
   {
@@ -270,7 +278,7 @@ const handleResetPwd = (row: UserVO) => {
   })
 }
 
-const { request: handleDel } = useMutation(userApi.delUser, [], {
+const { request: handleDel } = useApi(userApi.delUser, [], {
   onSuccess: () => refresh(),
   tipSuccess: '删除成功',
 })

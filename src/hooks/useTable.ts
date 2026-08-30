@@ -1,5 +1,5 @@
 import type { ApiDataOf, ApiPage, ApiPromisePage } from '@/api/_fetch'
-import { useQuery, type UseApiOnSubmitFn } from './useApi'
+import { useApi, type UseApiOnSubmitFn } from './useApi'
 import { isFunction, merge } from 'es-toolkit'
 import { isObject } from '@vueuse/core'
 import { iteratorObject } from '@/utils/iterator-object'
@@ -75,8 +75,9 @@ export function useTable<P, D>(
     data: pageData,
     request,
     loading,
-  } = useQuery<P, ApiPage<D>>(api, isFunction(params) ? params() : params, {
+  } = useApi<P, ApiPage<D>>(api, isFunction(params) ? params() : params, {
     immediate: resolvedOptions.immediate,
+    concurrency: 'takeLatest',
     onSubmit: async (requestData: any) => {
       const pageableData: Partial<P> | any = {
         [pageKey as string]: pagination.pageNo,
