@@ -18,55 +18,24 @@
       </div>
     </template>
     <template #header>
-      <ze-form v-model="searchForm" :items="searchFormItems" ref="searchFormRef" inline>
+      <ze-form v-model="searchForm" :items="searchFormItems" inline>
         <ze-form-item>
-          <ze-actions
-            :actions="[
-              { icon: 'el-scale-to-original', tip: '显示/隐藏列', onRef: (r) => (filterColRef = r) },
-              { icon: 'el-refresh', tip: '重置', onClick: reset },
-            ]"
-          />
+          <ze-actions :actions="toolbarActions" />
         </ze-form-item>
 
         <ze-form-item class="ml-a">
-          <ze-actions
-            :actions="[{ icon: 'el-plus', content: '新增', type: 'primary', onClick: () => editRef.open() }]"
-          />
+          <ze-actions :actions="createActions" />
         </ze-form-item>
       </ze-form>
     </template>
-    <ze-table
-      ref="tableRef"
-      :data="tableData"
-      :loading="loading"
-      :columns="[
-        { prop: 'userId', label: '用户编号', hidden: true },
-        { prop: 'userName', label: '用户名称', minWidth: 138, fixed: true },
-        { prop: 'nickName', label: '用户昵称', minWidth: 138 },
-        { prop: 'deptName', label: '部门', minWidth: 100 },
-        { prop: 'phonenumber', label: '手机号码', width: 140 },
-        { prop: 'status', label: '状态', width: 80 },
-        { prop: 'createTime', label: '创建时间', minWidth: 180 },
-        // { prop: '', label: '' },
-      ]"
-      :filterColVR="filterColRef"
-    >
+    <ze-table ref="tableRef" :data="tableData" :loading="loading" :columns="userColumns" :filterColVR="filterColRef">
       <template #col-status="{ row }">
         <el-switch v-model="row.status" active-value="0" inactive-value="1" @click="() => handleStatusChange(row)" />
       </template>
 
       <ze-table-column fixed="right" label="操作" width="200px" headerAlign="center">
         <template #default="scope">
-          <ze-actions
-            :options="{ text: true, type: 'primary' }"
-            :actions="[
-              { content: '编辑', text: true, type: 'primary', onClick: () => editRef.open(scope.row) },
-              { content: '分配角色', text: true, type: 'primary', onClick: () => authRoleRef.open(scope.row) },
-              { content: '删除', confirm: true, onClick: () => handleDel([scope.row.userId]) },
-              { content: '重置密码', text: true, type: 'primary', onClick: () => handleResetPwd(scope.row) },
-            ]"
-            ellipsis
-          />
+          <ze-actions :options="{ text: true, type: 'primary' }" :actions="getRowActions(scope.row)" ellipsis />
         </template>
       </ze-table-column>
     </ze-table>
@@ -83,37 +52,37 @@
 </template>
 
 <script setup lang="ts">
-import type { ZeFormInstance } from '@/components/types/form'
+import type { TreeNodeData } from 'element-plus'
 import { userApi } from '@/api/_index'
 import { toReactive, watchDebounced } from '@vueuse/core'
 import { validatePassword, validatePhone, validateUsername } from '@/utils/validators'
 import { merge } from 'es-toolkit'
 import type { DeptVO } from '@/api/sys/dept.type'
 import type { UserInfoVO, UserQuery, UserVO } from '@/api/sys/user.type'
+import { defineActions, type ZeActionItem } from '@/components/types/action'
+import { defineTableColumns } from '@/components/types/table'
 import VUserAuthRole from './_views/VUserAuthRole.vue'
 
 const authRoleRef = ref()
+const filterColRef = ref()
 
 const { sys_normal_disable } = toRefs(useDict('sys_normal_disable'))
 const { sys_user_sex } = toRefs(useDict('sys_user_sex'))
 
-const [deptOptions] = useApi<undefined, DeptVO[]>(() => userApi.deptTreeSelect(), undefined, { immediate: true })
+const { data: deptOptions } = useQuery<undefined, DeptVO[]>(() => userApi.deptTreeSelect(), undefined, {
+  immediate: true,
+})
 
-const [deptTreeRef, deptName] = [ref(), ref('')]
-const filterNode = (value: string, data: any) => {
+const deptTreeRef = ref()
+const deptName = ref('')
+const filterNode = (value: string, data: TreeNodeData) => {
   if (!value) return true
-  return data.label.indexOf(value) !== -1
+  return String(data.label || '').includes(value)
 }
 
 watchEffect(() => deptTreeRef.value?.filter(deptName.value), { flush: 'post' })
-const handleNodeClick = (data: DeptVO) => {
-  if (searchForm.value.deptId === data.id + '') return
-  loading.value = true
-  searchForm.value.deptId = data.id + ''
-}
-const searchFormRef = ref<ZeFormInstance>()
 
-const [searchForm, searchFormItems] = useForm({
+const searchFormSchema = defineFormSchema<Pick<UserQuery, 'deptId' | 'userName' | 'status'>>()({
   deptId: { value: '' },
   userName: { value: '', item: { type: 'text', plh: '用户名称', prefixIcon: 'el-search' } },
   status: {
@@ -121,21 +90,65 @@ const [searchForm, searchFormItems] = useForm({
     item: { type: 'select', label: '状态', options: sys_normal_disable, labelWidth: '50px' },
   },
 })
-watchDebounced(searchForm, () => refresh(), { deep: true, debounce: 666, maxWait: 3000 })
+const { form: searchForm, items: searchFormItems } = useForm(searchFormSchema)
 
-const [tableData, refresh, pagination, loading] = useTable<UserQuery, UserVO>(
-  userApi.listUser,
-  toReactive(searchForm),
-  {
-    immediate: true,
-  },
+const {
+  rows: tableData,
+  request: refresh,
+  pagination,
+  loading,
+} = useTable<UserQuery, UserVO>(userApi.listUser, toReactive(searchForm), {
+  immediate: true,
+})
+
+const SEARCH_DEBOUNCE_MS = 500
+const SEARCH_MAX_WAIT_MS = 2000
+const refreshFromFirstPage = () => {
+  pagination.pageNo = 1
+  return refresh()
+}
+watchDebounced(
+  () => [searchForm.value.deptId, searchForm.value.userName, searchForm.value.status],
+  () => refreshFromFirstPage(),
+  { debounce: SEARCH_DEBOUNCE_MS, maxWait: SEARCH_MAX_WAIT_MS },
 )
 
-const reset = () => (searchFormRef.value?.resetFields(), nextTick(() => refresh()))
-const filterColRef = ref()
+const handleNodeClick = (data: DeptVO) => {
+  const deptId = String(data.id)
+  if (searchForm.value.deptId !== deptId) searchForm.value.deptId = deptId
+}
+
+const reset = async () => {
+  const alreadyEmpty = !searchForm.value.deptId && !searchForm.value.userName && !searchForm.value.status
+  searchForm.value = { deptId: '', userName: '', status: '' }
+  await nextTick()
+  if (alreadyEmpty) await refreshFromFirstPage()
+}
+
+const userColumns = defineTableColumns<UserVO>([
+  { prop: 'userId', label: '用户编号', hidden: true },
+  { prop: 'userName', label: '用户名称', minWidth: 138, fixed: true },
+  { prop: 'nickName', label: '用户昵称', minWidth: 138 },
+  { prop: 'deptName', label: '部门', minWidth: 100 },
+  { prop: 'phonenumber', label: '手机号码', width: 140 },
+  { prop: 'status', label: '状态', width: 80 },
+  { prop: 'createTime', label: '创建时间', minWidth: 180 },
+])
+
+const toolbarActions = defineActions([
+  {
+    key: 'columns',
+    icon: 'el-scale-to-original',
+    tip: '显示/隐藏列',
+    onRef: (element) => {
+      filterColRef.value = element
+    },
+  },
+  { key: 'reset', icon: 'el-refresh', tip: '重置', onClick: reset },
+])
 
 const isEdit = computed(() => editForm?.value?.userId)
-const [editRef, EditModal] = useModal({
+const { reference: editRef, component: EditModal } = useModal({
   title: computed(() => `${isEdit.value ? '编辑' : '添加'}用户`),
   submitting: computed(() => submitting.value),
   onOpen: (row) => {
@@ -146,9 +159,15 @@ const [editRef, EditModal] = useModal({
   },
   onConfirm: () => fetchEdit(),
 })
-const [userDetail, refreshUserDetail] = useApi<Pick<UserVO, 'userId'>, UserInfoVO>(userApi.getUser)
-watch(userDetail, () => merge(editForm.value, userDetail.value || {}), { deep: true })
-const [editForm, editFormItems, editFormRules] = useForm({
+const { data: userDetail, request: refreshUserDetail } = useQuery<Pick<UserVO, 'userId'>, UserInfoVO>(userApi.getUser)
+watch(userDetail, (detail) => {
+  if (detail) merge(editForm.value, detail)
+})
+const {
+  form: editForm,
+  items: editFormItems,
+  rules: editFormRules,
+} = useForm({
   userId: { value: '' },
   roles: { value: [] },
   nickName: {
@@ -215,7 +234,7 @@ const [editForm, editFormItems, editFormRules] = useForm({
   },
 })
 
-const { request: fetchEdit, loading: submitting } = useApi(
+const { request: fetchEdit, loading: submitting } = useMutation(
   (data: typeof editForm.value) => (isEdit.value ? userApi.updateUser(data) : userApi.addUser(data)),
   editForm,
   {
@@ -228,7 +247,7 @@ const { request: fetchEdit, loading: submitting } = useApi(
   },
 )
 
-const handleStatusChange = (row) => {
+const handleStatusChange = (row: UserVO) => {
   const text = row.status === '0' ? '启用' : '停用'
 
   const cancel = () => (row.status = row.status === '0' ? '1' : '0')
@@ -236,14 +255,14 @@ const handleStatusChange = (row) => {
   ElMessageBox.confirm(`确定要${text}${row.userName}用户吗？`, { type: 'warning' })
     .then(() => {
       userApi
-        .changeUserStatus(row)
+        .changeUserStatus({ userId: String(row.userId), status: row.status })
         .then(() => ElMessage.success(`${text}成功`))
         .catch(() => cancel())
     })
     .catch(() => cancel())
 }
 
-const handleResetPwd = (row) => {
+const handleResetPwd = (row: UserVO) => {
   ElMessageBox.confirm(`确定要将"${row.userName}"的密码重置为系统默认密码吗？`, '重置密码', {
     type: 'warning',
   }).then(() => {
@@ -251,7 +270,50 @@ const handleResetPwd = (row) => {
   })
 }
 
-const [, handleDel] = useApi(userApi.delUser, [], { onSuccess: refresh, tipSuccess: '删除成功' })
+const { request: handleDel } = useMutation(userApi.delUser, [], {
+  onSuccess: () => refresh(),
+  tipSuccess: '删除成功',
+})
+
+const createActions = defineActions([
+  {
+    key: 'create',
+    icon: 'el-plus',
+    content: '新增',
+    type: 'primary',
+    onClick: () => editRef.value?.open(),
+  },
+])
+
+const getRowActions = (row: UserVO): ZeActionItem[] => [
+  {
+    key: 'edit',
+    content: '编辑',
+    text: true,
+    type: 'primary',
+    onClick: () => editRef.value?.open(row),
+  },
+  {
+    key: 'assign-role',
+    content: '分配角色',
+    text: true,
+    type: 'primary',
+    onClick: () => authRoleRef.value?.open(row),
+  },
+  {
+    key: 'delete',
+    content: '删除',
+    confirm: { title: `确定删除用户“${row.userName}”吗？` },
+    onClick: () => handleDel([row.userId]),
+  },
+  {
+    key: 'reset-password',
+    content: '重置密码',
+    text: true,
+    type: 'primary',
+    onClick: () => handleResetPwd(row),
+  },
+]
 </script>
 
 <style lang="scss" scoped></style>

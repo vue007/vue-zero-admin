@@ -10,6 +10,7 @@
 import type { TableColumnProps } from './types/mixin'
 import { ElTableColumn, type TableColumnInstance } from 'element-plus'
 import { mergeProps } from 'vue'
+import { createExposeProxy } from '@/utils/expose-proxy'
 
 const props = withDefaults(defineProps<TableColumnProps>(), {
   showOverflowTooltip: true,
@@ -17,22 +18,7 @@ const props = withDefaults(defineProps<TableColumnProps>(), {
 })
 const rawRef = ref<TableColumnInstance>()
 
-type ZeTableColumnExpose = TableColumnInstance & {}
-defineExpose<ZeTableColumnExpose>(
-  new Proxy(
-    {},
-    {
-      get(_target, prop) {
-        const raw = rawRef.value as unknown as Record<PropertyKey, any> | undefined
-        return raw?.[prop]
-      },
-      has(_target, prop) {
-        const raw = rawRef.value as unknown as Record<PropertyKey, any> | undefined
-        return Boolean(raw && prop in raw)
-      },
-    },
-  ) as ZeTableColumnExpose,
-)
+defineExpose<TableColumnInstance>(createExposeProxy(rawRef))
 </script>
 
 <style lang="scss" scoped>

@@ -4,7 +4,7 @@
     <template v-if="formItems?.length">
       <template v-for="item in formItems" :key="item.prop">
         <slot :name="'item-' + item.prop" v-bind="item">
-          <ze-form-item v-if="!isEmpty(model)" v-model="model[item.prop]" v-bind="item">
+          <ze-form-item v-if="!isEmpty(model)" v-model="model[item.prop]" v-bind="item" :prop="item.prop">
             <template
               v-for="(_, n) in pickBy($slots, (v, k) => startsWith(k.toString(), `item-${item.prop}`))"
               #[n.toString().split(`#`)[1]]="scope"
@@ -30,12 +30,12 @@
 </template>
 
 <script setup lang="tsx">
-import type { FormValidateCallback } from 'element-plus/lib/components/index.js'
 import ZeFormItem from './ZeFormItem.vue'
-import type { ZeFormInstance, ZeFormItemProp } from './types/form'
+import { ZE_MODAL_FORM_KEY, type ZeFormInstance, type ZeFormItemProp } from './types/form'
 import { cloneDeep, omit, pickBy, toMerged } from 'es-toolkit'
 import { isEmpty, startsWith } from 'es-toolkit/compat'
 import type { FormInstance } from 'element-plus'
+import { createExposeProxy } from '@/utils/expose-proxy'
 
 const emit = defineEmits(['update:modelValue', 'submit'])
 const model = defineModel<Record<string, any>>({ default: () => ({}) })
@@ -57,38 +57,25 @@ const formItems = computed(() => props.items.filter((item) => !item.hidden))
 
 const formRef = ref<FormInstance | null>(null)
 
-const setFields = (data?: Record<string, any>) => {
+const setFields: ZeFormInstance['setFields'] = (data) => {
   emit('update:modelValue', cloneDeep(data ?? defaultModelVal.value))
-  setTimeout(() => {
-    if (formRef.value) formRef.value.clearValidate()
-  })
+  void nextTick(() => formRef.value?.clearValidate())
 }
-const expose = new Proxy(
-  { setFields },
-  {
-    get(target, prop, receiver) {
-      if (Reflect.has(target, prop)) return Reflect.get(target, prop, receiver)
-      const form = formRef.value as unknown as Record<PropertyKey, any> | null
-      const value = form?.[prop]
-      return typeof value === 'function' ? value.bind(form) : value
-    },
-    has(target, prop) {
-      const form = formRef.value as unknown as Record<PropertyKey, any> | null
-      return Reflect.has(target, prop) || Boolean(form && prop in form)
-    },
-  },
-)
 
-const vFormRef = inject<any>('ZeModal->ZeForm', undefined)
-
-const initInject = () => {
-  if (vFormRef) vFormRef.value = expose
+const formExtensions = {
+  setFields,
 }
+const formExpose = createExposeProxy(formExtensions, formRef) as ZeFormInstance
+
+const modalForm = inject(ZE_MODAL_FORM_KEY, undefined)
 onMounted(() => {
-  initInject()
+  if (modalForm) modalForm.value = formExpose
+})
+onBeforeUnmount(() => {
+  if (modalForm?.value === formExpose) modalForm.value = undefined
 })
 
-defineExpose<ZeFormInstance>(expose as any)
+defineExpose<ZeFormInstance>(formExpose)
 </script>
 
 <style lang="scss" scoped>

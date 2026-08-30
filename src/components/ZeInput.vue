@@ -16,21 +16,15 @@
 import type { InputInstance } from 'element-plus/lib/components/index.js'
 import { omit } from 'es-toolkit'
 import { mergeProps } from 'vue'
+import { createExposeProxy } from '@/utils/expose-proxy'
 
 type ElInputType = InputInstance
 type ZeInputProps = { clearable?: boolean; prefixIcon?: string; suffixIcon?: string }
 const props = withDefaults(defineProps<ZeInputProps>(), { clearable: true })
 const rawRef = ref<ElInputType>()
 
-defineExpose<ElInputType>(
-  new Proxy(
-    {},
-    {
-      get: (_target, prop) => rawRef.value?.[prop],
-      has: (_target, prop) => prop in (rawRef.value || {}),
-    },
-  ) as ElInputType,
-)
+// ZeInput 是 ElInput 的能力超集：调用方仍可使用全部 ElInput 实例 API。
+defineExpose<ElInputType>(createExposeProxy(rawRef))
 </script>
 
 <style lang="scss" scoped>

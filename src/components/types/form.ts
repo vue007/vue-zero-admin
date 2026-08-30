@@ -1,4 +1,5 @@
 import type { FormInstance, FormItemProps, InputProps } from 'element-plus'
+import type { InjectionKey, Ref } from 'vue'
 import type ZeFormItem from '../ZeFormItem.vue'
 
 export const INPUT_TYPES = ['text', 'textarea', 'password'] as const
@@ -39,8 +40,12 @@ export type ZeFormItem = FormItemInstance & {}
 type ElFormItemProps = Omit<FormItemProps, 'type'>
 type _formItemProps = ZeFormItem['$props']
 export type ZeFormItemProp = Partial<Omit<_formItemProps, 'type'>> &
-  Partial<ElFormItemProps> & { type?: FormItemType; hidden?: boolean; [k: string]: any }
+  Partial<ElFormItemProps> & { type?: FormItemType; hidden?: boolean; [k: string]: unknown }
 
-export type ZeFormInstance = FormInstance & { setFields: any }
+export type ZeFormInstance = FormInstance & {
+  setFields: <T extends object>(data?: T) => void
+}
+
+export const ZE_MODAL_FORM_KEY: InjectionKey<Ref<ZeFormInstance | undefined>> = Symbol('ZE_MODAL_FORM_KEY')
 
 export interface FormItemActionType {}

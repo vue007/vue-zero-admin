@@ -1,9 +1,9 @@
 import type { ApiDataOf, ApiPage, ApiPromisePage } from '@/api/_fetch'
-import { useApi, type UseApiOnSubmitFn } from './useApi'
+import { useQuery, type UseApiOnSubmitFn } from './useApi'
 import { isFunction, merge } from 'es-toolkit'
 import { isObject } from '@vueuse/core'
 import { iteratorObject } from '@/utils/iterator-object'
-import { ref, watchEffect, type Reactive, type Ref } from 'vue'
+import { nextTick, ref, watchEffect, type Reactive, type Ref } from 'vue'
 import type { IteratorObjectReturn } from './_type'
 import { usePagination } from './usePagination'
 
@@ -71,7 +71,11 @@ export function useTable<P, D>(
   const pageKey = getLastPathSegment(resolvedOptions.path.page)
   const pageSizeKey = getLastPathSegment(resolvedOptions.path.pageSize)
 
-  const [pageData, request, loading] = useApi<P, ApiPage<D>>(api, isFunction(params) ? params() : params, {
+  const {
+    data: pageData,
+    request,
+    loading,
+  } = useQuery<P, ApiPage<D>>(api, isFunction(params) ? params() : params, {
     immediate: resolvedOptions.immediate,
     onSubmit: async (requestData: any) => {
       const pageableData: Partial<P> | any = {
@@ -88,16 +92,21 @@ export function useTable<P, D>(
     },
   })
 
+  const refresh: UseTableRequest = (extraData?: object) => request(extraData)
+
   watchEffect(() => {
     const rows = getPathValue(pageData.value, resolvedOptions.path.data, [])
     const total = getPathValue(pageData.value, resolvedOptions.path.total, 0)
     listData.value = Array.isArray(rows) ? (rows as D[]) : []
-    pagination.setTotal(Number(total) || 0)
+    if (pagination.setTotal(Number(total) || 0)) void nextTick(() => refresh())
   })
 
-  const refresh: UseTableRequest = (extraData?: object) => request(extraData)
-
-  return iteratorObject<UseTableReturn<D>>({ rows: listData, request: refresh, pagination, loading })
+  return iteratorObject({ rows: listData, request: refresh, pagination, loading }, [
+    'rows',
+    'request',
+    'pagination',
+    'loading',
+  ] as const) as UseTableReturn<D>
 }
 
 const getLastPathSegment = (path: string) => path.split('.').filter(Boolean).at(-1) || path

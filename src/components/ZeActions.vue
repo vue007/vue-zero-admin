@@ -13,7 +13,7 @@
             :key="getActionKey(item, index, 'overflow')"
             class="ze-action-dropdown-item"
           >
-            <Action v-bind="item" isMoreAction="true" />
+            <Action v-bind="item" :is-more-action="true" />
           </el-dropdown-item>
         </el-dropdown-menu>
       </template>
@@ -22,57 +22,53 @@
 </template>
 
 <script setup lang="tsx">
-import type { ButtonProps } from 'element-plus'
 import { omit } from 'es-toolkit'
 import SvgIcon from './SvgIcon.vue'
-import { mergeProps, type ComponentPublicInstance, type PropType } from 'vue'
+import { mergeProps, type PropType } from 'vue'
+import type { ZeActionItem } from './types/action'
 
-const Action = (props) => (props.confirm ? PopconfirmButton(props) : props.tip ? TipButton(props) : ActionButton(props))
+type ActionRenderProps = ZeActionItem & { isMoreAction?: boolean }
 
-const PopconfirmButton = (props) => (
-  <el-popconfirm
-    key={props.content + props.tip}
-    title={`确定要${props.content || props.tip || '操作'}吗?`}
-    placement='top'
-    onConfirm={props.onClick}
-  >
-    {{
-      reference: (h) => (
-        <span>{props.tip ? TipButton(omit(props, ['onClick'])) : ActionButton(omit(props, ['onClick']))}</span>
-      ),
-    }}
-  </el-popconfirm>
-)
+const Action = (action: ActionRenderProps) =>
+  action.confirm ? PopconfirmButton(action) : action.tip ? TipButton(action) : ActionButton(action)
 
-const TipButton = (props) => (
-  <el-tooltip key={props.tip} content={props.tip} placement='top'>
-    <ActionButton {...props} />
+const PopconfirmButton = (action: ActionRenderProps) => {
+  const confirm = typeof action.confirm === 'object' ? action.confirm : {}
+  const referenceAction = { ...action, onClick: undefined }
+  return (
+    <el-popconfirm
+      key={`${action.content ?? ''}:${action.tip ?? ''}`}
+      title={confirm.title ?? `确定要${action.content || action.tip || '操作'}吗？`}
+      placement={confirm.placement ?? 'top'}
+      confirmButtonText={confirm.confirmButtonText}
+      cancelButtonText={confirm.cancelButtonText}
+      onConfirm={action.onClick}
+    >
+      {{
+        reference: () => <span>{action.tip ? TipButton(referenceAction) : ActionButton(referenceAction)}</span>,
+      }}
+    </el-popconfirm>
+  )
+}
+
+const TipButton = (action: ActionRenderProps) => (
+  <el-tooltip key={action.tip} content={action.tip} placement="top">
+    <ActionButton {...action} />
   </el-tooltip>
 )
 
-const ActionButton = (props) => (
+const ActionButton = (action: ActionRenderProps) => (
   <el-button
-    ref={props.onRef}
-    {...omit(mergeProps(options.value, props), UnButtonProp)}
-    class={`ze-action p10! ${props.text || options.value?.text ? 'ml0!' : 'ml8!'}`}
+    ref={action.onRef}
+    {...omit(mergeProps(options.value, action), UNBUTTON_PROPS)}
+    class={`ze-action p10! ${action.text || options.value?.text ? 'ml0!' : 'ml8!'}`}
   >
     {{
-      icon: props.icon ? () => props.icon && <SvgIcon name={props.icon} /> : undefined,
-      default: props.content ? () => props.content : undefined,
+      icon: action.icon ? () => action.icon && <SvgIcon name={action.icon} /> : undefined,
+      default: action.content ? () => action.content : undefined,
     }}
   </el-button>
 )
-
-type ZeActionItem = {
-  key?: string | number
-  confirm?: boolean
-  content?: string
-  loading?: boolean
-  icon?: string
-  tip?: string
-  onRef?: (element?: Element | ComponentPublicInstance | null) => void
-  onClick?: (e?: Event) => void
-} & Partial<Omit<ButtonProps, 'icon'>>
 
 const props = defineProps({
   options: { type: Object as PropType<ZeActionItem>, default: () => ({}) },
@@ -82,7 +78,7 @@ const props = defineProps({
 })
 const options = computed(() => props.options)
 
-const UnButtonProp = ['key', 'confirm', 'content', 'icon', 'tip', 'onRef']
+const UNBUTTON_PROPS = ['key', 'confirm', 'content', 'icon', 'tip', 'onRef', 'isMoreAction']
 const overflowStart = computed(() => Math.max(0, props.ellipsisStart))
 
 const hasMoreActions = computed(() => props.ellipsis && props.actions.length > overflowStart.value)

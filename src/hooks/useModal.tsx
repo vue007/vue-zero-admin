@@ -17,7 +17,12 @@ type ModalArgs = {
 
 type UseModalReturn<R, C> = { reference: R; component: C } & [R, C]
 
-const defModalArgs: ModalArgs = { type: 'dialog', content: undefined, onConfirm: () => {}, immediate: false }
+const defModalArgs: ModalArgs = {
+  type: 'dialog',
+  content: undefined,
+  onConfirm: () => {},
+  immediate: false,
+}
 
 /**
  * useModal hook
@@ -64,8 +69,11 @@ export const useModal = ({ content, immediate, ...props }: ModalArgs = defModalA
     })
   }
 
-  return iteratorObject({
-    reference: modalRef,
-    component: __Use_Modal,
-  })
+  return iteratorObject(
+    {
+      reference: modalRef,
+      component: __Use_Modal,
+    },
+    ['reference', 'component'] as const,
+  ) as unknown as UseModalReturn<Ref<ZeModalInstance>, Component>
 }

@@ -2,7 +2,7 @@
   <el-pagination
     v-model:current-page="pagination!.pageNo"
     :page-size="pagination?.pageSize"
-    layout="total, sizes, prev, pager, next,jumper"
+    :layout="pagination?.layout"
     :page-sizes="pagination?.pageSizes"
     :total="pagination?.total"
     @size-change="(size) => pagination?.sizeChange(size)"

@@ -41,16 +41,18 @@
 </template>
 
 <script setup lang="ts">
-import type { Measurable, TableColumnCtx, TableInstance, TableProps } from 'element-plus'
+import type { Measurable, TableInstance, TableProps } from 'element-plus'
 import { omit } from 'es-toolkit'
 import { mergeProps, type Ref } from 'vue'
+import type { ZeTableColumn, ZeTableInstance } from './types/table'
+import { createExposeProxy } from '@/utils/expose-proxy'
 
-type ZeTableColumns = { hidden?: boolean } & Partial<TableColumnCtx<any>>
 type DefaultRow = Record<PropertyKey, any>
 
 type ZeTableProps<T extends DefaultRow = DefaultRow> = Partial<TableProps<T>> & {
   data?: T[]
-  columns?: ZeTableColumns[]
+  // SFC props cannot reliably infer T from sibling props; callers use defineTableColumns<T>() for static checking.
+  columns?: ZeTableColumn<any>[]
   loading?: boolean
   filterColVR?: Measurable
 }
@@ -66,14 +68,6 @@ const props = withDefaults(defineProps<ZeTableProps>(), {
   highlightCurrentRow: true,
   border: false,
 })
-
-// const props = defineProps({
-//   data: { type: Array as PropType<any[] | never[]>, require: true, default: () => [] },
-//   columns: { type: Array<Partial<ZeTableColumns>>, require: true },
-//   loading: { type: Boolean, default: false },
-//   filterColVR: { type: Object as PropType<Ref>, default: () => ref(undefined) },
-//   defaultExpandAll: { type: Boolean, default: () => false },
-// })
 
 const isExpandAll = ref(props.defaultExpandAll)
 
@@ -91,7 +85,7 @@ const toggleExpandAll = (data: any[] = [], status: boolean) => {
 
 const rawRef: Ref<TableInstance | undefined> = ref()
 
-const getColKey = (item: ZeTableColumns) => String(item.prop ?? item.type ?? item.label ?? '')
+const getColKey = (item: ZeTableColumn<DefaultRow>) => String(item.prop ?? item.type ?? item.label ?? '')
 const _columns = computed(() => {
   return props.columns.filter((item) => item && !item.hidden)
 })
@@ -121,28 +115,12 @@ watch(
   { immediate: true },
 )
 
-const customExpose = {
+const tableExtensions = {
   toggleAllExpansion,
 }
-type ZeTableExpose = TableInstance & { toggleAllExpansion: () => void }
-defineExpose<ZeTableExpose>(
-  new Proxy(
-    {},
-    {
-      get(_target, prop) {
-        const raw = rawRef.value as unknown as Record<PropertyKey, any> | undefined
-        const custom = customExpose as Record<PropertyKey, any>
-        if (raw && prop in raw) return raw[prop]
-        if (prop in custom) return custom[prop]
-      },
-      has(_target, prop) {
-        const raw = rawRef.value as unknown as Record<PropertyKey, any> | undefined
-        const custom = customExpose as Record<PropertyKey, any>
-        return Boolean(raw && prop in raw) || prop in custom
-      },
-    },
-  ) as ZeTableExpose,
-)
+
+// 原始 ElTable 实例能力全部保留，扩展方法拥有更高的解析优先级。
+defineExpose<ZeTableInstance>(createExposeProxy(tableExtensions, rawRef))
 </script>
 
 <style lang="scss" scoped>

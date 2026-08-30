@@ -24,8 +24,11 @@ export type UseApiReturn<D> = IteratorObjectReturn<
   [UseApiFields<D>['data'], UseApiFields<D>['request'], UseApiFields<D>['loading']]
 >
 
-type UseApiOptions<P, D> = {
+export type UseApiConcurrency = 'parallel' | 'takeLatest'
+
+export type UseApiOptions<P, D> = {
   immediate?: boolean
+  concurrency?: UseApiConcurrency
   tipError?: boolean | string | Ref
   tipSuccess?: boolean | string | Ref
   onSuccess?: UseApiOnSuccessFn<D>
@@ -68,11 +71,16 @@ export function useApi<P, D>(
     activeRequestCount += 1
     loading.value = true
     let requestData = {} as P & { [prop: string]: any }
+    const shouldHandleSideEffects = () => options?.concurrency !== 'takeLatest' || requestId === latestRequestId
 
     const finishRequest = () => {
       activeRequestCount = Math.max(0, activeRequestCount - 1)
-      loading.value = activeRequestCount > 0
-      options?.onFinally?.()
+      if (options?.concurrency === 'takeLatest') {
+        if (requestId === latestRequestId) loading.value = false
+      } else {
+        loading.value = activeRequestCount > 0
+      }
+      if (shouldHandleSideEffects()) options?.onFinally?.()
     }
 
     try {
@@ -93,8 +101,8 @@ export function useApi<P, D>(
         .then(() => api(data))
         .then((res) => {
           if (requestId === latestRequestId) apiData.value = res.apiData
-          options?.onSuccess?.(res)
-          if (options?.tipSuccess)
+          if (shouldHandleSideEffects()) options?.onSuccess?.(res)
+          if (shouldHandleSideEffects() && options?.tipSuccess)
             ElMessage.success(
               isString(options.tipSuccess)
                 ? options.tipSuccess
@@ -106,8 +114,8 @@ export function useApi<P, D>(
         })
         .catch((error) => {
           const err = normalizeApiError(error)
-          options?.onError?.(err)
-          if (options?.tipError) {
+          if (shouldHandleSideEffects()) options?.onError?.(err)
+          if (shouldHandleSideEffects() && options?.tipError) {
             const message = isString(options.tipError)
               ? options.tipError
               : isObject(options.tipError)
@@ -151,10 +159,50 @@ export function useApi<P, D>(
 
   if (options?.immediate) nextTick(() => request())
 
-  return iteratorObject<UseApiReturn<D>>({ data: apiData, request, loading })
+  return iteratorObject({ data: apiData, request, loading }, ['data', 'request', 'loading'] as const) as UseApiReturn<D>
+}
+
+type UseQueryOptions<P, D> = Omit<UseApiOptions<P, D>, 'concurrency'>
+
+export function useQuery<A extends (params: any) => ApiPromise<any>>(
+  api: A,
+  params?: any,
+  options?: UseQueryOptions<Parameters<A>[0], ApiDataOf<ReturnType<A>>>,
+): UseApiReturn<ApiDataOf<ReturnType<A>>>
+export function useQuery<P, D>(
+  api: (params: P) => ApiPromise<D>,
+  params?: (Partial<P> | any) | (() => Partial<P> | any),
+  options?: UseQueryOptions<P, D>,
+): UseApiReturn<D>
+export function useQuery<P, D>(
+  api: (params: P) => ApiPromise<D>,
+  params?: (Partial<P> | any) | (() => Partial<P> | any),
+  options?: UseQueryOptions<P, D>,
+): UseApiReturn<D> {
+  return useApi(api, params, { ...options, concurrency: 'takeLatest' })
+}
+
+export function useMutation<A extends (params: any) => ApiPromise<any>>(
+  api: A,
+  params?: any,
+  options?: UseQueryOptions<Parameters<A>[0], ApiDataOf<ReturnType<A>>>,
+): UseApiReturn<ApiDataOf<ReturnType<A>>>
+export function useMutation<P, D>(
+  api: (params: P) => ApiPromise<D>,
+  params?: (Partial<P> | any) | (() => Partial<P> | any),
+  options?: UseQueryOptions<P, D>,
+): UseApiReturn<D>
+export function useMutation<P, D>(
+  api: (params: P) => ApiPromise<D>,
+  params?: (Partial<P> | any) | (() => Partial<P> | any),
+  options?: UseQueryOptions<P, D>,
+): UseApiReturn<D> {
+  return useApi(api, params, { ...options, concurrency: 'parallel' })
 }
 
 const normalizeApiError = (error: unknown): ApiError => {
   if (isObject(error)) return error as ApiError
-  return Object.assign(new Error(String(error || '请求失败')), { data: undefined }) as unknown as ApiError
+  return Object.assign(new Error(String(error || '请求失败')), {
+    data: undefined,
+  }) as unknown as ApiError
 }

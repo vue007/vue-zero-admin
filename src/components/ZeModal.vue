@@ -1,6 +1,6 @@
 <template>
   <Component
-    :is="WarpComp"
+    :is="WrapComp"
     class="modal-dialog"
     v-bind="$attrs"
     v-model="model"
@@ -36,13 +36,14 @@
 <script lang="tsx" setup>
 import { ElDialog, ElDrawer } from 'element-plus'
 import { isUndefined } from 'es-toolkit'
+import { ZE_MODAL_FORM_KEY, type ZeFormInstance } from './types/form'
 let { t } = useI18nLocal()
 
-const modalForm = ref()
-provide('ZeModal->ZeForm', modalForm)
+const modalForm = ref<ZeFormInstance>()
+provide(ZE_MODAL_FORM_KEY, modalForm)
 const emit = defineEmits(['open', 'close', 'confirm', 'cancel'])
 
-const WarpComp = computed(() => (options.type === 'drawer' ? ElDrawer : ElDialog))
+const WrapComp = computed(() => (options.type === 'drawer' ? ElDrawer : ElDialog))
 
 const model = defineModel<any>()
 const props = defineProps({

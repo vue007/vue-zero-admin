@@ -36,6 +36,36 @@ describe('useApi', () => {
     expect(loading.value).toBe(false)
   })
 
+  it('suppresses stale callbacks when takeLatest is enabled', async () => {
+    const pending: ReturnType<typeof deferred>[] = []
+    const api = vi.fn(() => {
+      const request = deferred()
+      pending.push(request)
+      return request.promise as ApiPromise<string>
+    })
+    const onSuccess = vi.fn()
+    const onFinally = vi.fn()
+    const { request, loading } = useApi<unknown, string>(api, undefined, {
+      concurrency: 'takeLatest',
+      onSuccess,
+      onFinally,
+    })
+
+    const first = request()
+    const second = request()
+    await Promise.resolve()
+
+    pending[1]!.resolve({ apiData: 'newer' })
+    await second
+    expect(loading.value).toBe(false)
+    pending[0]!.resolve({ apiData: 'older' })
+    await first
+
+    expect(onSuccess).toHaveBeenCalledOnce()
+    expect(onSuccess.mock.calls[0]?.[0]?.apiData).toBe('newer')
+    expect(onFinally).toHaveBeenCalledOnce()
+  })
+
   it('clears loading when the api throws synchronously', async () => {
     const api = vi.fn(() => {
       throw new Error('sync failure')

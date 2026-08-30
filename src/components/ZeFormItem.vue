@@ -94,6 +94,8 @@ import {
 import type { ZeInputInstance } from './types'
 import ZeInput from './ZeInput.vue'
 import { mergeProps } from 'vue'
+import { createExposeProxy } from '@/utils/expose-proxy'
+import { inferPropFromModelUpdate } from '@/utils/infer-model-prop'
 
 const attrs = useAttrs()
 
@@ -156,17 +158,8 @@ const InputComp = computed<any>(() => {
   else return undefined
 })
 
-// beta
-const _prop = computed(() => {
-  if (props.prop) return props.prop
-
-  const str = attrs['onUpdate:modelValue']?.toString()
-  if (!str) return ''
-
-  const strArr = str.split('=')
-  const p = strArr[strArr.length - 2]?.split('.').pop()?.trim() || ''
-  return p
-})
+// 正常构建由模板编译器注入 prop；运行时推导只用于未加载项目编译配置时的向后兼容。
+const _prop = computed(() => props.prop || inferPropFromModelUpdate(attrs['onUpdate:modelValue']))
 
 const enumComponent = computed(() => {
   if (props.type === 'select') return ElSelect
@@ -182,7 +175,7 @@ const enumItemComponent = computed(() => {
   return props.type
 })
 
-const formItemEl = ref()
+const formItemEl = ref<FormItemInstance>()
 
 const FORM_ITEM_ATTRS = [
   'label',
@@ -199,29 +192,19 @@ const FORM_ITEM_ATTRS = [
 
 const OMIT_KEYS: any[] = FORM_ITEM_ATTRS
 
-// TODO 根据type 切换类型
-type ZeFormItemInputElType =
+type ZeFormItemInputInstance =
   | ZeInputInstance
   | SelectContext
   | RadioGroupContext
   | CheckboxGroupInstance
   | DatePickerInstance
   | TransferInstance
-const [inputEl] = [ref<ZeFormItemInputElType>()]
-// formitem 和内部input元素合并expose
-type ZeFormExposeType = FormItemInstance & ZeFormItemInputElType
-defineExpose<ZeFormExposeType>(
-  new Proxy(
-    {},
-    {
-      get(_target, prop) {
-        if (inputEl.value?.[prop]) return inputEl.value[prop]
-        if (formItemEl.value?.[prop]) return formItemEl.value[prop]
-      },
-      has: (_target, prop) => prop in (inputEl.value || {}) || prop in (formItemEl.value || {}),
-    },
-  ) as ZeFormExposeType,
-)
+
+const inputEl = ref<ZeFormItemInputInstance>()
+
+// 输入组件优先、FormItem 其次，组合后的实例同时保留两者的完整能力。
+type ZeFormItemInstance = FormItemInstance & ZeFormItemInputInstance
+defineExpose<ZeFormItemInstance>(createExposeProxy(inputEl, formItemEl))
 </script>
 
 <style lang="scss" scoped>

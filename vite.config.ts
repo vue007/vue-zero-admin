@@ -16,6 +16,7 @@ import ElementPlus from 'unplugin-element-plus/vite'
 import { vitePluginAutoPages } from './vite/plugins/auto-pages.ts'
 import { vitePluginAutoImport } from './vite/plugins/auto-import.ts'
 import { vitePluginComponents } from './vite/plugins/components.ts'
+import { inferZeFormItemProp } from './vite/plugins/infer-form-item-prop.ts'
 import { vitePluginSvgIcons } from './vite/plugins/svg-icon.ts'
 import { vitePluginUnocss } from './vite/plugins/unocss.ts'
 import { ViteConfigOptimizeDeps } from './vite/config/optimize-deps.ts'
@@ -26,8 +27,18 @@ export default defineConfig(({ command, mode }) => {
   const isDev = command === 'serve'
 
   const config: UserConfig = {
+    fmt: {
+      printWidth: 120,
+      singleQuote: true,
+      semi: false,
+    },
     plugins: [
       vue({
+        template: {
+          compilerOptions: {
+            nodeTransforms: [inferZeFormItemProp],
+          },
+        },
         script: {
           // TypeScript 7 no longer exposes ts.sys; compiler-sfc still needs fs for imported defineProps types.
           fs: {
