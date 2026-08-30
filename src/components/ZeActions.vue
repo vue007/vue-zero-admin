@@ -34,7 +34,7 @@ const Action = (action: ActionRenderProps) =>
 
 const PopconfirmButton = (action: ActionRenderProps) => {
   const confirm = typeof action.confirm === 'object' ? action.confirm : {}
-  const referenceAction = { ...action, onClick: undefined }
+  const referenceAction = omit(action, ['onClick']) as ActionRenderProps
   return (
     <el-popconfirm
       key={`${action.content ?? ''}:${action.tip ?? ''}`}
