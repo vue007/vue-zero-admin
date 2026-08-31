@@ -141,8 +141,8 @@ const reset = () => {
 const isEdit = computed(() => editForm.value?.roleId || false)
 
 const [menuOptions, fetchRoleMenutreeOpt] = useApi(
-  menuApi.roleMenuTreeselect,
-  computed(() => editForm.value.roleId || undefined),
+  ({ roleId }: { roleId: string | number }) => menuApi.roleMenuTreeselect(roleId),
+  undefined,
   {
     onSuccess: (data) => (editForm.value.menuIds = data?.apiData.checkedKeys || []),
   },
@@ -162,7 +162,7 @@ const getTreeAllCheckedKeys = (el): any => {
 const [editRef, EditModal] = useModal({
   title: computed(() => `${isEdit.value ? '编辑' : '添加'}角色类型`),
   submitting: computed(() => submitting.value),
-  onOpen: (row) => (row ? fetchRoleMenutreeOpt(row?.roleId) : fetchAddRoleMenutreeOpt()),
+  onOpen: (row) => (row ? fetchRoleMenutreeOpt({ roleId: row.roleId }) : fetchAddRoleMenutreeOpt()),
   onConfirm: () => fetchEdit(),
 })
 
@@ -229,10 +229,12 @@ const { request: fetchEdit, loading: submitting } = useApi(
 const [scopeRef, ScopeModal] = useModal({
   title: computed(() => `${isEdit.value ? '编辑' : '添加'}角色类型`),
   submitting: computed(() => submitting.value),
-  onOpen: (row) => fetchDeptTreeSelect(row?.roleId),
+  onOpen: (row) => fetchDeptTreeSelect({ roleId: row?.roleId }),
   onConfirm: () => fetchEdit(),
 })
-const [deptOptions, fetchDeptTreeSelect] = useApi(roleApi.deptTreeSelect, '')
+const [deptOptions, fetchDeptTreeSelect] = useApi(({ roleId }: { roleId: string | number }) =>
+  roleApi.deptTreeSelect(roleId),
+)
 
 const setDeptIds = () => (scopeForm.value.deptIds = getTreeAllCheckedKeys(deptRef.value))
 const [scopeForm, scopeFormItems, scopeFormRules] = useForm({

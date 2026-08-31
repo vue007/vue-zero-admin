@@ -99,4 +99,22 @@ describe('useApi', () => {
 
     expect(api).toHaveBeenCalledWith({ cacheName: 'sys_dict' })
   })
+
+  it('passes scalar default parameters without converting them to objects', async () => {
+    const api = vi.fn(() => Promise.resolve({ apiData: 'ok' }) as ApiPromise<string>)
+    const { request } = useApi<string, string>(api, 'default-role')
+
+    await request()
+
+    expect(api).toHaveBeenCalledWith('default-role')
+  })
+
+  it('replaces scalar parameters with per-request values', async () => {
+    const api = vi.fn(() => Promise.resolve({ apiData: 'ok' }) as ApiPromise<string>)
+    const { request } = useApi<string, string>(api, 'default-role')
+
+    await request('selected-role')
+
+    expect(api).toHaveBeenCalledWith('selected-role')
+  })
 })

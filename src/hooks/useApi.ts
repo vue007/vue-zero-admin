@@ -10,7 +10,8 @@ export type UseApiOnSuccessFn<T> = (res?: _AxiosResponse<ApiResponse<T>>) => voi
 export type UseApiOnSubmitFn<T, X = T & { [prop: string]: any }> = (data: X) => Promise<boolean | X>
 export type UseApiOnErrorFn = (err: ApiError) => void
 
-type RequestExtraData = { [prop: string]: any } | (() => { [prop: string]: any })
+type RequestValue = BaseType | any[] | { [prop: string]: any }
+type RequestExtraData = RequestValue | (() => RequestValue)
 type UseApiRequest<D> = (extraData?: RequestExtraData) => Promise<_AxiosResponse<ApiResponse<D>> | void>
 
 type UseApiFields<D> = {
@@ -84,13 +85,21 @@ export function useApi<P, D>(
     }
 
     try {
-      const resolvedParams = isRef(params) ? params.value : params
-      if (isFunction(resolvedParams) || isPlainObject(resolvedParams)) {
-        if (params) Object.assign(requestData, isFunction(params) ? params() : resolvedParams)
-      } else requestData = extraData as BaseType | any[] | any
+      const resolvedParams = isFunction(params) ? params() : isRef(params) ? params.value : params
+      const resolvedExtraData = isFunction(extraData) ? extraData() : extraData
 
-      // Per-request data must take precedence over the hook's default parameters.
-      if (extraData) Object.assign(requestData, isFunction(extraData) ? extraData() : extraData)
+      if (extraData !== undefined) {
+        // Merge records, but replace scalar and array request arguments as a whole.
+        requestData = (
+          isPlainObject(resolvedParams) && isPlainObject(resolvedExtraData)
+            ? Object.assign({}, resolvedParams, resolvedExtraData)
+            : resolvedExtraData
+        ) as P & { [prop: string]: any }
+      } else if (resolvedParams !== undefined) {
+        requestData = (isPlainObject(resolvedParams) ? Object.assign({}, resolvedParams) : resolvedParams) as P & {
+          [prop: string]: any
+        }
+      }
     } catch (error) {
       finishRequest()
       throw error
