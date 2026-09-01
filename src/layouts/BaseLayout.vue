@@ -15,7 +15,7 @@
       <aside class="layout-aside" :class="{ 'is-collapse': menu.collapse }">
         <div id="layout-aside-menu"></div>
         <button class="collapse-action" type="button" @click="baseStore.menu.toggleCollapse">
-          <svg-icon :name="menu.collapse ? 'el-expand' : 'el-fold'" />
+          <svg-icon :name="menu.collapse ? 'el-arrow-right' : 'el-arrow-left'" />
         </button>
       </aside>
       <div class="layout-page" :class="{ 'without-breadcrumb': !menu.breadcrumb.length }">
@@ -189,7 +189,7 @@ $header-height: 64px;
   background-color: var(--el-bg-color);
   border-right: 1px solid var(--el-border-color-light);
   position: relative;
-  z-index: 1;
+  z-index: 2;
   transition:
     width 0.2s ease,
     min-width 0.2s ease,
@@ -206,6 +206,7 @@ $header-height: 64px;
     width: 100%;
     height: 100%;
     padding-bottom: 56px;
+    border-radius: inherit;
     overflow-x: hidden;
     overflow-y: auto;
     overscroll-behavior: contain;
@@ -249,28 +250,30 @@ $header-height: 64px;
     border: none;
     border-radius: var(--ze-sidenav-radius, 12px);
     box-shadow: var(--el-box-shadow);
-    overflow: hidden;
   }
 
   .collapse-action {
     position: absolute;
-    bottom: 12px;
-    left: 50%;
+    bottom: 52px;
+    left: 100%;
+    z-index: 2;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     width: 32px;
     height: 32px;
     padding: 0;
-    border: 0;
-    border-radius: 8px;
-    background: var(--el-fill-color-light);
+    border: 1px solid var(--el-border-color-light);
+    border-radius: 50%;
+    background: var(--el-bg-color);
     color: var(--el-text-color-secondary);
     cursor: pointer;
-    transform: translateX(-50%);
+    transform: translateX(calc(-50% - 4px));
     transition:
+      box-shadow 0.2s ease,
       color 0.2s ease,
       background-color 0.2s ease;
+    box-shadow: var(--el-box-shadow-lighter);
 
     :deep(.svg-icon) {
       width: 20px;
@@ -278,30 +281,9 @@ $header-height: 64px;
     }
 
     &:hover {
-      background: var(--el-fill-color);
-      color: var(--el-color-primary);
-    }
-
-    #{$theme-default} {
-      position: fixed;
-      top: 17px;
-      left: calc(var(--layout-aside-width) - 15px);
-      z-index: 11;
-      border-radius: 50%;
-      background: var(--el-color-primary);
-      color: #fff;
-      box-shadow: 0 2px 4px rgba(var(--el-color-info-rgb), 0.3);
-
-      &:hover {
-        background: var(--el-color-primary-dark-2);
-        color: #fff;
-      }
-    }
-  }
-
-  &.is-collapse .collapse-action {
-    #{$theme-default} {
-      left: calc(var(--layout-aside-collapsed-width) - 15px);
+      background: var(--el-fill-color-light);
+      color: var(--el-text-color-regular);
+      box-shadow: var(--el-box-shadow-light);
     }
   }
 }
