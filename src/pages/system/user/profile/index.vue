@@ -34,6 +34,9 @@
             <el-tab-pane label="修改密码" name="password">
               <ResetPassword />
             </el-tab-pane>
+            <el-tab-pane :label="t('social_accounts')" name="social">
+              <SocialAccounts v-if="profile" :tenant-id="profile.user.tenantId" />
+            </el-tab-pane>
           </el-tabs>
         </VCard>
       </el-col>
@@ -46,10 +49,12 @@ import { userApi } from '@/api/_index'
 import type { UserInfoVO } from '@/api/sys/user.type'
 import { useBaseStore } from '@/stores/base.module'
 import ResetPassword from './_views/ResetPassword.vue'
+import SocialAccounts from './_views/SocialAccounts.vue'
 import UserAvatar from './_views/UserAvatar.vue'
 import UserInfo from './_views/UserInfo.vue'
 
 const activeTab = ref('userinfo')
+const { t } = useI18nLocal()
 const baseStore = useBaseStore()
 const [profile, refreshProfile, loading] = useApi<undefined, UserInfoVO>(() => userApi.getUserProfile(), undefined, {
   immediate: true,
@@ -109,3 +114,10 @@ const handleAvatarSuccess = (avatar: string) => {
   .profile-summary-card :deep(.el-card__body) { padding-right: 20px; padding-left: 20px; }
 }
 </style>
+
+<i18n lang="yaml">
+en:
+  social_accounts: 'Linked accounts'
+zh:
+  social_accounts: '第三方账号'
+</i18n>

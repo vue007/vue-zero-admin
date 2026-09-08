@@ -10,6 +10,27 @@ export type LoginForm = {
   [property: string]: any
 }
 
+export interface SocialLoginForm {
+  clientId: string
+  grantType: 'social'
+  tenantId: string
+  source: string
+  socialCode: string
+  socialState: string
+}
+
+export interface SocialAccount {
+  id: string | number
+  userId: string | number
+  tenantId: string
+  source: string
+  userName?: string
+  nickName?: string
+  email?: string
+  avatar?: string
+  createTime?: string
+}
+
 export interface LoginVo {
   /**
    * 授权令牌

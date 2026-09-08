@@ -46,12 +46,27 @@
   >
     {{ t('login_btn') }}
   </el-button>
+
+  <div v-if="socialProviders?.length" class="social-login">
+    <el-divider>{{ t('social_login') }}</el-divider>
+    <div class="social-login__providers">
+      <el-button
+        v-for="source in socialProviders"
+        :key="source"
+        :loading="startingSource === source"
+        @click="submitSocialLogin(source)"
+      >
+        {{ getSocialProviderLabel(source) }}
+      </el-button>
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
 import { baseApi } from '@/api/_index'
 import { useBaseStore } from '@/stores/base.module'
 import { setToken } from '@/utils/auth'
+import { getSocialProviderLabel, startSocialAuth } from '@/utils/social-auth'
 import { useThrottleFn } from '@vueuse/core'
 
 const { t } = useI18nLocal()
@@ -60,6 +75,7 @@ const { setting } = useBaseStore()
 const isArgon = computed(() => setting.theme === 'argon')
 
 const [tenantData] = useApi(baseApi.getTenantList, {}, { immediate: true })
+const [socialProviders] = useApi(baseApi.getSocialProviders, undefined, { immediate: true })
 
 const [loginForm, items, rules] = useForm({
   tenantId: {
@@ -122,6 +138,27 @@ const refreshCaptcha = useThrottleFn(() => fetchCaptcha(), 1000)
 
 const submitLogin = useThrottleFn(() => {
   fetchLogin()
+}, 1000)
+
+const startingSource = ref('')
+const submitSocialLogin = useThrottleFn(async (source: string) => {
+  if (!loginForm.value.tenantId) {
+    ElMessage.warning(t('tenant_required'))
+    return
+  }
+  startingSource.value = source
+  try {
+    await startSocialAuth({
+      mode: 'login',
+      source,
+      tenantId: loginForm.value.tenantId,
+      returnTo: '/',
+    })
+  } catch {
+    // 请求拦截器已展示服务端错误。
+  } finally {
+    startingSource.value = ''
+  }
 }, 1000)
 </script>
 
@@ -220,6 +257,21 @@ const submitLogin = useThrottleFn(() => {
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
   }
 }
+
+.social-login {
+  margin-top: 24px;
+}
+
+.social-login__providers {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+
+  :deep(.el-button + .el-button) {
+    margin-left: 0;
+  }
+}
 </style>
 
 <i18n lang="yaml">
@@ -239,6 +291,8 @@ en:
   forget_password_btn: 'Forget Password'
   login_success: 'Login Success'
   login_fail: 'Login Failed'
+  social_login: 'Other sign-in methods'
+  tenant_required: 'Please select a tenant first'
   username_plh: 'Please enter your username'
   password_plh: 'Please enter your password'
   captcha_plh: 'Please enter the captcha'
@@ -260,6 +314,8 @@ zh:
   forget_password_btn: '忘记密码'
   login_success: '登录成功'
   login_fail: '登录失败'
+  social_login: '其他登录方式'
+  tenant_required: '请先选择租户'
   username_plh: '请输入用户名'
   password_plh: '请输入密码'
   captcha_plh: '请输入验证码'
