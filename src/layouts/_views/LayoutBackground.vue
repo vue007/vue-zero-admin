@@ -21,9 +21,10 @@ const pageVisibility = useDocumentVisibility()
 const preferredMotion = usePreferredReducedMotion()
 
 const isDark = computed(() => setting.scheme === 'dark' || (setting.scheme === 'auto' && systemDark.value))
-const showWallpaper = computed(() => route.path === '/login' || setting.theme === 'argon')
+const isAuthPage = computed(() => route.path === '/login' || route.path === '/social/callback')
+const showWallpaper = computed(() => isAuthPage.value || setting.theme === 'argon')
 const paused = computed(
-  () => route.path !== '/login' || pageVisibility.value !== 'visible' || preferredMotion.value === 'reduce',
+  () => !isAuthPage.value || pageVisibility.value !== 'visible' || preferredMotion.value === 'reduce',
 )
 const wallpaperOpacity = computed(() => Math.min(1, Math.max(0.1, Number(setting.wallpaperOpacity) || 0.88)))
 const primary = computed(

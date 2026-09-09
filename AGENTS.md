@@ -35,7 +35,7 @@
 
 ## 前后端接口约定
 
-- 开发服务运行在 `3001`，Vite 将 `/api` 去前缀后代理到 `http://localhost:8080/`。生产和测试环境同样以 `/api` 为基础路径，实际反代由部署环境提供。
+- 开发服务运行在 `3030`，Vite 将 `/api` 去前缀后代理到 `http://localhost:8080/`。生产和测试环境同样以 `/api` 为基础路径，实际反代由部署环境提供。
 - 普通响应统一为 `{ code, msg, data }`，成功业务码为 `200`；分页响应的 `data` 为 `{ rows, total }`，前端拦截器补回请求使用的 `pageNo/pageSize`。
 - 接口函数放入对应的 `src/api/<domain>.api.ts`，请求/响应类型放相邻 `*.type.ts`/`*.types.ts`，并按需从 `src/api/_index.ts` 暴露。不要在页面内直接创建新的 Axios 实例。
 - 登录请求必须包含 `tenantId`、`clientId`、`grantType`、验证码 `code/uuid` 及具体认证字段。`VITE_APP_CLIENT_ID` 必须与后端 `sys_client.client_id` 一致。
@@ -71,7 +71,7 @@ pnpm test:e2e
 
 - 包管理器以 `package.json` 声明的 pnpm 11 为准，并使用 Node.js 22.13 或更高版本；不混用 npm/yarn 修改锁文件。
 - `pnpm lint` 带 `--fix`，会直接改文件；只想检查差异时先运行 `pnpm type-check`，并在 lint 后复查 `git diff`。
-- E2E 使用 Playwright，要求前端 `127.0.0.1:3001`、后端 `8080`、PostgreSQL 和 Redis 均已就绪。当前登录用例会从 stdin 人工读取验证码，不适合作为无人值守 CI 用例，修改时优先为测试环境提供可重复的验证码策略。
+- E2E 使用 Playwright，要求前端 `127.0.0.1:3030`、后端 `8080`、PostgreSQL 和 Redis 均已就绪。当前登录用例会从 stdin 人工读取验证码，不适合作为无人值守 CI 用例，修改时优先为测试环境提供可重复的验证码策略。
 - 修改接口类型或页面逻辑：至少运行 `pnpm type-check`；修改构建、路由、自动导入、样式：再运行相应模式的 `pnpm build:*`；修改关键用户流程：补充/运行 Playwright 用例。
 
 ## 安全与提交卫生

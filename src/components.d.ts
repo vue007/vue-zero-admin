@@ -13,6 +13,7 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     AppLogo: typeof import('./components/AppLogo.vue')['default']
+    AuthPageShell: typeof import('./components/AuthPageShell.vue')['default']
     BaseLayout: typeof import('./layouts/BaseLayout.vue')['default']
     BgBallpit: typeof import('./components/background/BgBallpit.vue')['default']
     BgWavys: typeof import('./components/background/BgWavys.vue')['default']
@@ -88,6 +89,7 @@ declare module 'vue' {
 // For TSX support
 declare global {
   const AppLogo: typeof import('./components/AppLogo.vue')['default']
+  const AuthPageShell: typeof import('./components/AuthPageShell.vue')['default']
   const BaseLayout: typeof import('./layouts/BaseLayout.vue')['default']
   const BgBallpit: typeof import('./components/background/BgBallpit.vue')['default']
   const BgWavys: typeof import('./components/background/BgWavys.vue')['default']

@@ -13,7 +13,7 @@
 pnpm test:e2e
 ```
 
-Playwright 会按 `playwright.config.ts` 自动启动或复用 `127.0.0.1:3001` 的前端服务。首次运行需安装浏览器：
+Playwright 会按 `playwright.config.ts` 自动启动或复用 `127.0.0.1:3030` 的前端服务。首次运行需安装浏览器：
 
 ```bash
 pnpm exec playwright install chromium

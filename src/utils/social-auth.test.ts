@@ -3,7 +3,7 @@ import { getSocialProviderLabel, getTenantIdFromSocialState } from './social-aut
 
 describe('social auth state', () => {
   it('extracts the tenant id from the server state payload', () => {
-    const state = btoa(JSON.stringify({ tenantId: '000000', domain: 'http://localhost:3001', state: 'nonce' }))
+    const state = btoa(JSON.stringify({ tenantId: '000000', domain: 'http://localhost:3030', state: 'nonce' }))
 
     expect(getTenantIdFromSocialState(state)).toBe('000000')
   })

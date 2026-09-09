@@ -3,17 +3,20 @@
 </route>
 
 <template>
-  <main class="social-callback-page">
-    <el-result :icon="status" :title="title" :sub-title="detail">
-      <template v-if="status === 'error'" #extra>
-        <el-button type="primary" @click="router.replace(fallbackPath)">{{ t('back') }}</el-button>
-      </template>
-    </el-result>
-  </main>
+  <AuthPageShell>
+    <main class="social-callback-content" aria-live="polite">
+      <el-result :icon="status" :title="title" :sub-title="detail">
+        <template v-if="status === 'error'" #extra>
+          <el-button type="primary" @click="router.replace(fallbackPath)">{{ t('back') }}</el-button>
+        </template>
+      </el-result>
+    </main>
+  </AuthPageShell>
 </template>
 
 <script setup lang="ts">
 import { baseApi } from '@/api/_index'
+import AuthPageShell from '@/components/AuthPageShell.vue'
 import { getToken, setToken } from '@/utils/auth'
 import {
   clearSocialAuthContext,
@@ -83,13 +86,20 @@ onMounted(async () => {
 })
 </script>
 
-<style scoped>
-.social-callback-page {
+<style lang="scss" scoped>
+.social-callback-content {
   display: grid;
-  min-height: 100vh;
+  min-height: 360px;
   place-items: center;
-  padding: 24px;
-  background: var(--el-bg-color-page);
+
+  :deep(.el-result) {
+    width: 100%;
+    padding: 24px 0;
+  }
+
+  @screen lt-sm {
+    min-height: 280px;
+  }
 }
 </style>
 

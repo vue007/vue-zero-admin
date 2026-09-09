@@ -125,7 +125,7 @@ export default defineConfig(({ command, mode }) => {
   if (isDev) {
     // ---------- only dev ----------
     const server = {
-      port: 3001,
+      port: 3030,
       host: '0.0.0.0',
       proxy: {} as any,
     }
