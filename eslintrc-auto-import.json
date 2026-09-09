@@ -7,7 +7,6 @@
     "DEFAULT_PAGE_SIZES": true,
     "DirectiveBinding": true,
     "EffectScope": true,
-    "ElMessage": true,
     "ExtractDefaultPropTypes": true,
     "ExtractPropTypes": true,
     "ExtractPublicPropTypes": true,

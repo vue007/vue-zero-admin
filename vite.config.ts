@@ -10,7 +10,6 @@ import oxlintPlugin from 'vite-plugin-oxlint'
 // @ts-ignore
 // import eslintPlugin from 'vite-plugin-eslint'
 
-import mkcert from 'vite-plugin-mkcert'
 import ElementPlus from 'unplugin-element-plus/vite'
 
 import { vitePluginAutoPages } from './vite/plugins/auto-pages.ts'
@@ -124,9 +123,14 @@ export default defineConfig(({ command, mode }) => {
 
   if (isDev) {
     // ---------- only dev ----------
+    const localHttpsCertificate = fileURLToPath(new URL('./.cert-local/localhost.p12', import.meta.url))
     const server = {
       port: 3030,
       host: '0.0.0.0',
+      https: {
+        pfx: fs.readFileSync(localHttpsCertificate),
+        passphrase: process.env.LOCAL_HTTPS_KEYSTORE_PASSWORD || 'changeit',
+      },
       proxy: {} as any,
     }
     const createProxy = (
@@ -140,23 +144,17 @@ export default defineConfig(({ command, mode }) => {
         target,
         changeOrigin,
         ws: true,
+        ...(target.startsWith('https://') ? { secure: false } : {}),
         ...(rewriteRedirect ? { autoRewrite: true } : {}),
         ...(rew ? { rewrite: (p: string) => p.replace(rew, '') } : {}),
       }
     }
 
-    createProxy('http://localhost:8080/', '/api', /^\/api/)
+    createProxy('https://localhost:8080/', '/api', /^\/api/)
     createProxy('http://localhost:9090/', '/admin', undefined, true, false)
     createProxy('http://localhost:8800/', '/snail-job', undefined, true, false)
     // createProxy('https://apifoxmock.com/m1/5534148-5210746-default', '/api', /^\/api/)
     config.server = server
-
-    // https support
-    const https = false
-    if (https) {
-      ;(config.server as any).https = true
-      config.plugins = config.plugins?.concat([mkcert()])
-    }
 
     // config.plugins = config.plugins?.concat([vueDevTools({})])
     config.optimizeDeps = ViteConfigOptimizeDeps
