@@ -1,11 +1,12 @@
 import fs from 'node:fs'
 import { fileURLToPath, URL } from 'node:url'
 
-import { defineConfig, UserConfig } from 'vite-plus'
+import { defineConfig, loadEnv, UserConfig } from 'vite-plus'
 import vue from '@vitejs/plugin-vue'
 import vueJsx from '@vitejs/plugin-vue-jsx'
 import vueI18n from '@intlify/unplugin-vue-i18n/vite'
 import vueDevTools from 'vite-plugin-vue-devtools'
+import mkcert from 'vite-plugin-mkcert'
 import oxlintPlugin from 'vite-plugin-oxlint'
 // @ts-ignore
 // import eslintPlugin from 'vite-plugin-eslint'
@@ -24,6 +25,7 @@ const pathSrc = fileURLToPath(new URL('./src', import.meta.url))
 
 export default defineConfig(({ command, mode }) => {
   const isDev = command === 'serve'
+  const env = loadEnv(mode, process.cwd(), '')
 
   const config: UserConfig = {
     fmt: {
@@ -123,14 +125,10 @@ export default defineConfig(({ command, mode }) => {
 
   if (isDev) {
     // ---------- only dev ----------
-    const localHttpsCertificate = fileURLToPath(new URL('./.cert-local/localhost.p12', import.meta.url))
     const server = {
       port: 3030,
       host: '0.0.0.0',
-      https: {
-        pfx: fs.readFileSync(localHttpsCertificate),
-        passphrase: process.env.LOCAL_HTTPS_KEYSTORE_PASSWORD || 'changeit',
-      },
+      https: true,
       proxy: {} as any,
     }
     const createProxy = (
@@ -150,11 +148,12 @@ export default defineConfig(({ command, mode }) => {
       }
     }
 
-    createProxy('https://localhost:8080/', '/api', /^\/api/)
+    createProxy(env.API_PROXY_TARGET || 'http://localhost:8080/', '/api', /^\/api/)
     createProxy('http://localhost:9090/', '/admin', undefined, true, false)
     createProxy('http://localhost:8800/', '/snail-job', undefined, true, false)
     // createProxy('https://apifoxmock.com/m1/5534148-5210746-default', '/api', /^\/api/)
     config.server = server
+    config.plugins = config.plugins?.concat([(mkcert as any)()])
 
     // config.plugins = config.plugins?.concat([vueDevTools({})])
     config.optimizeDeps = ViteConfigOptimizeDeps

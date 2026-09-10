@@ -8,6 +8,7 @@
     "DirectiveBinding": true,
     "EffectScope": true,
     "ElMessage": true,
+    "ElMessageBox": true,
     "ExtractDefaultPropTypes": true,
     "ExtractPropTypes": true,
     "ExtractPublicPropTypes": true,
