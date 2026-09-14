@@ -49,7 +49,7 @@
 
 <script setup lang="ts">
 import { memberApi } from '@/api/_index'
-import type { MemberQuery, MemberVO } from '@/api/sys/member.types'
+import type { MemberQuery, MemberVO } from '@/api/app/member.types'
 import type { ZeFormInstance } from '@/components/types/form'
 import { toReactive, watchDebounced } from '@vueuse/core'
 
@@ -119,7 +119,7 @@ en:
   enable: 'enable'
   disable: 'disable'
   statusConfirm: 'Are you sure you want to {action} member "{username}"?'
-  statusSuccess: 'Member {action}d successfully'
+  statusSuccess: 'Member status updated successfully'
 zh-CN:
   columns: '显示/隐藏列'
   reset: '重置'

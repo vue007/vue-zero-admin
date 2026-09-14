@@ -12,12 +12,14 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    AppAccessManager: typeof import('./components/AppAccessManager.vue')['default']
     AppLogo: typeof import('./components/AppLogo.vue')['default']
     AuthPageShell: typeof import('./components/AuthPageShell.vue')['default']
     BaseLayout: typeof import('./layouts/BaseLayout.vue')['default']
     BgBallpit: typeof import('./components/background/BgBallpit.vue')['default']
     BgWavys: typeof import('./components/background/BgWavys.vue')['default']
     BlankLayout: typeof import('./layouts/BlankLayout.vue')['default']
+    ElAlert: typeof import('element-plus/es')['ElAlert']
     ElAvatar: typeof import('element-plus/es')['ElAvatar']
     ElBreadcrumb: typeof import('element-plus/es')['ElBreadcrumb']
     ElBreadcrumbItem: typeof import('element-plus/es')['ElBreadcrumbItem']
@@ -88,12 +90,14 @@ declare module 'vue' {
 
 // For TSX support
 declare global {
+  const AppAccessManager: typeof import('./components/AppAccessManager.vue')['default']
   const AppLogo: typeof import('./components/AppLogo.vue')['default']
   const AuthPageShell: typeof import('./components/AuthPageShell.vue')['default']
   const BaseLayout: typeof import('./layouts/BaseLayout.vue')['default']
   const BgBallpit: typeof import('./components/background/BgBallpit.vue')['default']
   const BgWavys: typeof import('./components/background/BgWavys.vue')['default']
   const BlankLayout: typeof import('./layouts/BlankLayout.vue')['default']
+  const ElAlert: typeof import('element-plus/es')['ElAlert']
   const ElAvatar: typeof import('element-plus/es')['ElAvatar']
   const ElBreadcrumb: typeof import('element-plus/es')['ElBreadcrumb']
   const ElBreadcrumbItem: typeof import('element-plus/es')['ElBreadcrumbItem']

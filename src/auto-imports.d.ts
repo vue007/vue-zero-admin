@@ -113,4 +113,7 @@ declare global {
   // @ts-ignore
   export type { PaginationCallback } from './hooks/usePagination'
   import('./hooks/usePagination')
+  // @ts-ignore
+  export type { DateTimeFormatOptions, JsonPaths, NumberFormatOptions, RemoveIndexSignature } from './components/ZeFormItem.vue'
+  import('./components/ZeFormItem.vue')
 }

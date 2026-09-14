@@ -124,10 +124,7 @@ fetch.interceptors.response.use(
       }
 
       // 成功
-      console.log(HttpStatusCode.Ok, res.data.code, 'HttpStatusCode.Ok === res.data.code')
-
       if (HttpStatusCode.Ok === res.data.code) {
-        console.log(res, res.request, res.config, 'asdfasdf')
         if (res.config && res.config.params) {
           const { pageNo, pageSize } = res.config.params
           if (pageNo) res.data.data['pageNo'] = pageNo

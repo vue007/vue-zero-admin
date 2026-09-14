@@ -4,7 +4,6 @@ import { fileURLToPath, URL } from 'node:url'
 import { defineConfig, loadEnv, UserConfig } from 'vite-plus'
 import vue from '@vitejs/plugin-vue'
 import vueJsx from '@vitejs/plugin-vue-jsx'
-import vueI18n from '@intlify/unplugin-vue-i18n/vite'
 import vueDevTools from 'vite-plugin-vue-devtools'
 import mkcert from 'vite-plugin-mkcert'
 import oxlintPlugin from 'vite-plugin-oxlint'
@@ -19,6 +18,7 @@ import { vitePluginComponents } from './vite/plugins/components.ts'
 import { inferZeFormItemProp } from './vite/plugins/infer-form-item-prop.ts'
 import { vitePluginSvgIcons } from './vite/plugins/svg-icon.ts'
 import { vitePluginUnocss } from './vite/plugins/unocss.ts'
+import { vitePluginVueI18nBlocks } from './vite/plugins/vue-i18n-blocks.ts'
 import { ViteConfigOptimizeDeps } from './vite/config/optimize-deps.ts'
 
 const pathSrc = fileURLToPath(new URL('./src', import.meta.url))
@@ -50,11 +50,7 @@ export default defineConfig(({ command, mode }) => {
         },
       }),
       vueJsx({}),
-      vueI18n({
-        include: [],
-        strictMessage: false,
-        runtimeOnly: true,
-      }),
+      vitePluginVueI18nBlocks(),
       (oxlintPlugin as any)({ allow: ['no-unsafe-declaration-merging', 'no-unused-vars'] }),
       // eslintPlugin(),
 

@@ -6,7 +6,7 @@ export const vitePluginComponents = (): PluginOption =>
   Components({
     include: [/\.vue$/, /\.vue\?vue/],
     extensions: ['vue'],
-    dirs: ['src/components', 'src/layouts', 'src/pages/_views', 'src/pages/components', 'src/hooks', 'src/prime'],
+    dirs: ['src/components', 'src/layouts', 'src/pages/_views', 'src/pages/components', 'src/hooks'],
     dts: './src/components.d.ts',
     resolvers: [ElementPlusResolver({ importStyle: 'sass' })],
   })

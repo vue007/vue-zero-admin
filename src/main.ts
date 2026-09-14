@@ -1,7 +1,6 @@
 import 'virtual:uno.css'
-import 'virtual:svg-icons-register'
+import 'virtual:svg-icons/register'
 
-import '@intlify/core-base'
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 

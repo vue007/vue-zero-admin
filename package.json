@@ -33,14 +33,11 @@
   },
   "devDependencies": {
     "@intlify/core-base": "^11.4.10",
-    "@intlify/unplugin-vue-i18n": "^11.2.5",
     "@playwright/test": "^1.62.1",
     "@tsconfig/node20": "^20.1.10",
     "@tsconfig/node24": "^24.0.5",
     "@types/jsdom": "^30.0.0",
     "@types/node": "^26.4.0",
-    "@types/three": "^0.185.4",
-    "@types/w3c-web-hid": "^1.0.7",
     "@typescript/native": "npm:typescript@^7.0.2",
     "@unocss/preset-attributify": "^66.8.1",
     "@unocss/preset-rem-to-px": "^66.8.1",
@@ -68,11 +65,12 @@
     "vite-plugin-mkcert": "^2.1.0",
     "vite-plugin-oxlint": "^2.1.2",
     "vite-plugin-pages": "^0.33.3",
-    "vite-plugin-svg-icons": "^2.0.1",
+    "vite-plugin-svg-icons-ng": "^1.9.3",
     "vite-plugin-vue-devtools": "^8.2.1",
     "vite-plus": "^0.3.0",
     "vitest": "^4.1.11",
-    "vue-tsc": "^3.3.11"
+    "vue-tsc": "^3.3.11",
+    "yaml": "^2.9.1"
   },
   "lint-staged": {
     "**/*.{js,mjs,cjs,jsx,ts,mts,cts,tsx,vue,astro,svelte}": "oxlint"

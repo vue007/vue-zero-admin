@@ -78,7 +78,12 @@ import type {
   SelectContext,
   TransferInstance,
 } from 'element-plus'
-
+import type {
+  DateTimeFormatOptions,
+  JsonPaths,
+  NumberFormatOptions,
+  RemoveIndexSignature,
+} from '@intlify/core-base'
 import { isUndefined, omit } from 'es-toolkit'
 import { includes } from 'es-toolkit/compat'
 import {
@@ -96,6 +101,9 @@ import ZeInput from './ZeInput.vue'
 import { mergeProps } from 'vue'
 import { createExposeProxy } from '@/utils/expose-proxy'
 import { inferPropFromModelUpdate } from '@/utils/infer-model-prop'
+
+// vue-tsc composite emit needs these names after dropping @intlify/unplugin-vue-i18n.
+export type { DateTimeFormatOptions, JsonPaths, NumberFormatOptions, RemoveIndexSignature }
 
 const attrs = useAttrs()
 

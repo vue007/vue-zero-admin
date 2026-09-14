@@ -1,5 +1,10 @@
 export * as baseApi from './base.api'
 
+// /** App */
+export * as memberApi from './app/member.api'
+export * as partnerApi from './app/partner.api'
+export * as applicationApi from './app/application.api'
+
 // /** Monitor */
 export * as loginInfoApi from './monitor/logininfor.api'
 export * as operLogApi from './monitor/operlog.api'
@@ -13,10 +18,10 @@ export * as configApi from './sys/config.api'
 export * as dictApi from './sys/dict.api'
 export * as userApi from './sys/user.api'
 export * as menuApi from './sys/menu.api'
-export * as memberApi from './sys/member.api'
 export * as noticeApi from './sys/notice.api'
 export * as ossApi from './sys/oss.api'
 export * as roleApi from './sys/role.api'
 export * as postApi from './sys/post.api'
 export * as tenantApi from './sys/tenant.api'
+export * as tenantAppApi from './sys/tenant-app.api'
 export * as tenantPackageApi from './sys/tenant-package.api'

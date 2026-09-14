@@ -74,6 +74,46 @@ export const authorisedMenus = [
       },
     ],
   },
+  {
+    name: 'Tenant',
+    path: '/tenant',
+    component: 'Layout',
+    meta: { title: '租户管理', icon: 'ze-tenant' },
+    children: [
+      {
+        name: 'TenantAppAccess',
+        path: 'appAccess',
+        component: 'tenant/appAccess/index',
+        meta: { title: 'App接入管理', icon: 'el-key' },
+      },
+    ],
+  },
+  {
+    name: 'App',
+    path: '/app',
+    component: 'Layout',
+    meta: { title: 'App管理', icon: 'el-cellphone' },
+    children: [
+      {
+        name: 'AppMember',
+        path: 'member',
+        component: 'app/member/index',
+        meta: { title: '会员管理', icon: 'ze-users' },
+      },
+      {
+        name: 'AppPartner',
+        path: 'partner',
+        component: 'app/partner/index',
+        meta: { title: '合作客户管理', icon: 'el-office-building' },
+      },
+      {
+        name: 'AppAccess',
+        path: 'access',
+        component: 'app/access/index',
+        meta: { title: '应用接入', icon: 'el-key' },
+      },
+    ],
+  },
 ]
 
 export const createMockApiState = (): MockApiState => ({
@@ -179,6 +219,90 @@ export const installMockApi = async (page: Page, state: MockApiState) => {
           },
         ],
         total: 1,
+      })
+    }
+
+    if (call.method === 'GET' && path === '/app/member/list') {
+      return fulfill({
+        rows: [
+          {
+            memberId: 1,
+            tenantId: '000000',
+            username: 'app-user',
+            nickname: '测试会员',
+            mobile: '13800138000',
+            status: '0',
+            registerSource: 'password',
+            createTime: '2026-09-10 10:00:00',
+          },
+        ],
+        total: 1,
+      })
+    }
+
+    if (call.method === 'GET' && path === '/app/partner/list') {
+      return fulfill({
+        rows: [
+          {
+            partnerId: 1,
+            tenantId: '000000',
+            partnerCode: 'PARTNER001',
+            partnerName: '示例合作商户',
+            creditCode: '91440101MA00000001',
+            contactName: '张经理',
+            contactPhone: '13700000001',
+            status: '0',
+            createTime: '2026-09-12 10:00:00',
+          },
+        ],
+        total: 1,
+      })
+    }
+
+    if (call.method === 'GET' && path === '/system/tenant-app/list') {
+      return fulfill({
+        rows: [
+          {
+            id: 1,
+            tenantId: '000001',
+            tenantName: 'XXX有限责任公司',
+            appName: '示例平台应用',
+            appId: 'app_platform_example',
+            appType: 'mobile',
+            scopes: ['member:read'],
+            status: '0',
+            secretRotatedTime: '2026-09-12 10:00:00',
+            createTime: '2026-09-12 10:00:00',
+          },
+        ],
+        total: 1,
+      })
+    }
+
+    if (call.method === 'GET' && path === '/app/application/list') {
+      return fulfill({
+        rows: [
+          {
+            id: 2,
+            tenantId: '000001',
+            appName: '租户自助应用',
+            appId: 'app_tenant_example',
+            appType: 'mini_program',
+            scopes: ['member:read'],
+            status: '0',
+            secretRotatedTime: '2026-09-12 10:00:00',
+            createTime: '2026-09-12 10:00:00',
+          },
+        ],
+        total: 1,
+      })
+    }
+    if (call.method === 'POST' && path === '/app/application') {
+      return fulfill({
+        id: 3,
+        tenantId: '000001',
+        appId: 'app_new_example',
+        appSecret: 'secret_shown_only_once',
       })
     }
 

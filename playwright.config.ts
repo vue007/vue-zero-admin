@@ -1,5 +1,7 @@
 import { defineConfig, devices } from '@playwright/test'
 
+const browserChannel = process.env.PLAYWRIGHT_CHANNEL
+
 /**
  * Read environment variables from file.
  * https://github.com/motdotla/dotenv
@@ -29,7 +31,7 @@ export default defineConfig({
     browserName: 'chromium', // 默认使用 Chromium 浏览器
     trace: 'on-first-retry',
     /* Base URL to use in actions like `await page.goto('/')`. */
-    baseURL: 'http://127.0.0.1:3030',
+    baseURL: 'https://127.0.0.1:3030',
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     viewport: { width: 1280, height: 720 }, // 默认视口大小
     ignoreHTTPSErrors: true, // 忽略 HTTPS 错误
@@ -39,7 +41,7 @@ export default defineConfig({
   projects: [
     {
       name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
+      use: { ...devices['Desktop Chrome'], ...(browserChannel ? { channel: browserChannel } : {}) },
     },
 
     // {
@@ -76,7 +78,8 @@ export default defineConfig({
   /* Core E2E mocks backend APIs, so only the frontend development server is required. */
   webServer: {
     command: 'pnpm dev',
-    url: 'http://127.0.0.1:3030',
+    url: 'https://127.0.0.1:3030',
+    ignoreHTTPSErrors: true,
     reuseExistingServer: true,
     timeout: 120_000,
   },
