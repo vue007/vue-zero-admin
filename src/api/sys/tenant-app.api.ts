@@ -10,12 +10,22 @@ import type {
 
 const baseUrl = '/system/tenant-app'
 
+/** 超级管理员为 App 接入选择所属租户时使用的轻量搜索结果。 */
+export interface TenantAppTenantOption {
+  tenantId: string
+  tenantName: string
+}
+
 export function listTenantApp(query: ApplicationQuery): ApiPromisePage<ApplicationVO> {
   return fetch({ url: `${baseUrl}/list`, method: 'get', params: query })
 }
 
 export function getTenantAppScopeOptions(): ApiPromise<ApplicationScopeOption[]> {
   return fetch({ url: `${baseUrl}/scope-options`, method: 'get' })
+}
+
+export function searchTenantAppTenantOptions(keyword: string): ApiPromise<TenantAppTenantOption[]> {
+  return fetch({ url: `${baseUrl}/tenant-options`, method: 'get', params: { keyword } })
 }
 
 export function getTenantApp(id: ApplicationVO['id']): ApiPromise<ApplicationVO> {

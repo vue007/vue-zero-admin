@@ -13,6 +13,7 @@
       direction="ltr"
       :size="drawerSize"
       :with-header="false"
+      append-to-body
     >
       <div class="aside-drawer-content">
         <slot name="aside"></slot>

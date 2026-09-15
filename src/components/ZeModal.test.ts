@@ -9,13 +9,14 @@ import ZeModal from './ZeModal.vue'
 const ModalShellStub = defineComponent({
   name: 'ModalShell',
   inheritAttrs: false,
-  setup(_props, { attrs, slots }) {
+  props: { appendToBody: { type: Boolean, default: false } },
+  setup(props, { attrs, slots }) {
     return () =>
-      h('section', { 'data-modal-shell': '', 'data-size': attrs.size }, [
-        h('header', slots.header?.()),
-        h('main', slots.default?.()),
-        h('footer', slots.footer?.()),
-      ])
+      h(
+        'section',
+        { 'data-modal-shell': '', 'data-size': attrs.size, 'data-append-to-body': String(props.appendToBody) },
+        [h('header', slots.header?.()), h('main', slots.default?.()), h('footer', slots.footer?.())],
+      )
   },
 })
 
@@ -42,6 +43,17 @@ const globalStubs = {
 }
 
 describe('ZeModal', () => {
+  it('teleports the overlay to body by default and still allows an explicit opt-out', () => {
+    const defaultWrapper = mount(ZeModal, { global: { stubs: globalStubs } })
+    const inlineWrapper = mount(ZeModal, {
+      props: { appendToBody: false },
+      global: { stubs: globalStubs },
+    })
+
+    expect(defaultWrapper.get('[data-modal-shell]').attributes('data-append-to-body')).toBe('true')
+    expect(inlineWrapper.get('[data-modal-shell]').attributes('data-append-to-body')).toBe('false')
+  })
+
   it('opens with data and delegates that data to the nested enhanced form', async () => {
     const form = {
       setFields: vi.fn(),

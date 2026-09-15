@@ -95,6 +95,10 @@
     <div v-if="oneTimeCredential" class="credential-panel">
       <el-alert :title="t('credentialWarning')" type="warning" show-icon :closable="false" />
 
+      <div class="credential-toolbar">
+        <el-button type="primary" @click="copyAllCredentials">{{ t('copyAllCredentials') }}</el-button>
+      </div>
+
       <el-descriptions class="credential-details" :column="1" border>
         <el-descriptions-item :label="t('appId')">
           <div class="credential-value">
@@ -139,8 +143,9 @@ import type {
 } from '@/api/app/application.types'
 import type { ZeActionItem } from '@/components/types/action'
 import type { ZeFormInstance } from '@/components/types/form'
+import type { TenantAppTenantOption } from '@/api/sys/tenant-app.api'
 import { useBaseStore } from '@/stores/base.module'
-import { toReactive, useClipboard, watchDebounced } from '@vueuse/core'
+import { toReactive, useClipboard, useDebounceFn, watchDebounced } from '@vueuse/core'
 import { merge } from 'es-toolkit'
 
 const props = defineProps({
@@ -188,6 +193,28 @@ const [scopeOptions] = useApi<undefined, ApplicationScopeOption[]>(
   { immediate: true },
 )
 const scopeLabel = (scope: string) => scopeOptions.value?.find((item) => item.value === scope)?.label || scope
+
+const [tenantOptions, fetchTenantOptions, tenantOptionsLoading] = useApi(
+  tenantAppApi.searchTenantAppTenantOptions,
+  undefined,
+  { concurrency: 'takeLatest' },
+)
+const selectedTenant = ref<TenantAppTenantOption>()
+const tenantSelectOptions = computed(() => {
+  const options = tenantOptions.value || []
+  const selected = selectedTenant.value
+  const visibleOptions = selected && !options.some((item) => item.tenantId === selected.tenantId)
+    ? [selected, ...options]
+    : options
+  return visibleOptions.map((item) => ({
+    value: item.tenantId,
+    label: `${item.tenantId} · ${item.tenantName}`,
+  }))
+})
+const searchTenantOptions = useDebounceFn((keyword: string) => fetchTenantOptions(keyword), 250)
+const rememberSelectedTenant = (tenantId: string) => {
+  selectedTenant.value = tenantOptions.value?.find((item) => item.tenantId === tenantId)
+}
 
 const searchFormRef = ref<ZeFormInstance>()
 const [searchForm, searchFormItems] = useForm({
@@ -247,11 +274,25 @@ const [applicationDetail, fetchApplicationDetail, detailLoading] = useApi<{ id: 
   ({ id }) => accessApi.value.get(id),
 )
 watch(applicationDetail, (detail) => detail && merge(editForm.value, detail), { deep: true })
+watch(applicationDetail, (detail) => {
+  if (props.platform && detail) {
+    selectedTenant.value = { tenantId: detail.tenantId, tenantName: detail.tenantName || detail.tenantId }
+  }
+})
 
 const [editRef, EditModal] = useModal({
   title: computed(() => (isEdit.value ? t('editTitle') : t('addTitle'))),
   submitting: computed(() => submitting.value),
-  onOpen: (row?: ApplicationVO) => row && fetchApplicationDetail({ id: row.id }),
+  onOpen: (row?: ApplicationVO) => {
+    if (row) {
+      if (props.platform) selectedTenant.value = { tenantId: row.tenantId, tenantName: row.tenantName || row.tenantId }
+      return fetchApplicationDetail({ id: row.id })
+    }
+    if (props.platform) {
+      selectedTenant.value = undefined
+      return fetchTenantOptions('')
+    }
+  },
   onConfirm: () => submitEdit(),
 })
 
@@ -259,8 +300,8 @@ const [editForm, baseEditFormItems, editFormRules] = useForm({
   id: { value: undefined as number | string | undefined },
   tenantId: {
     value: '',
-    item: { type: 'text', label: t('tenantId'), plh: t('tenantIdPlaceholder'), hidden: !props.platform },
-    rule: props.platform ? [{ required: true, message: t('tenantIdRequired'), trigger: 'blur' }] : [],
+    item: { type: 'select', label: t('tenantId'), plh: t('tenantIdPlaceholder'), hidden: !props.platform },
+    rule: props.platform ? [{ required: true, message: t('tenantIdRequired'), trigger: 'change' }] : [],
   },
   appName: {
     value: '',
@@ -292,7 +333,17 @@ const [editForm, baseEditFormItems, editFormRules] = useForm({
 
 const editFormItems = computed(() =>
   baseEditFormItems.value.map((item) => {
-    if (item.prop === 'tenantId') return { ...item, disabled: isEdit.value }
+    if (item.prop === 'tenantId')
+      return {
+        ...item,
+        disabled: isEdit.value,
+        filterable: true,
+        remote: true,
+        remoteMethod: searchTenantOptions,
+        loading: tenantOptionsLoading.value,
+        options: tenantSelectOptions.value,
+        onChange: rememberSelectedTenant,
+      }
     if (item.prop === 'status') return { ...item, hidden: isEdit.value }
     if (item.prop === 'scopes') return { ...item, options: scopeOptions.value || [] }
     return item
@@ -427,6 +478,12 @@ const copyCredential = async (value: string, field: string) => {
     ElMessage.error(t('copyFailed'))
   }
 }
+
+const copyAllCredentials = () => {
+  if (!oneTimeCredential.value) return
+  const { appId, appSecret } = oneTimeCredential.value
+  return copyCredential(`${t('appId')}: ${appId}\n${t('appSecret')}: ${appSecret}`, t('allCredentials'))
+}
 </script>
 
 <style lang="scss" scoped>
@@ -465,6 +522,11 @@ const copyCredential = async (value: string, field: string) => {
   width: 100%;
 }
 
+.credential-toolbar {
+  display: flex;
+  justify-content: flex-end;
+}
+
 .credential-tip {
   margin: 0;
   color: var(--el-text-color-secondary);
@@ -500,8 +562,8 @@ en:
   resetSecret: 'Reset secret'
   addTitle: 'Add application access'
   editTitle: 'Edit application access'
-  tenantIdPlaceholder: 'Enter the tenant ID'
-  tenantIdRequired: 'Tenant ID is required'
+  tenantIdPlaceholder: 'Search by tenant ID or company name'
+  tenantIdRequired: 'Select a tenant'
   appNamePlaceholder: 'Enter an application name'
   appNameRequired: 'Application name is required'
   scopesPlaceholder: 'Select business modules under App management'
@@ -524,6 +586,8 @@ en:
   savedAndClose: 'Saved, close window'
   copySuccess: '{field} copied'
   copyFailed: 'Copy failed. Please copy it manually.'
+  copyAllCredentials: 'Copy App ID and Secret Key'
+  allCredentials: 'App ID and Secret Key'
 zh-CN:
   columns: '显示/隐藏列'
   reset: '重置'
@@ -547,8 +611,8 @@ zh-CN:
   resetSecret: '重置密钥'
   addTitle: '新增应用接入'
   editTitle: '编辑应用接入'
-  tenantIdPlaceholder: '请输入租户编号'
-  tenantIdRequired: '租户编号不能为空'
+  tenantIdPlaceholder: '搜索租户编号或企业名称'
+  tenantIdRequired: '请选择租户'
   appNamePlaceholder: '请输入应用名称'
   appNameRequired: '应用名称不能为空'
   scopesPlaceholder: '请选择 App 管理中的业务模块'
@@ -571,4 +635,6 @@ zh-CN:
   savedAndClose: '已保存，关闭窗口'
   copySuccess: '{field} 已复制'
   copyFailed: '复制失败，请手动复制。'
+  copyAllCredentials: '一键复制 App ID 和 Secret Key'
+  allCredentials: 'App ID 和 Secret Key'
 </i18n>

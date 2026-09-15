@@ -67,7 +67,12 @@
       </div>
     </div>
 
-    <el-dialog v-model="keysVisible" :title="`${currentGroup?.remark || ''} - ${t('cacheKeys')}`" width="720px">
+    <el-dialog
+      v-model="keysVisible"
+      :title="`${currentGroup?.remark || ''} - ${t('cacheKeys')}`"
+      width="720px"
+      append-to-body
+    >
       <ze-table
         :data="keyRows"
         :loading="keysLoading"

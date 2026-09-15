@@ -278,6 +278,24 @@ export const installMockApi = async (page: Page, state: MockApiState) => {
       })
     }
 
+    if (call.method === 'GET' && path === '/system/tenant-app/tenant-options') {
+      const keyword = (call.query.keyword || '').toLowerCase()
+      return fulfill(
+        [
+          { tenantId: '000000', tenantName: '默认租户' },
+          { tenantId: '000001', tenantName: 'XXX有限责任公司' },
+        ].filter((item) => `${item.tenantId} ${item.tenantName}`.toLowerCase().includes(keyword)),
+      )
+    }
+    if (call.method === 'POST' && path === '/system/tenant-app') {
+      return fulfill({
+        id: 4,
+        tenantId: '000001',
+        appId: 'app_platform_new',
+        appSecret: 'platform_secret_shown_only_once',
+      })
+    }
+
     if (
       call.method === 'GET' &&
       (path === '/system/tenant-app/scope-options' || path === '/app/application/scope-options')

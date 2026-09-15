@@ -6,6 +6,7 @@
     v-model="model"
     @close="close"
     :size="$attrs.size || $attrs.width"
+    :append-to-body="props.appendToBody"
     @submit.prevent
   >
     <template #header>
@@ -53,6 +54,7 @@ const props = defineProps({
   readonly: { type: Boolean, default: () => false },
   submitting: { type: Boolean, default: () => false },
   footerConfirmTxt: { type: String, default: () => undefined },
+  appendToBody: { type: Boolean, default: true },
 })
 
 // const attrs = useAttrs()
