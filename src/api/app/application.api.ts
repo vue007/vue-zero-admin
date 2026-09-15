@@ -3,6 +3,7 @@ import type {
   ApplicationCredential,
   ApplicationForm,
   ApplicationQuery,
+  ApplicationScopeOption,
   ApplicationStatusForm,
   ApplicationVO,
 } from './application.types'
@@ -11,6 +12,10 @@ const baseUrl = '/app/application'
 
 export function listApplication(query: ApplicationQuery): ApiPromisePage<ApplicationVO> {
   return fetch({ url: `${baseUrl}/list`, method: 'get', params: query })
+}
+
+export function getApplicationScopeOptions(): ApiPromise<ApplicationScopeOption[]> {
+  return fetch({ url: `${baseUrl}/scope-options`, method: 'get' })
 }
 
 export function getApplication(id: ApplicationVO['id']): ApiPromise<ApplicationVO> {

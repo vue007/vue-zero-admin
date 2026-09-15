@@ -8,7 +8,6 @@ export interface ApplicationVO extends BaseEntity {
   tenantName?: string
   appName: string
   appId: string
-  appType: string
   scopes: string[]
   status: string
   remark?: string
@@ -21,7 +20,6 @@ export interface ApplicationForm {
   /** 仅平台端新增应用时提交；租户自助接口从登录会话获取租户。 */
   tenantId?: string
   appName: string
-  appType: string
   scopes: string[]
   status?: string
   remark?: string
@@ -32,8 +30,13 @@ export interface ApplicationQuery extends PageQuery {
   tenantId?: string
   appName?: string
   appId?: string
-  appType?: string
   status?: string
+}
+
+/** App 管理下可授权的业务模块。 */
+export interface ApplicationScopeOption {
+  value: string
+  label: string
 }
 
 /** 只在创建或重置密钥成功后返回一次。 */

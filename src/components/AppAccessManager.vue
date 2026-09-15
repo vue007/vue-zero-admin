@@ -29,13 +29,9 @@
         </div>
       </template>
 
-      <template #col-appType="{ row }">
-        {{ appTypeLabel(row.appType) }}
-      </template>
-
       <template #col-scopes="{ row }">
         <div v-if="row.scopes?.length" class="scope-list">
-          <el-tag v-for="scope in row.scopes" :key="scope" size="small" type="info">{{ scope }}</el-tag>
+          <el-tag v-for="scope in row.scopes" :key="scope" size="small" type="info">{{ scopeLabel(scope) }}</el-tag>
         </div>
         <span v-else class="empty-value">—</span>
       </template>
@@ -138,6 +134,7 @@ import type {
   ApplicationCredential,
   ApplicationForm,
   ApplicationQuery,
+  ApplicationScopeOption,
   ApplicationVO,
 } from '@/api/app/application.types'
 import type { ZeActionItem } from '@/components/types/action'
@@ -163,6 +160,7 @@ const platformApi = {
   changeStatus: tenantAppApi.changeTenantAppStatus,
   resetSecret: tenantAppApi.resetTenantAppSecret,
   remove: tenantAppApi.delTenantApp,
+  scopeOptions: tenantAppApi.getTenantAppScopeOptions,
 }
 const selfServiceApi = {
   list: applicationApi.listApplication,
@@ -172,6 +170,7 @@ const selfServiceApi = {
   changeStatus: applicationApi.changeApplicationStatus,
   resetSecret: applicationApi.resetApplicationSecret,
   remove: applicationApi.delApplication,
+  scopeOptions: applicationApi.getApplicationScopeOptions,
 }
 const accessApi = computed(() => (props.platform ? platformApi : selfServiceApi))
 
@@ -183,13 +182,12 @@ const hasPermission = (action: string) => {
 }
 const hasRowActions = computed(() => ['edit', 'resetSecret', 'remove'].some(hasPermission))
 
-const appTypeOptions = computed(() => [
-  { label: t('typeMobile'), value: 'mobile' },
-  { label: t('typeH5'), value: 'h5' },
-  { label: t('typeMiniProgram'), value: 'mini_program' },
-  { label: t('typeServer'), value: 'server' },
-])
-const appTypeLabel = (type: string) => appTypeOptions.value.find((item) => item.value === type)?.label || type
+const [scopeOptions] = useApi<undefined, ApplicationScopeOption[]>(
+  () => accessApi.value.scopeOptions(),
+  undefined,
+  { immediate: true },
+)
+const scopeLabel = (scope: string) => scopeOptions.value?.find((item) => item.value === scope)?.label || scope
 
 const searchFormRef = ref<ZeFormInstance>()
 const [searchForm, searchFormItems] = useForm({
@@ -199,10 +197,6 @@ const [searchForm, searchFormItems] = useForm({
   },
   appName: { value: '', item: { type: 'text', plh: t('appName') } },
   appId: { value: '', item: { type: 'text', plh: t('appId') } },
-  appType: {
-    value: '',
-    item: { type: 'select', label: t('appType'), options: appTypeOptions, labelWidth: '72px' },
-  },
   status: {
     value: '',
     item: { type: 'select', label: t('status'), options: sys_normal_disable, labelWidth: '50px' },
@@ -241,7 +235,6 @@ const tableColumns = computed(() => [
     : []),
   { prop: 'appName', label: t('appName'), minWidth: 180, fixed: !props.platform },
   { prop: 'appId', label: t('appId'), minWidth: 230 },
-  { prop: 'appType', label: t('appType'), minWidth: 125 },
   { prop: 'scopes', label: t('scopes'), minWidth: 220 },
   { prop: 'status', label: t('status'), width: 90 },
   { prop: 'lastAccessTime', label: t('lastAccessTime'), minWidth: 180 },
@@ -274,25 +267,6 @@ const [editForm, baseEditFormItems, editFormRules] = useForm({
     item: { type: 'text', label: t('appName'), plh: t('appNamePlaceholder'), maxlength: 100 },
     rule: [{ required: true, message: t('appNameRequired'), trigger: 'blur' }],
   },
-  appType: {
-    value: 'mobile',
-    item: {
-      type: 'select',
-      label: t('appType'),
-      plh: t('appTypePlaceholder'),
-      options: appTypeOptions,
-      allowCreate: true,
-      defaultFirstOption: true,
-    },
-    rule: [
-      { required: true, message: t('appTypeRequired'), trigger: 'change' },
-      {
-        pattern: /^[A-Za-z][A-Za-z0-9_-]{0,31}$/,
-        message: t('appTypeInvalid'),
-        trigger: ['blur', 'change'],
-      },
-    ],
-  },
   scopes: {
     value: [] as string[],
     item: {
@@ -301,12 +275,10 @@ const [editForm, baseEditFormItems, editFormRules] = useForm({
       plh: t('scopesPlaceholder'),
       options: [],
       multiple: true,
-      allowCreate: true,
-      defaultFirstOption: true,
       collapseTags: true,
       collapseTagsTooltip: true,
     },
-    rule: [{ validator: validateScopes, trigger: 'change' }],
+    rule: [{ required: true, message: t('scopesRequired'), trigger: 'change' }],
   },
   status: {
     value: '0',
@@ -322,17 +294,10 @@ const editFormItems = computed(() =>
   baseEditFormItems.value.map((item) => {
     if (item.prop === 'tenantId') return { ...item, disabled: isEdit.value }
     if (item.prop === 'status') return { ...item, hidden: isEdit.value }
+    if (item.prop === 'scopes') return { ...item, options: scopeOptions.value || [] }
     return item
   }),
 )
-
-function validateScopes(_rule: unknown, value: string[], callback: (error?: Error) => void) {
-  const scopes = Array.isArray(value) ? value : []
-  if (scopes.length > 32) return callback(new Error(t('scopesTooMany')))
-  const invalid = scopes.find((scope) => !/^[A-Za-z][A-Za-z0-9:_*.-]{0,63}$/.test(scope.trim()))
-  if (invalid) return callback(new Error(t('scopeInvalid', { scope: invalid })))
-  callback()
-}
 
 const submitting = ref(false)
 const buildApplicationForm = (): ApplicationForm => {
@@ -341,7 +306,6 @@ const buildApplicationForm = (): ApplicationForm => {
     ...(isEdit.value ? { id: editForm.value.id } : {}),
     ...(props.platform && !isEdit.value ? { tenantId: editForm.value.tenantId.trim() } : {}),
     appName: editForm.value.appName.trim(),
-    appType: editForm.value.appType.trim(),
     scopes,
     ...(!isEdit.value ? { status: editForm.value.status } : {}),
     remark: editForm.value.remark?.trim(),
@@ -523,7 +487,6 @@ en:
   appName: 'Application name'
   appId: 'App ID'
   appSecret: 'Secret key'
-  appType: 'Application type'
   scopes: 'Scopes'
   status: 'Status'
   lastAccessTime: 'Last accessed at'
@@ -541,18 +504,10 @@ en:
   tenantIdRequired: 'Tenant ID is required'
   appNamePlaceholder: 'Enter an application name'
   appNameRequired: 'Application name is required'
-  appTypePlaceholder: 'Select or enter an application type'
-  appTypeRequired: 'Application type is required'
-  appTypeInvalid: 'Start with a letter; use up to 32 letters, numbers, underscores, or hyphens'
-  scopesPlaceholder: 'Enter a scope and press Enter'
-  scopesTooMany: 'At most 32 scopes are allowed'
-  scopeInvalid: 'Invalid scope: {scope}'
+  scopesPlaceholder: 'Select business modules under App management'
+  scopesRequired: 'Select at least one business module'
   remark: 'Remark'
   remarkPlaceholder: 'Enter a remark'
-  typeMobile: 'Mobile App'
-  typeH5: 'H5'
-  typeMiniProgram: 'Mini program'
-  typeServer: 'Server-side application'
   saveSuccess: 'Saved successfully'
   addSuccess: 'Created successfully'
   deleteSuccess: 'Deleted successfully'
@@ -564,7 +519,7 @@ en:
   deleteConfirm: 'Delete application “{appName}”?'
   credentialTitle: 'Save the application credential now'
   credentialWarning: 'The secret is shown only once. Copy it to a secure location before closing this window.'
-  credentialTip: 'For mobile apps, H5, and mini programs, do not bundle a long-lived secret in client code. Keep it on a trusted server only.'
+  credentialTip: 'App ID identifies the tenant application; the client proxy identifies the channel. Keep Secret Key on a trusted server only.'
   credentialSaved: 'I have saved the credential securely'
   savedAndClose: 'Saved, close window'
   copySuccess: '{field} copied'
@@ -579,7 +534,6 @@ zh-CN:
   appName: '应用名称'
   appId: 'App ID'
   appSecret: 'Secret Key'
-  appType: '应用类型'
   scopes: '授权范围'
   status: '状态'
   lastAccessTime: '最后调用时间'
@@ -597,18 +551,10 @@ zh-CN:
   tenantIdRequired: '租户编号不能为空'
   appNamePlaceholder: '请输入应用名称'
   appNameRequired: '应用名称不能为空'
-  appTypePlaceholder: '请选择或输入应用类型'
-  appTypeRequired: '应用类型不能为空'
-  appTypeInvalid: '须以字母开头，最多 32 位，仅支持字母、数字、下划线和连字符'
-  scopesPlaceholder: '输入权限范围后按回车添加'
-  scopesTooMany: '授权范围最多可添加 32 项'
-  scopeInvalid: '授权范围格式不正确：{scope}'
+  scopesPlaceholder: '请选择 App 管理中的业务模块'
+  scopesRequired: '请至少选择一个业务模块'
   remark: '备注'
   remarkPlaceholder: '请输入备注'
-  typeMobile: '移动 App'
-  typeH5: 'H5'
-  typeMiniProgram: '小程序'
-  typeServer: '服务端应用'
   saveSuccess: '保存成功'
   addSuccess: '创建成功'
   deleteSuccess: '删除成功'
@@ -620,7 +566,7 @@ zh-CN:
   deleteConfirm: '确认删除应用“{appName}”吗？'
   credentialTitle: '请立即保存应用凭证'
   credentialWarning: 'Secret Key 仅展示一次，关闭前请复制并保存到安全位置。'
-  credentialTip: '移动 App、H5 和小程序中不要内置长期密钥；Secret Key 只能保存在可信服务端。'
+  credentialTip: 'App ID 用于识别租户应用，终端渠道由客户端代理识别；Secret Key 只能保存在可信服务端。'
   credentialSaved: '我已将凭证保存到安全位置'
   savedAndClose: '已保存，关闭窗口'
   copySuccess: '{field} 已复制'

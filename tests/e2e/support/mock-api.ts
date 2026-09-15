@@ -268,8 +268,7 @@ export const installMockApi = async (page: Page, state: MockApiState) => {
             tenantName: 'XXX有限责任公司',
             appName: '示例平台应用',
             appId: 'app_platform_example',
-            appType: 'mobile',
-            scopes: ['member:read'],
+            scopes: ['app:member'],
             status: '0',
             secretRotatedTime: '2026-09-12 10:00:00',
             createTime: '2026-09-12 10:00:00',
@@ -277,6 +276,16 @@ export const installMockApi = async (page: Page, state: MockApiState) => {
         ],
         total: 1,
       })
+    }
+
+    if (
+      call.method === 'GET' &&
+      (path === '/system/tenant-app/scope-options' || path === '/app/application/scope-options')
+    ) {
+      return fulfill([
+        { value: 'app:member', label: '会员管理' },
+        { value: 'app:partner', label: '合作客户管理' },
+      ])
     }
 
     if (call.method === 'GET' && path === '/app/application/list') {
@@ -287,8 +296,7 @@ export const installMockApi = async (page: Page, state: MockApiState) => {
             tenantId: '000001',
             appName: '租户自助应用',
             appId: 'app_tenant_example',
-            appType: 'mini_program',
-            scopes: ['member:read'],
+            scopes: ['app:member'],
             status: '0',
             secretRotatedTime: '2026-09-12 10:00:00',
             createTime: '2026-09-12 10:00:00',

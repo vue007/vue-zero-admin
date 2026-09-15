@@ -12,14 +12,17 @@ test.describe('应用接入凭证', () => {
     const editDialog = page.getByRole('dialog', { name: '新增应用接入' })
     await expect(editDialog).toContainText('新增应用接入')
     await editDialog.getByPlaceholder('请输入应用名称').fill('E2E 接入应用')
+    await editDialog.getByRole('combobox', { name: /授权范围/ }).press('ArrowDown')
+    await page.getByRole('option', { name: '会员管理' }).click()
     await editDialog.getByRole('button', { name: '确定' }).click()
     await expect(editDialog).toBeHidden()
 
     const createBody = findApiCall(api, 'POST', '/app/application')?.body
     expect(createBody).toMatchObject({
       appName: 'E2E 接入应用',
-      appType: 'mobile',
+      scopes: ['app:member'],
     })
+    expect(createBody).not.toHaveProperty('appType')
     expect(createBody).not.toHaveProperty('tenantId')
 
     const credentialDialog = page.getByRole('dialog', { name: '请立即保存应用凭证' })
