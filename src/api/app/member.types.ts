@@ -17,6 +17,7 @@ export interface MemberVO {
 }
 
 export interface MemberQuery extends PageQuery {
+  tenantId?: string
   memberId?: number | string
   username?: string
   nickname?: string

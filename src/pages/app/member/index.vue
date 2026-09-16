@@ -19,6 +19,7 @@
       :loading="loading"
       :columns="[
         { prop: 'memberId', label: t('memberId'), hidden: true },
+        { prop: 'tenantId', label: t('tenantId'), minWidth: 120, hidden: !isSuperAdmin },
         { prop: 'username', label: t('username'), minWidth: 140, fixed: true },
         { prop: 'nickname', label: t('nickname'), minWidth: 140 },
         { prop: 'mobile', label: t('mobile'), minWidth: 140 },
@@ -51,13 +52,25 @@
 import { memberApi } from '@/api/_index'
 import type { MemberQuery, MemberVO } from '@/api/app/member.types'
 import type { ZeFormInstance } from '@/components/types/form'
+import { useBaseStore } from '@/stores/base.module'
 import { toReactive, watchDebounced } from '@vueuse/core'
 
 const { t } = useI18nLocal()
 const { sys_normal_disable } = toRefs(useDict('sys_normal_disable'))
+const baseStore = useBaseStore()
+const isSuperAdmin = computed(() => baseStore.setting.userInfo.roles?.includes('superadmin') ?? false)
 
 const searchFormRef = ref<ZeFormInstance>()
 const [searchForm, searchFormItems] = useForm({
+  tenantId: {
+    value: '',
+    item: {
+      type: 'text',
+      plh: t('tenantId'),
+      prefixIcon: 'el-office-building',
+      hidden: computed(() => !isSuperAdmin.value),
+    },
+  },
   username: { value: '', item: { type: 'text', plh: t('username'), prefixIcon: 'el-search' } },
   nickname: { value: '', item: { type: 'text', plh: t('nickname') } },
   mobile: { value: '', item: { type: 'text', plh: t('mobile') } },
@@ -106,6 +119,7 @@ const handleStatusChange = (row: MemberVO) => {
 en:
   columns: 'Show/hide columns'
   reset: 'Reset'
+  tenantId: 'Tenant ID'
   memberId: 'Member ID'
   username: 'Username'
   nickname: 'Nickname'
@@ -123,6 +137,7 @@ en:
 zh-CN:
   columns: '显示/隐藏列'
   reset: '重置'
+  tenantId: '租户编号'
   memberId: '会员编号'
   username: '会员账号'
   nickname: '会员昵称'
