@@ -9,10 +9,41 @@ export interface ApplicationVO extends BaseEntity {
   appName: string
   appId: string
   scopes: string[]
+  terminals: ApplicationTerminalVO[]
   status: string
   remark?: string
   lastAccessTime?: string
   secretRotatedTime?: string
+}
+
+/** App 与一个认证客户端之间的终端渠道绑定。 */
+export interface ApplicationTerminalForm {
+  authClientId: number | string
+  /** App 对外公开的渠道码，例如 app、h5、miniapp。 */
+  channel: string
+  status: string
+}
+
+export interface ApplicationTerminalVO extends ApplicationTerminalForm {
+  id?: number | string
+  clientKey?: string
+  deviceType?: string
+  grantTypeList?: string[]
+  activeTimeout?: number
+  timeout?: number
+  clientStatus?: string
+}
+
+/** App 接入页面可选择的服务端认证策略。 */
+export interface ApplicationClientOption {
+  authClientId: number | string
+  clientKey: string
+  deviceType: string
+  grantTypeList: string[]
+  activeTimeout?: number
+  timeout?: number
+  clientStatus: string
+  label?: string
 }
 
 export interface ApplicationForm {
@@ -21,6 +52,7 @@ export interface ApplicationForm {
   tenantId?: string
   appName: string
   scopes: string[]
+  terminals: ApplicationTerminalForm[]
   status?: string
   remark?: string
 }

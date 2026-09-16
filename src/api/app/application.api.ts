@@ -1,6 +1,7 @@
 import { fetch, type ApiPromise, type ApiPromisePage } from '../_fetch'
 import type {
   ApplicationCredential,
+  ApplicationClientOption,
   ApplicationForm,
   ApplicationQuery,
   ApplicationScopeOption,
@@ -16,6 +17,10 @@ export function listApplication(query: ApplicationQuery): ApiPromisePage<Applica
 
 export function getApplicationScopeOptions(): ApiPromise<ApplicationScopeOption[]> {
   return fetch({ url: `${baseUrl}/scope-options`, method: 'get' })
+}
+
+export function getApplicationClientOptions(): ApiPromise<ApplicationClientOption[]> {
+  return fetch({ url: `${baseUrl}/client-options`, method: 'get' })
 }
 
 export function getApplication(id: ApplicationVO['id']): ApiPromise<ApplicationVO> {

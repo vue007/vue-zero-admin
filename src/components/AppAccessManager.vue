@@ -36,6 +36,20 @@
         <span v-else class="empty-value">—</span>
       </template>
 
+      <template #col-terminals="{ row }">
+        <div v-if="row.terminals?.length" class="terminal-tags">
+          <el-tag
+            v-for="terminal in row.terminals"
+            :key="`${terminal.channel}-${terminal.authClientId}`"
+            size="small"
+            :type="terminal.status === '0' && terminal.clientStatus === '0' ? 'success' : 'info'"
+          >
+            {{ terminal.channel }} · {{ terminal.clientKey || terminal.deviceType || t('unknownClient') }}
+          </el-tag>
+        </div>
+        <span v-else class="empty-value">—</span>
+      </template>
+
       <template #col-status="{ row }">
         <el-switch
           v-if="hasPermission('status')"
@@ -77,9 +91,69 @@
     </template>
   </VPage>
 
-  <EditModal width="680px" top="5vh">
+  <EditModal width="900px" top="5vh">
     <div v-loading="detailLoading">
       <ze-form v-model="editForm" :items="editFormItems" :rules="editFormRules" label-width="110px" />
+
+      <section class="terminal-editor">
+        <div class="terminal-editor__header">
+          <div>
+            <div class="terminal-editor__title">{{ t('terminals') }}</div>
+            <div class="terminal-editor__tip">{{ t('terminalsTip') }}</div>
+          </div>
+          <el-button
+            type="primary"
+            plain
+            :disabled="clientOptionsLoading || editForm.terminals.length >= MAX_TERMINALS"
+            @click="addTerminal"
+          >
+            {{ t('addTerminal') }}
+          </el-button>
+        </div>
+
+        <div v-if="editForm.terminals.length" class="terminal-editor__list">
+          <div
+            v-for="(terminal, index) in editForm.terminals"
+            :key="terminalRowKey(terminal, index)"
+            class="terminal-editor__row"
+          >
+            <el-select
+              v-model="terminal.authClientId"
+              class="terminal-editor__client"
+              :placeholder="t('authClientPlaceholder')"
+              :loading="clientOptionsLoading"
+              @change="(value) => handleClientChange(terminal, value)"
+            >
+              <el-option
+                v-for="option in clientOptions || []"
+                :key="option.authClientId"
+                :value="option.authClientId"
+                :label="clientOptionLabel(option)"
+                :disabled="option.clientStatus !== '0'"
+              />
+            </el-select>
+            <el-input
+              v-model="terminal.channel"
+              class="terminal-editor__channel"
+              :placeholder="t('channelPlaceholder')"
+              maxlength="32"
+            >
+              <template #prepend>{{ t('channel') }}</template>
+            </el-input>
+            <el-switch
+              v-model="terminal.status"
+              active-value="0"
+              inactive-value="1"
+              :active-text="t('enabled')"
+              :inactive-text="t('disabled')"
+            />
+            <el-button type="danger" link :disabled="editForm.terminals.length === 1" @click="removeTerminal(index)">
+              {{ t('removeTerminal') }}
+            </el-button>
+          </div>
+        </div>
+        <el-empty v-else :description="t('terminalsRequired')" :image-size="64" />
+      </section>
     </div>
   </EditModal>
 
@@ -135,10 +209,13 @@
 <script setup lang="ts">
 import { applicationApi, tenantAppApi } from '@/api/_index'
 import type {
+  ApplicationClientOption,
   ApplicationCredential,
   ApplicationForm,
   ApplicationQuery,
   ApplicationScopeOption,
+  ApplicationTerminalForm,
+  ApplicationTerminalVO,
   ApplicationVO,
 } from '@/api/app/application.types'
 import type { ZeActionItem } from '@/components/types/action'
@@ -166,6 +243,7 @@ const platformApi = {
   resetSecret: tenantAppApi.resetTenantAppSecret,
   remove: tenantAppApi.delTenantApp,
   scopeOptions: tenantAppApi.getTenantAppScopeOptions,
+  clientOptions: tenantAppApi.getTenantAppClientOptions,
 }
 const selfServiceApi = {
   list: applicationApi.listApplication,
@@ -176,6 +254,7 @@ const selfServiceApi = {
   resetSecret: applicationApi.resetApplicationSecret,
   remove: applicationApi.delApplication,
   scopeOptions: applicationApi.getApplicationScopeOptions,
+  clientOptions: applicationApi.getApplicationClientOptions,
 }
 const accessApi = computed(() => (props.platform ? platformApi : selfServiceApi))
 
@@ -193,6 +272,17 @@ const [scopeOptions] = useApi<undefined, ApplicationScopeOption[]>(
   { immediate: true },
 )
 const scopeLabel = (scope: string) => scopeOptions.value?.find((item) => item.value === scope)?.label || scope
+
+const [clientOptions, , clientOptionsLoading] = useApi<undefined, ApplicationClientOption[]>(
+  () => accessApi.value.clientOptions(),
+  undefined,
+  { immediate: true },
+)
+const clientOptionLabel = (option: ApplicationClientOption) => {
+  if (option.label) return option.label
+  const grants = option.grantTypeList?.join(' / ')
+  return [option.clientKey, option.deviceType, grants].filter(Boolean).join(' · ')
+}
 
 const [tenantOptions, fetchTenantOptions, tenantOptionsLoading] = useApi(
   tenantAppApi.searchTenantAppTenantOptions,
@@ -263,6 +353,7 @@ const tableColumns = computed(() => [
   { prop: 'appName', label: t('appName'), minWidth: 180, fixed: !props.platform },
   { prop: 'appId', label: t('appId'), minWidth: 230 },
   { prop: 'scopes', label: t('scopes'), minWidth: 220 },
+  { prop: 'terminals', label: t('terminals'), minWidth: 240 },
   { prop: 'status', label: t('status'), width: 90 },
   { prop: 'lastAccessTime', label: t('lastAccessTime'), minWidth: 180 },
   { prop: 'secretRotatedTime', label: t('secretRotatedTime'), minWidth: 180 },
@@ -273,9 +364,20 @@ const isEdit = computed(() => editForm.value.id !== undefined && editForm.value.
 const [applicationDetail, fetchApplicationDetail, detailLoading] = useApi<{ id: ApplicationVO['id'] }, ApplicationVO>(
   ({ id }) => accessApi.value.get(id),
 )
-watch(applicationDetail, (detail) => detail && merge(editForm.value, detail), { deep: true })
+const editingApplicationId = ref<ApplicationVO['id']>()
 watch(applicationDetail, (detail) => {
-  if (props.platform && detail) {
+  if (!detail || editingApplicationId.value === undefined
+    || String(detail.id) !== String(editingApplicationId.value)) return
+  merge(editForm.value, detail)
+  editForm.value.terminals = (detail.terminals || []).map((terminal) => ({
+    authClientId: terminal.authClientId,
+    channel: terminal.channel,
+    status: terminal.status,
+  }))
+}, { deep: true })
+watch(applicationDetail, (detail) => {
+  if (props.platform && detail && editingApplicationId.value !== undefined
+    && String(detail.id) === String(editingApplicationId.value)) {
     selectedTenant.value = { tenantId: detail.tenantId, tenantName: detail.tenantName || detail.tenantId }
   }
 })
@@ -285,9 +387,12 @@ const [editRef, EditModal] = useModal({
   submitting: computed(() => submitting.value),
   onOpen: (row?: ApplicationVO) => {
     if (row) {
+      editingApplicationId.value = row.id
       if (props.platform) selectedTenant.value = { tenantId: row.tenantId, tenantName: row.tenantName || row.tenantId }
       return fetchApplicationDetail({ id: row.id })
     }
+    editingApplicationId.value = undefined
+    void initializeNewApplication()
     if (props.platform) {
       selectedTenant.value = undefined
       return fetchTenantOptions('')
@@ -321,6 +426,7 @@ const [editForm, baseEditFormItems, editFormRules] = useForm({
     },
     rule: [{ required: true, message: t('scopesRequired'), trigger: 'change' }],
   },
+  terminals: { value: [] as ApplicationTerminalForm[] },
   status: {
     value: '0',
     item: { type: 'radio', label: t('status'), options: sys_normal_disable },
@@ -351,13 +457,86 @@ const editFormItems = computed(() =>
 )
 
 const submitting = ref(false)
+const MAX_TERMINALS = 16
+const terminalRowKey = (terminal: ApplicationTerminalVO | ApplicationTerminalForm, index: number) =>
+  'id' in terminal && terminal.id ? terminal.id : `terminal-${index}`
+
+const newTerminal = (): ApplicationTerminalForm => {
+  const options = clientOptions.value || []
+  const preferred = options.find((option) => option.clientStatus === '0' && option.clientKey === 'app')
+    || options.find((option) => option.clientStatus === '0')
+  return {
+    authClientId: preferred?.authClientId ?? '',
+    channel: preferred?.clientKey || '',
+    status: '0',
+  }
+}
+
+const ensureDefaultTerminal = () => {
+  if (!editForm.value.terminals.length) editForm.value.terminals.push(newTerminal())
+}
+
+const initializeNewApplication = async () => {
+  // ZeModal 会在打开后的 nextTick 重置 ZeForm；再等一轮后写入默认终端。
+  await nextTick()
+  await nextTick()
+  ensureDefaultTerminal()
+}
+
+const addTerminal = () => {
+  if (editForm.value.terminals.length >= MAX_TERMINALS) return
+  editForm.value.terminals.push({ authClientId: '', channel: '', status: '0' })
+}
+
+const removeTerminal = (index: number) => {
+  if (editForm.value.terminals.length <= 1) return
+  editForm.value.terminals.splice(index, 1)
+}
+
+const handleClientChange = (terminal: ApplicationTerminalForm, authClientId: string | number) => {
+  const option = clientOptions.value?.find((item) => String(item.authClientId) === String(authClientId))
+  if (option && !terminal.channel.trim()) terminal.channel = option.clientKey
+}
+
+const normalizeTerminals = (): ApplicationTerminalForm[] | undefined => {
+  const terminals = editForm.value.terminals.map((terminal) => ({
+    authClientId: terminal.authClientId,
+    channel: terminal.channel.trim().toLowerCase(),
+    status: terminal.status,
+  }))
+  if (!terminals.length) {
+    ElMessage.error(t('terminalsRequired'))
+    return undefined
+  }
+  if (terminals.length > MAX_TERMINALS) {
+    ElMessage.error(t('terminalsMax', { max: MAX_TERMINALS }))
+    return undefined
+  }
+  if (terminals.some((terminal) => terminal.authClientId === '' || terminal.authClientId === undefined)) {
+    ElMessage.error(t('authClientRequired'))
+    return undefined
+  }
+  if (terminals.some((terminal) => !/^[a-z][a-z0-9_-]{0,31}$/.test(terminal.channel))) {
+    ElMessage.error(t('channelInvalid'))
+    return undefined
+  }
+  if (new Set(terminals.map((terminal) => terminal.channel)).size !== terminals.length) {
+    ElMessage.error(t('channelDuplicate'))
+    return undefined
+  }
+  return terminals
+}
+
 const buildApplicationForm = (): ApplicationForm => {
   const scopes = [...new Set((editForm.value.scopes || []).map((scope) => scope.trim()).filter(Boolean))]
+  const terminals = normalizeTerminals()
+  if (!terminals) throw new Error('invalid terminals')
   return {
     ...(isEdit.value ? { id: editForm.value.id } : {}),
     ...(props.platform && !isEdit.value ? { tenantId: editForm.value.tenantId.trim() } : {}),
     appName: editForm.value.appName.trim(),
     scopes,
+    terminals,
     ...(!isEdit.value ? { status: editForm.value.status } : {}),
     remark: editForm.value.remark?.trim(),
   }
@@ -508,6 +687,56 @@ const copyAllCredentials = () => {
   gap: 6px;
 }
 
+.terminal-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.terminal-editor {
+  margin-top: 4px;
+  padding: 16px;
+  border: 1px solid var(--el-border-color-lighter);
+  border-radius: 8px;
+}
+
+.terminal-editor__header,
+.terminal-editor__row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.terminal-editor__header {
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.terminal-editor__title {
+  color: var(--el-text-color-primary);
+  font-weight: 600;
+}
+
+.terminal-editor__tip {
+  margin-top: 4px;
+  color: var(--el-text-color-secondary);
+  font-size: 12px;
+}
+
+.terminal-editor__list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.terminal-editor__client {
+  width: 280px;
+}
+
+.terminal-editor__channel {
+  flex: 1;
+}
+
 .empty-value {
   color: var(--el-text-color-placeholder);
 }
@@ -550,6 +779,21 @@ en:
   appId: 'App ID'
   appSecret: 'Secret key'
   scopes: 'Scopes'
+  terminals: 'Terminals'
+  terminalsTip: 'Bind one or more authentication policies. Apps send the public channel code; internal client IDs stay on the server.'
+  addTerminal: 'Add terminal'
+  removeTerminal: 'Remove'
+  authClientPlaceholder: 'Select an authentication policy'
+  authClientRequired: 'Select an authentication policy for every terminal'
+  channel: 'Channel'
+  channelPlaceholder: 'app, h5, miniapp...'
+  channelInvalid: 'Channel must start with a letter and contain only lowercase letters, numbers, _ or -'
+  channelDuplicate: 'Channel codes must be unique within the application'
+  terminalsRequired: 'Add at least one terminal'
+  terminalsMax: 'An application can have at most {max} terminals'
+  unknownClient: 'Unknown policy'
+  enabled: 'Enabled'
+  disabled: 'Disabled'
   status: 'Status'
   lastAccessTime: 'Last accessed at'
   secretRotatedTime: 'Secret rotated at'
@@ -581,7 +825,7 @@ en:
   deleteConfirm: 'Delete application “{appName}”?'
   credentialTitle: 'Save the application credential now'
   credentialWarning: 'The secret is shown only once. Copy it to a secure location before closing this window.'
-  credentialTip: 'App ID identifies the tenant application; the client proxy identifies the channel. Keep Secret Key on a trusted server only.'
+  credentialTip: 'Public clients send App ID and a configured channel. Internal client IDs stay on the server; keep Secret Key on a trusted server only.'
   credentialSaved: 'I have saved the credential securely'
   savedAndClose: 'Saved, close window'
   copySuccess: '{field} copied'
@@ -599,6 +843,21 @@ zh-CN:
   appId: 'App ID'
   appSecret: 'Secret Key'
   scopes: '授权范围'
+  terminals: '终端配置'
+  terminalsTip: '为 App 绑定一个或多个认证策略；终端只传公开渠道码，内部客户端 ID 保留在服务端。'
+  addTerminal: '添加终端'
+  removeTerminal: '移除'
+  authClientPlaceholder: '请选择认证策略'
+  authClientRequired: '请为每个终端选择认证策略'
+  channel: '渠道码'
+  channelPlaceholder: '例如 app、h5、miniapp'
+  channelInvalid: '渠道码须以字母开头，只能包含小写字母、数字、下划线或短横线'
+  channelDuplicate: '同一 App 内的渠道码不能重复'
+  terminalsRequired: '请至少添加一个终端'
+  terminalsMax: '每个 App 最多可配置 {max} 个终端'
+  unknownClient: '未知策略'
+  enabled: '启用'
+  disabled: '停用'
   status: '状态'
   lastAccessTime: '最后调用时间'
   secretRotatedTime: '密钥轮换时间'
@@ -630,7 +889,7 @@ zh-CN:
   deleteConfirm: '确认删除应用“{appName}”吗？'
   credentialTitle: '请立即保存应用凭证'
   credentialWarning: 'Secret Key 仅展示一次，关闭前请复制并保存到安全位置。'
-  credentialTip: 'App ID 用于识别租户应用，终端渠道由客户端代理识别；Secret Key 只能保存在可信服务端。'
+  credentialTip: '公开终端使用 App ID 和已配置的渠道码；内部客户端 ID 保留在服务端，Secret Key 只能保存在可信服务端。'
   credentialSaved: '我已将凭证保存到安全位置'
   savedAndClose: '已保存，关闭窗口'
   copySuccess: '{field} 已复制'
