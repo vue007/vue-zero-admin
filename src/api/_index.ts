@@ -4,6 +4,7 @@ export * as baseApi from './base.api'
 export * as memberApi from './app/member.api'
 export * as partnerApi from './app/partner.api'
 export * as applicationApi from './app/application.api'
+export * as communityApi from './app/community.api'
 
 // /** Monitor */
 export * as loginInfoApi from './monitor/logininfor.api'
