@@ -278,13 +278,16 @@ export const installMockApi = async (page: Page, state: MockApiState) => {
       })
     }
 
-    if (call.method === 'GET' && path === '/system/tenant-app/tenant-options') {
+    if (
+      call.method === 'GET' &&
+      (path === '/system/tenant/options' || path === '/system/tenant-app/tenant-options')
+    ) {
       const keyword = (call.query.keyword || '').toLowerCase()
       return fulfill(
         [
-          { tenantId: '000000', tenantName: '默认租户' },
-          { tenantId: '000001', tenantName: 'XXX有限责任公司' },
-        ].filter((item) => `${item.tenantId} ${item.tenantName}`.toLowerCase().includes(keyword)),
+          { tenantId: '000000', tenantName: '默认租户', companyName: '默认租户' },
+          { tenantId: '000001', tenantName: 'XXX有限责任公司', companyName: 'XXX有限责任公司' },
+        ].filter((item) => `${item.tenantId} ${item.companyName}`.toLowerCase().includes(keyword)),
       )
     }
     if (call.method === 'POST' && path === '/system/tenant-app') {

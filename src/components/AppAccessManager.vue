@@ -2,6 +2,9 @@
   <VPage class="p-24">
     <template #header>
       <ze-form ref="searchFormRef" v-model="searchForm" :items="searchFormItems" inline>
+        <template #item-tenantId="item">
+          <VTenantSelector v-model="searchForm.tenantId" v-bind="item" />
+        </template>
         <ze-form-item>
           <ze-actions
             :actions="[
@@ -93,7 +96,11 @@
 
   <EditModal width="900px" top="5vh">
     <div v-loading="detailLoading">
-      <ze-form v-model="editForm" :items="editFormItems" :rules="editFormRules" label-width="110px" />
+      <ze-form v-model="editForm" :items="editFormItems" :rules="editFormRules" label-width="110px">
+        <template #item-tenantId="item">
+          <VTenantSelector v-model="editForm.tenantId" v-bind="item" :disabled="isEdit" :option="selectedTenant" />
+        </template>
+      </ze-form>
 
       <section class="terminal-editor">
         <div class="terminal-editor__header">
@@ -220,9 +227,10 @@ import type {
 } from '@/api/app/application.types'
 import type { ZeActionItem } from '@/components/types/action'
 import type { ZeFormInstance } from '@/components/types/form'
-import type { TenantAppTenantOption } from '@/api/sys/tenant-app.api'
+import type { TenantOption } from '@/api/sys/tenant.types'
+import VTenantSelector from '@/pages/tenant/_views/VTenantSelector.vue'
 import { useBaseStore } from '@/stores/base.module'
-import { toReactive, useClipboard, useDebounceFn, watchDebounced } from '@vueuse/core'
+import { toReactive, useClipboard, watchDebounced } from '@vueuse/core'
 import { merge } from 'es-toolkit'
 
 const props = defineProps({
@@ -284,33 +292,17 @@ const clientOptionLabel = (option: ApplicationClientOption) => {
   return [option.clientKey, option.deviceType, grants].filter(Boolean).join(' · ')
 }
 
-const [tenantOptions, fetchTenantOptions, tenantOptionsLoading] = useApi(
-  tenantAppApi.searchTenantAppTenantOptions,
-  undefined,
-  { concurrency: 'takeLatest' },
-)
-const selectedTenant = ref<TenantAppTenantOption>()
-const tenantSelectOptions = computed(() => {
-  const options = tenantOptions.value || []
-  const selected = selectedTenant.value
-  const visibleOptions = selected && !options.some((item) => item.tenantId === selected.tenantId)
-    ? [selected, ...options]
-    : options
-  return visibleOptions.map((item) => ({
-    value: item.tenantId,
-    label: `${item.tenantId} · ${item.tenantName}`,
-  }))
-})
-const searchTenantOptions = useDebounceFn((keyword: string) => fetchTenantOptions(keyword), 250)
-const rememberSelectedTenant = (tenantId: string) => {
-  selectedTenant.value = tenantOptions.value?.find((item) => item.tenantId === tenantId)
+const selectedTenant = ref<TenantOption>()
+const toTenantOption = (tenant?: { tenantId?: string; tenantName?: string }): TenantOption | undefined => {
+  if (!tenant?.tenantId) return undefined
+  return { tenantId: tenant.tenantId, companyName: tenant.tenantName || tenant.tenantId }
 }
 
 const searchFormRef = ref<ZeFormInstance>()
 const [searchForm, searchFormItems] = useForm({
   tenantId: {
     value: '',
-    item: { type: 'text', plh: t('tenantId'), prefixIcon: 'el-search', hidden: !props.platform },
+    item: { hidden: !props.platform },
   },
   appName: { value: '', item: { type: 'text', plh: t('appName') } },
   appId: { value: '', item: { type: 'text', plh: t('appId') } },
@@ -378,7 +370,7 @@ watch(applicationDetail, (detail) => {
 watch(applicationDetail, (detail) => {
   if (props.platform && detail && editingApplicationId.value !== undefined
     && String(detail.id) === String(editingApplicationId.value)) {
-    selectedTenant.value = { tenantId: detail.tenantId, tenantName: detail.tenantName || detail.tenantId }
+    selectedTenant.value = toTenantOption(detail)
   }
 })
 
@@ -388,15 +380,12 @@ const [editRef, EditModal] = useModal({
   onOpen: (row?: ApplicationVO) => {
     if (row) {
       editingApplicationId.value = row.id
-      if (props.platform) selectedTenant.value = { tenantId: row.tenantId, tenantName: row.tenantName || row.tenantId }
+      if (props.platform) selectedTenant.value = toTenantOption(row)
       return fetchApplicationDetail({ id: row.id })
     }
     editingApplicationId.value = undefined
+    selectedTenant.value = undefined
     void initializeNewApplication()
-    if (props.platform) {
-      selectedTenant.value = undefined
-      return fetchTenantOptions('')
-    }
   },
   onConfirm: () => submitEdit(),
 })
@@ -405,7 +394,7 @@ const [editForm, baseEditFormItems, editFormRules] = useForm({
   id: { value: undefined as number | string | undefined },
   tenantId: {
     value: '',
-    item: { type: 'select', label: t('tenantId'), plh: t('tenantIdPlaceholder'), hidden: !props.platform },
+    item: { label: t('tenantId'), hidden: !props.platform },
     rule: props.platform ? [{ required: true, message: t('tenantIdRequired'), trigger: 'change' }] : [],
   },
   appName: {
@@ -439,17 +428,6 @@ const [editForm, baseEditFormItems, editFormRules] = useForm({
 
 const editFormItems = computed(() =>
   baseEditFormItems.value.map((item) => {
-    if (item.prop === 'tenantId')
-      return {
-        ...item,
-        disabled: isEdit.value,
-        filterable: true,
-        remote: true,
-        remoteMethod: searchTenantOptions,
-        loading: tenantOptionsLoading.value,
-        options: tenantSelectOptions.value,
-        onChange: rememberSelectedTenant,
-      }
     if (item.prop === 'status') return { ...item, hidden: isEdit.value }
     if (item.prop === 'scopes') return { ...item, options: scopeOptions.value || [] }
     return item
@@ -806,7 +784,6 @@ en:
   resetSecret: 'Reset secret'
   addTitle: 'Add application access'
   editTitle: 'Edit application access'
-  tenantIdPlaceholder: 'Search by tenant ID or company name'
   tenantIdRequired: 'Select a tenant'
   appNamePlaceholder: 'Enter an application name'
   appNameRequired: 'Application name is required'
@@ -870,7 +847,6 @@ zh-CN:
   resetSecret: '重置密钥'
   addTitle: '新增应用接入'
   editTitle: '编辑应用接入'
-  tenantIdPlaceholder: '搜索租户编号或企业名称'
   tenantIdRequired: '请选择租户'
   appNamePlaceholder: '请输入应用名称'
   appNameRequired: '应用名称不能为空'

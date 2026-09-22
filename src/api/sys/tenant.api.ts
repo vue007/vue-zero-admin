@@ -1,5 +1,5 @@
 import { fetch, type ApiPromise, type ApiPromisePage } from '../_fetch'
-import type { TenantForm, TenantQuery, TenantVO } from './tenant.types'
+import type { TenantForm, TenantOption, TenantQuery, TenantVO } from './tenant.types'
 
 // 查询租户列表
 export function listTenant(query: TenantQuery): ApiPromisePage<TenantVO> {
@@ -7,6 +7,15 @@ export function listTenant(query: TenantQuery): ApiPromisePage<TenantVO> {
     url: '/system/tenant/list',
     method: 'get',
     params: query,
+  })
+}
+
+// 按租户编号或企业名称搜索轻量租户选项
+export function searchTenantOptions(keyword = ''): ApiPromise<TenantOption[]> {
+  return fetch({
+    url: '/system/tenant/options',
+    method: 'get',
+    params: { keyword },
   })
 }
 

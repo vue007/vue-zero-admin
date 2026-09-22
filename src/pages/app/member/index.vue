@@ -2,6 +2,9 @@
   <VPage class="p-24">
     <template #header>
       <ze-form ref="searchFormRef" v-model="searchForm" :items="searchFormItems" inline>
+        <template #item-tenantId="item">
+          <VTenantSelector v-model="searchForm.tenantId" v-bind="item" />
+        </template>
         <ze-form-item>
           <ze-actions
             :actions="[
@@ -54,6 +57,7 @@ import type { MemberQuery, MemberVO } from '@/api/app/member.types'
 import type { ZeFormInstance } from '@/components/types/form'
 import { useBaseStore } from '@/stores/base.module'
 import { toReactive, watchDebounced } from '@vueuse/core'
+import VTenantSelector from '@/pages/tenant/_views/VTenantSelector.vue'
 
 const { t } = useI18nLocal()
 const { sys_normal_disable } = toRefs(useDict('sys_normal_disable'))
@@ -62,15 +66,7 @@ const isSuperAdmin = computed(() => baseStore.setting.userInfo.roles?.includes('
 
 const searchFormRef = ref<ZeFormInstance>()
 const [searchForm, searchFormItems] = useForm({
-  tenantId: {
-    value: '',
-    item: {
-      type: 'text',
-      plh: t('tenantId'),
-      prefixIcon: 'el-office-building',
-      hidden: computed(() => !isSuperAdmin.value),
-    },
-  },
+  tenantId: { value: '', item: {} },
   username: { value: '', item: { type: 'text', plh: t('username'), prefixIcon: 'el-search' } },
   nickname: { value: '', item: { type: 'text', plh: t('nickname') } },
   mobile: { value: '', item: { type: 'text', plh: t('mobile') } },

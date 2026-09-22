@@ -10,6 +10,12 @@ export interface TenantBaseVO {
   tenantId: string
 }
 
+/** 其他模块搜索选择租户时使用的轻量选项。 */
+export interface TenantOption {
+  tenantId: string
+  companyName: string
+}
+
 export interface TenantInfo {
   tenantEnabled: boolean
   voList: TenantVO[]

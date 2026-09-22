@@ -19,7 +19,7 @@ test.describe('应用接入凭证', () => {
     await editDialog.getByRole('button', { name: '确定' }).click()
 
     expect(api.calls.some((call) =>
-      call.method === 'GET' && call.path === '/system/tenant-app/tenant-options' && call.query.keyword === 'XXX',
+      call.method === 'GET' && call.path === '/system/tenant/options' && call.query.keyword === 'XXX',
     )).toBe(true)
     expect(findApiCall(api, 'POST', '/system/tenant-app')?.body).toMatchObject({
       tenantId: '000001',
@@ -66,7 +66,7 @@ test.describe('应用接入凭证', () => {
     })
     expect(createBody).not.toHaveProperty('appType')
     expect(createBody).not.toHaveProperty('tenantId')
-    expect(api.calls.some((call) => call.path === '/system/tenant-app/tenant-options')).toBe(false)
+    expect(api.calls.some((call) => call.path === '/system/tenant/options')).toBe(false)
 
     const credentialDialog = page.getByRole('dialog', { name: '请立即保存应用凭证' })
     await expect(credentialDialog).toContainText('请立即保存应用凭证')

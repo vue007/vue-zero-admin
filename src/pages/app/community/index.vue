@@ -2,6 +2,9 @@
   <VPage class="p-24">
     <template #header>
       <ze-form ref="searchFormRef" v-model="searchForm" :items="searchFormItems" inline>
+        <template #item-tenantId="item">
+          <VTenantSelector v-model="searchForm.tenantId" v-bind="item" />
+        </template>
         <ze-form-item>
           <ze-actions
             :actions="[
@@ -92,6 +95,7 @@ import type {
 import type { ZeFormInstance } from '@/components/types/form'
 import { useBaseStore } from '@/stores/base.module'
 import { toReactive, watchDebounced } from '@vueuse/core'
+import VTenantSelector from '@/pages/tenant/_views/VTenantSelector.vue'
 
 const { t } = useI18nLocal()
 const baseStore = useBaseStore()
@@ -123,7 +127,7 @@ const statusOptions = computed(() => [
 const [searchForm, searchFormItems] = useForm({
   tenantId: {
     value: '',
-    item: { type: 'text', plh: t('tenantId'), hidden: computed(() => !isSuperAdmin.value) },
+    item: {},
   },
   keyword: { value: '', item: { type: 'text', plh: t('searchPlaceholder'), prefixIcon: 'el-search' } },
   kind: { value: '', item: { type: 'select', plh: t('kind'), options: kindOptions } },
