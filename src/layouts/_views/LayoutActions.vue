@@ -1,8 +1,16 @@
 <template>
   <Teleport :to="props.to" defer>
     <template v-for="action in resolvedActions" :key="action">
-      <div v-if="'fullscreen' === action" class="action cursor-pointer" v-tooltip="'full screen'">
-        <svg-icon name="ze-full-screen" />
+      <div
+        v-if="'fullscreen' === action"
+        class="action cursor-pointer"
+        role="button"
+        :aria-label="fullscreenLabel"
+        :aria-pressed="isFullscreen"
+        v-tooltip="fullscreenLabel"
+        @click="toggleFullscreen"
+      >
+        <svg-icon :name="isFullscreen ? 'ze-off-screen' : 'ze-full-screen'" />
       </div>
 
       <el-popover v-if="'wallpaper' === action && showWallpaperAction" trigger="click" :width="300">
@@ -146,7 +154,7 @@
 import { logout } from '@/api/base.api'
 import { BASE_WALLPAPERS, useBaseStore } from '@/stores/base.module'
 import { BASE_THEME_COLORS, BASE_THEME_SURFACES, getThemeSurfaceFallback } from '@/styles/theme/theme-colors'
-import { useMediaQuery } from '@vueuse/core'
+import { useFullscreen, useMediaQuery } from '@vueuse/core'
 import { includes } from 'es-toolkit/compat'
 
 const { t } = useI18nLocal()
@@ -204,6 +212,9 @@ const SizeCheckTag = ({ text, value }) => (
     v-html={t(text)}
   />
 )
+
+const { isFullscreen, toggle: toggleFullscreen } = useFullscreen()
+const fullscreenLabel = computed(() => (isFullscreen.value ? t('base.fullscreen.exit') : t('base.fullscreen.enter')))
 
 const schemeIcon = computed(() => {
   if ('light' === setting.scheme) return 'el-sunny'

@@ -18,6 +18,10 @@ export const baseLang = {
     primary: i('主题色', 'Primary color'),
     surface: i('Surface 背景色', 'Surface color'),
   },
+  fullscreen: {
+    enter: i('全屏', 'Full screen'),
+    exit: i('退出全屏', 'Exit full screen'),
+  },
   wallpaper: {
     title: i('动态壁纸', 'Animated wallpaper'),
     Wavy: i('波浪', 'Wavy'),
