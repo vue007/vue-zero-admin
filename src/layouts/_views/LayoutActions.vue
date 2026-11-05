@@ -213,8 +213,11 @@ const SizeCheckTag = ({ text, value }) => (
   />
 )
 
-const { isFullscreen, toggle: toggleFullscreen } = useFullscreen()
+const { isFullscreen, toggle } = useFullscreen()
 const fullscreenLabel = computed(() => (isFullscreen.value ? t('base.fullscreen.exit') : t('base.fullscreen.enter')))
+const toggleFullscreen = () => {
+  toggle().catch(() => undefined)
+}
 
 const schemeIcon = computed(() => {
   if ('light' === setting.scheme) return 'el-sunny'
